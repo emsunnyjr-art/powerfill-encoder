@@ -244,9 +244,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <span id="ai-btn-txt">🤖 Read with AI</span>
       </button>
       <div class="card" id="ai-result-card" style="display:none">
-        <div class="card-title"><span class="card-title-dot"></span>AI Reading</div>
-        <div id="ai-response" style="font-size:12px;line-height:1.7;white-space:pre-wrap;max-height:250px;overflow-y:auto;color:var(--text)"></div>
-        <button class="btn-secondary" id="apply-btn" onclick="applyAIData()" style="display:none;margin-top:8px;color:var(--green);border-color:var(--green)">✅ Apply to Form</button>
+        <div class="card-title"><span class="card-title-dot"></span>AI Reading Result</div>
+        <div id="ai-summary" style="font-size:13px;line-height:1.9;color:var(--text)"></div>
+        <div id="ai-response" style="font-size:11px;line-height:1.5;white-space:pre-wrap;max-height:120px;overflow-y:auto;color:var(--muted);margin-top:8px;display:none"></div>
+        <button class="btn-primary" id="apply-btn" onclick="applyAIData()" style="display:none;margin-top:10px;background:linear-gradient(135deg,#00c853,#00e676)">✅ Apply Data to Form</button>
+        <button class="btn-secondary" onclick="toggleRawJson()" style="margin-top:4px;font-size:11px">👁 Show/Hide Raw Data</button>
       </div>
     </div>
     <div id="shift-inactive-content" style="display:none">
@@ -887,8 +889,28 @@ Rules: shift_sales = end - beginning, always positive. Sales over 20000 per hose
     document.getElementById('ai-response').textContent = text;
     try {
       aiParsedData = JSON.parse(text.replace(/```json|```/g,'').trim());
+      // Show clean summary
+      const d = aiParsedData;
+      let summary = '';
+      if (d.date) summary += `📅 Date: <strong>${d.date}</strong><br>`;
+      if (d.shift) summary += `🔄 Shift: <strong>${d.shift}</strong><br>`;
+      if (d.attendant) summary += `👤 Attendant: <strong>${d.attendant}</strong><br>`;
+      if (d.hoses && d.hoses.length) {
+        summary += `⛽ Hoses found: <strong>${d.hoses.length}</strong><br>`;
+        d.hoses.forEach(h => {
+          const sl = Math.max(0, (h.end_liter||0) - (h.beg_liter||0));
+          const ss = Math.max(0, (h.end_sales||0) - (h.beg_sales||0));
+          summary += `&nbsp;&nbsp;• ${h.hose} ${h.product}: <strong style="color:var(--gold)">${fmt(sl)}L / ₱${fmt(ss)}</strong><br>`;
+        });
+      }
+      if (d.dipstick) summary += `🛢 Dipstick — D:${d.dipstick.diesel||0}L G:${d.dipstick.gasoline||0}L<br>`;
+      document.getElementById('ai-summary').innerHTML = summary || 'Data read successfully.';
       document.getElementById('apply-btn').style.display = 'block';
-    } catch { document.getElementById('apply-btn').style.display = 'none'; }
+    } catch(ex) {
+      document.getElementById('ai-summary').textContent = 'Could not parse data. Check raw view below.';
+      document.getElementById('ai-response').style.display = 'block';
+      document.getElementById('apply-btn').style.display = 'none';
+    }
   } catch(err) {
     document.getElementById('ai-result-card').style.display = 'block';
     document.getElementById('ai-response').textContent = 'Error: ' + err.message;
@@ -1479,6 +1501,10 @@ function saveSettings() {
 
 // ═══════════ UTILS ═══════════
 function fmt(n) { return Number(n).toLocaleString('en-PH',{maximumFractionDigits:2}); }
+function toggleRawJson() {
+  const el = document.getElementById('ai-response');
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
 function showStatus(id, msg, type) {
   const el = document.getElementById(id); if (!el) return;
   el.textContent = msg; el.className = 'status-msg '+type; el.style.display = 'block';
