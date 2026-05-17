@@ -83,19 +83,23 @@
   .pump-block { margin-bottom: 16px; }
   .pump-label { font-size: 11px; font-weight: 700; color: var(--accent); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
   .meter-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-  .meter-table th { color: var(--muted); font-size: 9px; font-weight: 600; padding: 4px 6px; text-align: right; border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.5px; }
+  .meter-table th { color: var(--muted); font-size: 9px; font-weight: 700; padding: 5px 6px; text-align: right; border-bottom: 2px solid var(--border); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
   .meter-table th:first-child { text-align: left; }
+  .meter-table th.sales-col { color: var(--accent); border-bottom-color: var(--accent); }
   .meter-table td { padding: 5px 6px; text-align: right; border-bottom: 1px solid rgba(42,45,62,0.5); vertical-align: middle; }
   .meter-table td:first-child { text-align: left; }
+  .meter-table td.sales-col { background: rgba(245,200,66,0.04); border-left: 1px solid rgba(245,200,66,0.2); }
   .meter-table tr:last-child td { border-bottom: none; }
-  .meter-table input[type="number"], .meter-table input[type="text"] {
+  .meter-table input[type="number"] {
     background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
     padding: 4px 6px; color: var(--text); font-size: 11px; font-family: inherit;
-    width: 100%; text-align: right; min-width: 90px;
+    width: 100%; text-align: right; min-width: 100px;
   }
   .meter-table input:focus { outline: none; border-color: var(--accent); }
   .meter-table input.flagged { border-color: var(--danger) !important; background: rgba(255,77,109,0.08); }
-  .meter-table input.corrected { border-color: var(--warn) !important; background: rgba(255,159,28,0.06); }
+  .meter-table input.corrected { border-color: var(--warn) !important; background: rgba(255,159,28,0.08); }
+  .shift-sales-cell { font-weight: 700; font-size: 12px; color: var(--accent2); white-space: nowrap; }
+  .shift-sales-cell.bad { color: var(--danger); }
   .fuel-badge { display: inline-block; width: 22px; height: 22px; border-radius: 4px; font-size: 10px; font-weight: 900; text-align: center; line-height: 22px; }
   .fuel-U { background: var(--U); color: #000; }
   .fuel-P { background: var(--P); color: #fff; }
@@ -314,17 +318,17 @@
           <thead>
             <tr>
               <th>HOSE</th>
-              <th>BEG. METER<br><span style="font-weight:400;font-size:9px;">liters (cumul.)</span></th>
-              <th>BEG. SALES ₱<br><span style="font-weight:400;font-size:9px;">cumul. peso</span></th>
-              <th>END METER<br><span style="font-weight:400;font-size:9px;">liters (cumul.)</span></th>
-              <th>END SALES ₱<br><span style="font-weight:400;font-size:9px;">cumul. peso</span></th>
-              <th>SHIFT<br>SALES ₱</th>
+              <th>BEG. LITER<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
+              <th>BEG. SALES ₱<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
+              <th>END LITER<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
+              <th>END SALES ₱<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
+              <th class="sales-col">SHIFT SALES ₱<br><span style="font-weight:400;font-size:8px;">end − beg</span></th>
             </tr>
           </thead>
           <tbody id="pump1-body"></tbody>
         </table>
       </div>
-      <div class="pump-total">PUMP 1 SALES: ₱<span id="pump1-total">0.00</span></div>
+      <div class="pump-total">PUMP 1 SALES: <span id="pump1-total" style="color:var(--accent2);">₱0.00</span></div>
     </div>
   </div>
 
@@ -337,17 +341,17 @@
           <thead>
             <tr>
               <th>HOSE</th>
-              <th>BEG. METER<br><span style="font-weight:400;font-size:9px;">liters (cumul.)</span></th>
-              <th>BEG. SALES ₱<br><span style="font-weight:400;font-size:9px;">cumul. peso</span></th>
-              <th>END METER<br><span style="font-weight:400;font-size:9px;">liters (cumul.)</span></th>
-              <th>END SALES ₱<br><span style="font-weight:400;font-size:9px;">cumul. peso</span></th>
-              <th>SHIFT<br>SALES ₱</th>
+              <th>BEG. LITER<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
+              <th>BEG. SALES ₱<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
+              <th>END LITER<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
+              <th>END SALES ₱<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
+              <th class="sales-col">SHIFT SALES ₱<br><span style="font-weight:400;font-size:8px;">end − beg</span></th>
             </tr>
           </thead>
           <tbody id="pump2-body"></tbody>
         </table>
       </div>
-      <div class="pump-total">PUMP 2 SALES: ₱<span id="pump2-total">0.00</span></div>
+      <div class="pump-total">PUMP 2 SALES: <span id="pump2-total" style="color:var(--accent2);">₱0.00</span></div>
     </div>
   </div>
 
@@ -821,24 +825,29 @@ function renderPumpTables() {
 function renderPumpBody(bodyId, hoses, pumpNum) {
   const tbody = document.getElementById(bodyId);
   if (!hoses || hoses.length === 0) {
-    // Render 4 empty editable rows
     tbody.innerHTML = [0,1,2,3].map(i => emptyHoseRow(pumpNum, i)).join('');
     return;
   }
   tbody.innerHTML = hoses.map((h, i) => {
     const fuel = (h.fuel_type || h.fuel || 'U').toUpperCase();
     const corrected = h.auto_corrected || false;
-    const flagClass = corrected ? 'corrected' : '';
+    const flagBM = corrected ? 'corrected' : '';
+    const flagBS = corrected ? 'corrected' : '';
     const bm = fmt(h.beg_meter); const bs = fmt(h.beg_sales);
     const em = fmt(h.end_meter); const es = fmt(h.end_sales);
-    return `<tr>
-      <td><span class="fuel-badge fuel-${fuel}">${fuel}</span></td>
-      <td><input type="number" class="meter-in ${flagClass}" id="p${pumpNum}_bm_${i}" value="${bm}" step="0.01" onchange="recalcRow(${pumpNum},${i})" title="${corrected ? 'Auto-corrected: ' + (h.correction_note||'') : ''}"></td>
-      <td><input type="number" class="meter-in ${flagClass}" id="p${pumpNum}_bs_${i}" value="${bs}" step="0.01" onchange="recalcRow(${pumpNum},${i})"></td>
-      <td><input type="number" class="meter-in" id="p${pumpNum}_em_${i}" value="${em}" step="0.01" onchange="recalcRow(${pumpNum},${i})"></td>
-      <td><input type="number" class="meter-in" id="p${pumpNum}_es_${i}" value="${es}" step="0.01" onchange="recalcRow(${pumpNum},${i})"></td>
-      <td class="shift-sales" id="p${pumpNum}_ss_${i}">—</td>
-    </tr>`;
+    const shiftSales = (parseFloat(es) || 0) - (parseFloat(bs) || 0);
+    const shiftLiters = (parseFloat(em) || 0) - (parseFloat(bm) || 0);
+    const ssClass = shiftSales < 0 ? 'bad' : '';
+    const ssLabel = shiftSales >= 0 ? fmtPeso(shiftSales) : '⚠ CHECK';
+    const tip = corrected ? ('Auto-corrected: ' + (h.correction_note||'')) : '';
+    return \`<tr>
+      <td><span class="fuel-badge fuel-\${fuel}" title="\${tip}">\${fuel}</span>\${corrected ? '<span style="font-size:9px;color:var(--warn);margin-left:2px;">✎</span>' : ''}</td>
+      <td><input type="number" class="meter-in \${flagBM}" id="p\${pumpNum}_bm_\${i}" value="\${bm}" step="0.01" onchange="recalcRow(\${pumpNum},\${i})" title="\${tip}"></td>
+      <td><input type="number" class="meter-in \${flagBS}" id="p\${pumpNum}_bs_\${i}" value="\${bs}" step="0.01" onchange="recalcRow(\${pumpNum},\${i})" title="\${tip}"></td>
+      <td><input type="number" class="meter-in" id="p\${pumpNum}_em_\${i}" value="\${em}" step="0.01" onchange="recalcRow(\${pumpNum},\${i})"></td>
+      <td><input type="number" class="meter-in" id="p\${pumpNum}_es_\${i}" value="\${es}" step="0.01" onchange="recalcRow(\${pumpNum},\${i})"></td>
+      <td class="sales-col shift-sales-cell \${ssClass}" id="p\${pumpNum}_ss_\${i}">\${ssLabel}</td>
+    </tr>\`;
   }).join('');
 }
 
@@ -851,7 +860,7 @@ function emptyHoseRow(pump, i) {
     <td><input type="number" class="meter-in" id="p${pump}_bs_${i}" value="" step="0.01" placeholder="0.00" onchange="recalcRow(${pump},${i})"></td>
     <td><input type="number" class="meter-in" id="p${pump}_em_${i}" value="" step="0.01" placeholder="0.00" onchange="recalcRow(${pump},${i})"></td>
     <td><input type="number" class="meter-in" id="p${pump}_es_${i}" value="" step="0.01" placeholder="0.00" onchange="recalcRow(${pump},${i})"></td>
-    <td class="shift-sales" id="p${pump}_ss_${i}">—</td>
+    <td class="sales-col shift-sales-cell" id="p${pump}_ss_${i}">—</td>
   </tr>`;
 }
 
@@ -861,8 +870,16 @@ function recalcRow(pump, i) {
   const ss = es - bs;
   const el = document.getElementById(`p${pump}_ss_${i}`);
   if (el) {
-    el.textContent = ss >= 0 ? '₱' + ss.toFixed(2) : '—';
-    el.className = 'shift-sales' + (ss < 0 ? ' negative' : '');
+    if (ss > 0) {
+      el.textContent = fmtPeso(ss);
+      el.className = 'sales-col shift-sales-cell';
+    } else if (ss === 0) {
+      el.textContent = '—';
+      el.className = 'sales-col shift-sales-cell';
+    } else {
+      el.textContent = '⚠ CHECK';
+      el.className = 'sales-col shift-sales-cell bad';
+    }
   }
   recalcPumps();
   updateSummaries();
@@ -883,8 +900,8 @@ function recalcPumps() {
     const bs = parseFloat(document.getElementById(`p2_bs_${i}`)?.value) || 0;
     t2 += Math.max(0, es - bs);
   }
-  document.getElementById('pump1-total').textContent = t1.toFixed(2);
-  document.getElementById('pump2-total').textContent = t2.toFixed(2);
+  document.getElementById('pump1-total').textContent = fmtNum(t1);
+  document.getElementById('pump2-total').textContent = fmtNum(t2);
   return { t1, t2 };
 }
 
@@ -997,13 +1014,13 @@ function recalcCash() {
   const cashRemit = cashOnHand + gcash;
   const overShort = cashRemit + takeawayTotal - totalSales;
 
-  document.getElementById('rec-total-sales').textContent = '₱' + totalSales.toFixed(2);
-  document.getElementById('rec-cash-hand').textContent = '₱' + cashOnHand.toFixed(2);
-  document.getElementById('rec-gcash').textContent = '₱' + gcash.toFixed(2);
-  document.getElementById('rec-takeaways').textContent = '₱' + takeawayTotal.toFixed(2);
-  document.getElementById('rec-remit').textContent = '₱' + cashRemit.toFixed(2);
+  document.getElementById('rec-total-sales').textContent = fmtPeso(totalSales);
+  document.getElementById('rec-cash-hand').textContent = fmtPeso(cashOnHand);
+  document.getElementById('rec-gcash').textContent = fmtPeso(gcash);
+  document.getElementById('rec-takeaways').textContent = fmtPeso(takeawayTotal);
+  document.getElementById('rec-remit').textContent = fmtPeso(cashRemit);
   const osEl = document.getElementById('rec-overshort');
-  osEl.textContent = (overShort >= 0 ? '+' : '') + '₱' + overShort.toFixed(2);
+  osEl.textContent = (overShort >= 0 ? '+' : '-') + fmtPeso(Math.abs(overShort));
   osEl.className = 'val ' + (Math.abs(overShort) < 0.01 ? 'ok' : overShort > 0 ? '' : 'bad');
 }
 
@@ -1166,6 +1183,13 @@ function removeListItem(key, i) {
 // HELPERS
 // ============================================================
 function fmt(v) { return v != null && v !== '' && !isNaN(v) ? parseFloat(v).toFixed(2) : ''; }
+function fmtNum(v) {
+  if (v == null || isNaN(v)) return '0.00';
+  return parseFloat(v).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function fmtPeso(v) {
+  return '₱' + fmtNum(v);
+}
 function showBanner(containerId, type, msg) {
   const el = document.getElementById(containerId);
   if (!el) return;
