@@ -193,23 +193,19 @@
   <div class="card">
     <div class="card-title">📷 UPLOAD SHIFT REPORT PHOTO</div>
 
-    <!-- Hidden file input -->
-    <input type="file" accept="image/*" id="photo-input" style="display:none;" onchange="handlePhotoSelect(event)">
-
-    <!-- Click area -->
-    <div class="photo-drop" id="photo-drop" onclick="document.getElementById('photo-input').click()"
-         ondragover="event.preventDefault();this.classList.add('drag')"
-         ondragleave="this.classList.remove('drag')"
-         ondrop="handlePhotoDrop(event)">
-      <div class="photo-drop-icon">📸</div>
-      <p style="font-size:13px;font-weight:700;margin-bottom:4px;">Click here to select photo</p>
-      <p style="font-size:10px;color:var(--muted);">Windows: click to browse · iPhone: camera or library · JPG, PNG, HEIC</p>
-    </div>
-
-    <!-- Explicit button as backup -->
-    <button class="btn btn-ghost btn-full" style="margin-top:8px;" onclick="document.getElementById('photo-input').click()">
-      📁 BROWSE FILE
-    </button>
+    <!-- File input overlaid on label - most reliable cross-browser method -->
+    <label for="photo-input" style="display:block;cursor:pointer;">
+      <div class="photo-drop" id="photo-drop"
+           ondragover="event.preventDefault();document.getElementById('photo-drop').classList.add('drag')"
+           ondragleave="document.getElementById('photo-drop').classList.remove('drag')"
+           ondrop="handlePhotoDrop(event)">
+        <div class="photo-drop-icon">📸</div>
+        <p style="font-size:13px;font-weight:700;margin-bottom:4px;color:var(--accent);">Click here to select photo</p>
+        <p style="font-size:10px;color:var(--muted);">Windows: click to browse file · iPhone: camera or library</p>
+        <p style="font-size:10px;color:var(--muted);">JPG · PNG · HEIC accepted</p>
+      </div>
+    </label>
+    <input type="file" accept="image/*" id="photo-input" style="position:absolute;width:1px;height:1px;opacity:0;" onchange="handlePhotoSelect(event)">
 
     <!-- Preview -->
     <div id="photo-status" style="display:none;margin-top:10px;padding:8px 12px;background:rgba(61,214,140,0.1);border:1px solid var(--accent2);border-radius:8px;font-size:11px;color:var(--accent2);"></div>
