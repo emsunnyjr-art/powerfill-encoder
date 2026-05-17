@@ -246,7 +246,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div class="card" id="ai-result-card" style="display:none">
         <div class="card-title"><span class="card-title-dot"></span>AI Reading Result</div>
         <div id="ai-summary" style="font-size:13px;line-height:1.9;color:var(--text)"></div>
-        <div id="ai-response" style="font-size:11px;line-height:1.5;white-space:pre-wrap;max-height:120px;overflow-y:auto;color:var(--muted);margin-top:8px;display:none"></div>
+        <div id="ai-response" style="font-size:11px;line-height:1.5;white-space:pre-wrap;max-height:200px;overflow-y:auto;color:var(--muted);margin-top:8px;display:block"></div>
         <button class="btn-primary" id="apply-btn" onclick="applyAIData()" style="display:none;margin-top:10px;background:linear-gradient(135deg,#00c853,#00e676)">✅ Apply Data to Form</button>
         <button class="btn-secondary" onclick="toggleRawJson()" style="margin-top:4px;font-size:11px">👁 Show/Hide Raw Data</button>
       </div>
@@ -888,13 +888,17 @@ Rules: shift_sales = end - beginning, always positive. Sales over 20000 per hose
     document.getElementById('ai-result-card').style.display = 'block';
     document.getElementById('ai-response').textContent = text;
     try {
-      // Strip all markdown fences robustly
+      // Bulletproof JSON extraction
       let cleanText = text.trim();
-      cleanText = cleanText.replace(/^```json\s*/i, '').replace(/^```\s*/i, '');
-      cleanText = cleanText.replace(/\s*```$/i, '');
-      // Extract JSON object if surrounded by other text
-      const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) cleanText = jsonMatch[0];
+      // Remove all markdown code fences
+      cleanText = cleanText.replace(/```json/gi, '').replace(/```/g, '');
+      // Extract the JSON object - find first { to last }
+      const firstBrace = cleanText.indexOf('{');
+      const lastBrace = cleanText.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace !== -1) {
+        cleanText = cleanText.substring(firstBrace, lastBrace + 1);
+      }
+      cleanText = cleanText.trim();
       aiParsedData = JSON.parse(cleanText);
       // Show clean summary
       const d = aiParsedData;
@@ -914,7 +918,7 @@ Rules: shift_sales = end - beginning, always positive. Sales over 20000 per hose
       document.getElementById('ai-summary').innerHTML = summary || 'Data read successfully.';
       document.getElementById('apply-btn').style.display = 'block';
     } catch(ex) {
-      document.getElementById('ai-summary').textContent = 'Could not parse data. Check raw view below.';
+      document.getElementById('ai-summary').innerHTML = '<span style="color:var(--red)">Parse error: ' + ex.message + '</span>';
       document.getElementById('ai-response').style.display = 'block';
       document.getElementById('apply-btn').style.display = 'none';
     }
