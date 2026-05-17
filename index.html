@@ -677,7 +677,16 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="card">
       <div class="card-title"><span class="card-title-dot"></span>Google Sheets URL</div>
       <input type="text" id="settings-url" placeholder="https://script.google.com/macros/s/.../exec">
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="card-title-dot"></span>Anthropic API Key (for AI Photo Reading)</div>
+      <input type="password" id="settings-apikey" placeholder="sk-ant-api03-...">
+      <div style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.7">
+        Get your key at <strong style="color:var(--gold)">console.anthropic.com</strong> → API Keys → Create Key.<br>
+        Saved privately on this device only. Never shared.
+      </div>
       <button class="btn-primary" style="margin-top:10px" onclick="saveSettings()">💾 Save Settings</button>
+      <div class="status-msg" id="settings-status"></div>
     </div>
     <div class="card">
       <div class="card-title"><span class="card-title-dot"></span>Active Stations</div>
@@ -715,6 +724,7 @@ let employees = JSON.parse(localStorage.getItem('af_employees') || '[]');
 let deliveries = JSON.parse(localStorage.getItem('af_deliveries') || '[]');
 let attendance = JSON.parse(localStorage.getItem('af_attendance') || '[]');
 let sheetsUrl = localStorage.getItem('af_sheets_url') || '';
+let apiKey = localStorage.getItem('af_api_key') || '';
 let pendingModule = null;
 
 // PH Holidays 2025
@@ -750,6 +760,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (sheetsUrl) {
     document.getElementById('sheets-url').value = sheetsUrl;
     document.getElementById('settings-url').value = sheetsUrl;
+  }
+  if (apiKey) {
+    document.getElementById('settings-apikey').value = apiKey;
   }
   initHoseTable();
   addPayRow('supplier');
@@ -854,8 +867,15 @@ async function readWithAI() {
 "payables":[{"type":"supplier","name":"","amount":0}]}
 Rules: shift_sales = end - beginning, always positive. Sales over 20000 per hose = likely misread, flag it. Return ONLY JSON.`;
   try {
+    const key = apiKey || localStorage.getItem('af_api_key') || '';
+    if (!key) {
+      document.getElementById('ai-result-card').style.display = 'block';
+      document.getElementById('ai-response').textContent = '⚠️ No API key found. Go to ⚙️ Settings and enter your Anthropic API key first.';
+      btn.disabled = false; document.getElementById('ai-btn-txt').textContent = '🤖 Read with AI';
+      return;
+    }
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST', headers:{'Content-Type':'application/json'},
+      method:'POST', headers:{'Content-Type':'application/json','x-api-key': key, 'anthropic-version':'2023-06-01'},
       body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1500,
         messages:[{role:'user',content:[
           {type:'image',source:{type:'base64',media_type:'image/jpeg',data:photoBase64}},
@@ -1448,10 +1468,13 @@ function renderHolidays() {
 // ═══════════ SETTINGS ═══════════
 function saveSettings() {
   const url = document.getElementById('settings-url').value.trim();
+  const key = document.getElementById('settings-apikey').value.trim();
   sheetsUrl = url;
+  apiKey = key;
   localStorage.setItem('af_sheets_url', url);
+  if (key) localStorage.setItem('af_api_key', key);
   document.getElementById('sheets-url').value = url;
-  alert("✅ Settings saved!");
+  showStatus('settings-status', '✅ Settings saved! API key and Sheets URL stored on this device.', 'success');
 }
 
 // ═══════════ UTILS ═══════════
