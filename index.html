@@ -345,7 +345,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div class="summ-card"><div class="summ-label">Liters Sold</div><div class="summ-val gold" id="s-liters">0 L</div></div>
       <div class="summ-card"><div class="summ-label">Peso Sales</div><div class="summ-val gold" id="s-sales">₱0</div></div>
       <div class="summ-card"><div class="summ-label">Diesel Sold</div><div class="summ-val" id="s-diesel">0 L</div></div>
-      <div class="summ-card"><div class="summ-label">Gasoline Sold</div><div class="summ-val" id="s-gas">0 L</div></div>
+      <div class="summ-card"><div class="summ-label">Unleaded/Gas Sold</div><div class="summ-val" id="s-gas">0 L</div></div>
+      <div class="summ-card"><div class="summ-label">Premium Sold</div><div class="summ-val" id="s-premium">0 L</div></div>
     </div>
 
     <div class="card">
@@ -859,15 +860,19 @@ async function readWithAI() {
   const btn = document.getElementById('ai-btn');
   btn.disabled = true;
   document.getElementById('ai-btn-txt').innerHTML = '<div class="spinner"></div> Reading...';
-  const prompt = `You are reading a handwritten gas station shift report. Extract all data and return ONLY a JSON object:
+  const prompt = `You are reading a handwritten gas station shift report. Extract all data and return ONLY a valid JSON object with NO trailing commas and NO markdown fences:
 {"date":"YYYY-MM-DD","shift":"1 or 2 or 3","attendant":"name","supervisor":"name",
-"prices":{"diesel":0,"gasoline":0},
+"prices":{"diesel":0,"unleaded":0,"premium":0},
 "hoses":[{"hose":"H1","product":"Diesel","beg_liter":0,"beg_sales":0,"end_liter":0,"end_sales":0}],
-"dipstick":{"diesel":0,"gasoline":0},
+"dipstick":{"diesel":0,"unleaded":0,"premium":0},
 "denominations":{"1000":0,"500":0,"200":0,"100":0,"50":0,"20":0,"10":0,"5":0,"1":0},
 "ar_sales":0,"other_income":0,
 "payables":[{"type":"supplier","name":"","amount":0}]}
-Rules: shift_sales = end - beginning, always positive. Sales over 20000 per hose = likely misread, flag it. Return ONLY JSON.`;
+Rules:
+- product must be exactly one of: Diesel, Unleaded, Premium, Gasoline
+- shift_sales = end - beginning, always positive
+- Sales over 20000 per hose = likely misread, use 0
+- Return ONLY the JSON object, no backticks, no markdown, no explanation`;
   try {
     const key = apiKey || localStorage.getItem('af_api_key') || '';
     if (!key) {
@@ -890,14 +895,17 @@ Rules: shift_sales = end - beginning, always positive. Sales over 20000 per hose
     try {
       // Bulletproof JSON extraction
       let cleanText = text.trim();
-      // Remove all markdown code fences
+      // Step 1: Remove all markdown code fences
       cleanText = cleanText.replace(/```json/gi, '').replace(/```/g, '');
-      // Extract the JSON object - find first { to last }
+      // Step 2: Extract only the JSON object (first { to last })
       const firstBrace = cleanText.indexOf('{');
       const lastBrace = cleanText.lastIndexOf('}');
       if (firstBrace !== -1 && lastBrace !== -1) {
         cleanText = cleanText.substring(firstBrace, lastBrace + 1);
       }
+      // Step 3: Fix trailing commas before } or ] (common AI mistake)
+      cleanText = cleanText.replace(/,\s*([}\]])/g, '$1');
+      // Step 4: Fix any unquoted values
       cleanText = cleanText.trim();
       aiParsedData = JSON.parse(cleanText);
       // Show clean summary
@@ -975,6 +983,8 @@ function addHoseRowData(data = {}) {
     <td><input type="text" value="${data.hose||'H'+(id+1)}" style="width:44px;padding:4px 6px;font-size:11px"></td>
     <td><select onchange="recalcAll()" style="font-size:11px;padding:3px 18px 3px 5px;width:85px">
       <option${p==='Diesel'?' selected':''}>Diesel</option>
+      <option${p==='Unleaded'?' selected':''}>Unleaded</option>
+      <option${p==='Premium'?' selected':''}>Premium</option>
       <option${p==='Gasoline'?' selected':''}>Gasoline</option></select></td>
     <td><input type="number" class="bl" value="${data.beg_liter||0}" oninput="recalcRow(${id})"></td>
     <td><input type="number" class="bs" value="${data.beg_sales||0}" oninput="recalcRow(${id})"></td>
@@ -1015,7 +1025,7 @@ function recalcRow(id) {
 function recalcAll() { hoseRows.forEach(id => recalcRow(id)); }
 
 function recalcTotals() {
-  let tbl=0,tbs=0,tel=0,tes=0,tsl=0,tss=0,dsl=0,gsl=0;
+  let tbl=0,tbs=0,tel=0,tes=0,tsl=0,tss=0,dsl=0,gsl=0,psl=0;
   hoseRows.forEach(id => {
     const tr = document.getElementById('hr-'+id); if (!tr) return;
     const bl=+tr.querySelector('.bl').value||0, bs=+tr.querySelector('.bs').value||0;
@@ -1034,6 +1044,7 @@ function recalcTotals() {
   document.getElementById('s-sales').textContent='₱'+fmt(tss);
   document.getElementById('s-diesel').textContent=fmt(dsl)+' L';
   document.getElementById('s-gas').textContent=fmt(gsl)+' L';
+  document.getElementById('s-premium').textContent=fmt(psl)+' L';
   document.getElementById('gross-sales').value=tss.toFixed(2);
   checkFlags(tsl, tss);
   calcCash(); checkInventory();
