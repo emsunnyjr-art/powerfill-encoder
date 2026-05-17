@@ -635,14 +635,23 @@ function buildPumpRows(pump, hoses) {
     const cls = h.fixed ? 'warn' : '';
     const tip = h.fixed ? (h.fix_note||'Auto-corrected') : '';
     const ss = (parseFloat(es)||0) - (parseFloat(bs)||0);
-    const ssDisp = ss > 0 ? '₱'+p(ss) : ss===0 ? '—' : '<span style="color:var(--red)">⚠ CHECK</span>';
+    let ssDisp, ssCls = 'sale-cell';
+    if (ss < 0) {
+      ssDisp = '🔴 NEGATIVE — CHECK BEG/END'; ssCls = 'sale-cell bad';
+    } else if (ss > 20000) {
+      ssDisp = '🟡 ₱'+p(ss)+'<br><small style="font-size:9px;color:var(--warn);">MISREAD? &gt;₱20,000</small>'; ssCls = 'sale-cell bad';
+    } else if (ss === 0) {
+      ssDisp = '—';
+    } else {
+      ssDisp = '₱'+p(ss);
+    }
     return `<tr>
       <td><span class="badge ${f}" title="${tip}">${f}</span>${h.fixed?'<span style="font-size:9px;color:var(--warn);margin-left:2px;">✎</span>':''}</td>
-      <td><input type="number" id="p${pump}bm${i}" value="${bm}" step="0.01" class="${cls}" onchange="rowCalc(${pump},${i})" title="${tip}"></td>
-      <td><input type="number" id="p${pump}bs${i}" value="${bs}" step="0.01" class="${cls}" onchange="rowCalc(${pump},${i})" title="${tip}"></td>
-      <td><input type="number" id="p${pump}em${i}" value="${em}" step="0.01" onchange="rowCalc(${pump},${i})"></td>
-      <td><input type="number" id="p${pump}es${i}" value="${es}" step="0.01" onchange="rowCalc(${pump},${i})"></td>
-      <td class="sale-cell" id="p${pump}ss${i}">${ssDisp}</td>
+      <td><input type="number" id="p${pump}bm${i}" value="${bm}" step="0.01" class="${cls}" onchange="rowCalc(${pump},${i})" title="${tip||bm}"><div style="font-size:9px;color:var(--muted);text-align:right;margin-top:1px;">${bm?p(parseFloat(bm)):''}</div></td>
+      <td><input type="number" id="p${pump}bs${i}" value="${bs}" step="0.01" class="${cls}" onchange="rowCalc(${pump},${i})" title="${tip||bs}"><div style="font-size:9px;color:var(--muted);text-align:right;margin-top:1px;">${bs?p(parseFloat(bs)):''}</div></td>
+      <td><input type="number" id="p${pump}em${i}" value="${em}" step="0.01" onchange="rowCalc(${pump},${i})" title="${em}"><div style="font-size:9px;color:var(--muted);text-align:right;margin-top:1px;">${em?p(parseFloat(em)):''}</div></td>
+      <td><input type="number" id="p${pump}es${i}" value="${es}" step="0.01" onchange="rowCalc(${pump},${i})" title="${es}"><div style="font-size:9px;color:var(--muted);text-align:right;margin-top:1px;">${es?p(parseFloat(es)):''}</div></td>
+      <td class="${ssCls}" id="p${pump}ss${i}">${ssDisp}</td>
     </tr>`;
   }).join('');
 }
@@ -653,9 +662,27 @@ function rowCalc(pump, i) {
   const ss = es - bs;
   const cell = document.getElementById(`p${pump}ss${i}`);
   if (!cell) return;
-  if (ss > 0)      { cell.innerHTML = '₱'+p(ss); cell.className = 'sale-cell'; }
-  else if (ss ===0) { cell.innerHTML = '—';        cell.className = 'sale-cell'; }
-  else              { cell.innerHTML = '<span style="color:var(--red)">⚠ CHECK</span>'; cell.className = 'sale-cell bad'; }
+  if (ss < 0) {
+    cell.innerHTML = '🔴 NEGATIVE — CHECK BEG/END';
+    cell.className = 'sale-cell bad';
+  } else if (ss > 20000) {
+    cell.innerHTML = '🟡 ₱'+p(ss)+'<br><small style="font-size:9px;color:var(--warn);">MISREAD? &gt;₱20,000</small>';
+    cell.className = 'sale-cell bad';
+  } else if (ss === 0) {
+    cell.innerHTML = '—';
+    cell.className = 'sale-cell';
+  } else {
+    cell.innerHTML = '₱'+p(ss);
+    cell.className = 'sale-cell';
+  }
+  // Update formatted display below each input
+  ['bm','bs','em','es'].forEach(field => {
+    const inp = document.getElementById(`p${pump}${field}${i}`);
+    if (inp && inp.nextElementSibling) {
+      const val = parseFloat(inp.value);
+      inp.nextElementSibling.textContent = val ? p(val) : '';
+    }
+  });
   recalcAll(); recon();
 }
 
