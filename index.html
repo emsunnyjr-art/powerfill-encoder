@@ -574,37 +574,61 @@ async function readWithAI() {
   const priceP = parseFloat(document.getElementById('price-P').value) || 0;
   const priceD = parseFloat(document.getElementById('price-D').value) || 0;
 
-  const prompt = `You are reading a handwritten gas station shift report photo. Extract ALL meter data with maximum accuracy.
+  const prompt = `You are reading a handwritten gas station shift report photo for a Philippine gas station. Extract ALL data with maximum accuracy.
 
-KNOWN FUEL PRICES (use these for validation):
-- Unleaded (U): ₱${priceU > 0 ? priceU : 'unknown'}/L
-- Premium (P): ₱${priceP > 0 ? priceP : 'unknown'}/L  
-- Diesel (D): ₱${priceD > 0 ? priceD : 'unknown'}/L
+KNOWN FUEL PRICES (for validation only):
+- Unleaded (U): ${priceU > 0 ? priceU : 'unknown'} pesos per liter
+- Premium (P): ${priceP > 0 ? priceP : 'unknown'} pesos per liter
+- Diesel (D): ${priceD > 0 ? priceD : 'unknown'} pesos per liter
 
-CRITICAL RECONCILIATION RULES you MUST apply before outputting:
-1. For each hose: shift_liters = end_meter - beg_meter (must be >= 0)
-2. shift_sales = end_sales - beg_sales (must be >= 0)
-3. If prices known: shift_liters × price should ≈ shift_sales (within 5%)
-4. If end_meter < beg_meter, the beg_meter was misread — adjust the beg_meter so that end_meter - beg_meter = shift_liters computed from shift_sales/price
-5. If cumulative meter digits look wrong vs the liter difference shown in the sheet tally, auto-correct the misread digit
-6. Cumulative odometer-style meters only increase, never decrease
-7. If shift_sales shown in sheet matches liters×price better than raw end-beg, trust the sheet's tally
+CORE CALCULATION RULE - THE ONLY RULE THAT MATTERS:
+  shift_sales = end_sales - beg_sales (always positive, cumulative meters only go forward)
+  shift_liters = end_meter - beg_meter (always positive, cumulative meters only go forward)
 
-Extract:
-- date, shift (AM/PM/GY), cashier name
-- prices per liter for U, P, D
-- dipstick before/after for U, P, D
-- pump1 and pump2 hoses: each with fuel_type, beg_meter, beg_sales, end_meter, end_sales, shift_liters (computed), shift_sales (computed), auto_corrected (bool), correction_note (string)
-- pump1_total_sales, pump2_total_sales
-- liter totals: total_U_liters, total_P_liters, total_D_liters
-- peso totals: total_U_sales, total_P_sales, total_D_sales
-- cash_sales, cash_remit, cash_on_hand
-- denominations: {1000:count, 500:count, 200:count, 100:count, 50:count, 20:count, 10:count, 5:count, 1:count}
-- takeaways: [{label, amount}] (vehicle fills, cash advances, etc.)
-- gcash_amount, gcash_ref
-- flags: [{severity:"error"|"warn"|"info", field:string, message:string}] — list every inconsistency found even after auto-correction
+These are odometer-style cumulative readings. ENDING is always LARGER than BEGINNING. The DIFFERENCE is what was sold this shift.
 
-Respond ONLY with a valid JSON object, no markdown, no explanation, no backticks. Use null for unreadable fields.`;
+MISREAD DETECTION - apply to every hose:
+1. Compute diff = end_sales - beg_sales
+2. If diff is NEGATIVE: one number was misread. Flag as error.
+3. If diff is UNREASONABLY LARGE (over 50,000 pesos single hose single shift): misread. Flag as error.
+4. If diff is ZERO but others have sales: could be correct or misread. Flag as info.
+5. For flagged hoses: check the sheet tally section (handwritten subtotals on left of sheet) for expected shift_sales, then find the misread digit.
+6. Reasonable shift_sales per hose per shift: 0 to 20,000 pesos.
+7. Reasonable shift_liters per hose per shift: 0 to 300 liters.
+
+COMMON DIGIT MISREAD PATTERNS in handwriting:
+- 3 vs 8, 6 vs 0, 1 vs 7, 9 vs 4, transposed digits, missing/extra digit
+
+AUTO-CORRECT: If you can determine the correct number from the sheet tally, correct it, set auto_corrected=true, explain in correction_note.
+
+SHEET TALLY: Lower-left of sheet has handwritten liter subtotals per fuel (U, P, D) and peso values. Use this to validate. If computed shift_sales does not match tally, tally is likely correct.
+
+TAKEAWAYS: Look for entries like VIOS-GARY-700 meaning vehicle name, staff name, and amount. These are cash deductions.
+
+Respond ONLY with this exact JSON structure, no markdown, no backticks, no text outside JSON:
+{
+  "date": "MM/DD/YYYY",
+  "shift": "AM or PM or GY",
+  "cashier": "name",
+  "price_U": 0,
+  "price_P": 0,
+  "price_D": 0,
+  "dipstick": {"U_before": 0, "U_after": 0, "P_before": 0, "P_after": 0, "D_before": 0, "D_after": 0},
+  "pump1": [
+    {"fuel_type": "U or P or D", "beg_meter": 0, "beg_sales": 0, "end_meter": 0, "end_sales": 0, "shift_liters": 0, "shift_sales": 0, "auto_corrected": false, "correction_note": ""}
+  ],
+  "pump2": [same structure as pump1],
+  "pump1_total_sales": 0,
+  "pump2_total_sales": 0,
+  "cash_sales": 0,
+  "cash_remit": 0,
+  "cash_on_hand": 0,
+  "denominations": {"1000": 0, "500": 0, "200": 0, "100": 0, "50": 0, "20": 0, "10": 0, "5": 0, "1": 0},
+  "takeaways": [{"label": "", "amount": 0}],
+  "gcash_amount": 0,
+  "gcash_ref": "",
+  "flags": [{"severity": "error or warn or info", "field": "", "message": ""}]
+}`
 
   try {
     renderSteps(steps, 1);
