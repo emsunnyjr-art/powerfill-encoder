@@ -6,495 +6,561 @@
 <title>Powerfill Shift Encoder</title>
 <style>
 :root {
-  --bg: #0f1117; --surface: #1a1d27; --card: #1e2130; --border: #2a2d3e;
-  --accent: #f5c842; --green: #3dd68c; --red: #ff4d6d; --warn: #ff9f1c;
-  --muted: #6b7280; --text: #e8eaf0; --text2: #a0a8c0;
-  --U: #3dd68c; --P: #a78bfa; --D: #f5c842;
+  --bg:#0f1117;--surface:#1a1d27;--card:#1e2130;--border:#2a2d3e;
+  --accent:#f5c842;--green:#3dd68c;--red:#ff4d6d;--warn:#ff9f1c;--blue:#60a5fa;
+  --muted:#6b7280;--text:#e8eaf0;--text2:#a0a8c0;
+  --U:#3dd68c;--P:#a78bfa;--D:#f5c842;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Courier New',monospace;min-height:100vh;}
 
-.header { background: var(--surface); border-bottom: 2px solid var(--accent); padding: 12px 16px; display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 100; }
-.header h1 { font-size: 15px; font-weight: 700; color: var(--accent); letter-spacing: 1px; }
-.header p { font-size: 10px; color: var(--muted); }
-.gear { background: none; border: none; font-size: 22px; cursor: pointer; margin-left: auto; }
+/* HEADER */
+.hdr{background:var(--surface);border-bottom:2px solid var(--accent);padding:10px 14px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;}
+.hdr h1{font-size:14px;font-weight:700;color:var(--accent);letter-spacing:1px;}
+.hdr p{font-size:9px;color:var(--muted);}
+.gear{background:none;border:none;font-size:20px;cursor:pointer;margin-left:auto;}
 
-.tabs { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); }
-.tab { flex: 1; padding: 10px 4px 8px; text-align: center; font-size: 9px; font-weight: 700; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; text-transform: uppercase; }
-.tab span { font-size: 16px; display: block; margin-bottom: 2px; }
-.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+/* TABS */
+.tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;}
+.tab{flex:1;min-width:55px;padding:8px 4px 6px;text-align:center;font-size:8px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;text-transform:uppercase;white-space:nowrap;}
+.tab span{font-size:15px;display:block;margin-bottom:2px;}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
 
-.page { display: none; padding: 12px; max-width: 900px; margin: 0 auto; }
-.page.active { display: block; }
+/* PAGES */
+.page{display:none;padding:12px;max-width:900px;margin:0 auto;}
+.page.active{display:block;}
 
-.card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 12px; }
-.card h3 { font-size: 12px; color: var(--accent); letter-spacing: 1px; margin-bottom: 12px; }
-
-/* FILE UPLOAD - simple and reliable */
-.upload-box { position: relative; border: 2px dashed var(--border); border-radius: 10px; padding: 30px; text-align: center; transition: all 0.2s; }
-.upload-box:hover { border-color: var(--accent); background: rgba(245,200,66,0.04); }
-.upload-box input[type=file] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-.upload-box .icon { font-size: 40px; margin-bottom: 8px; }
-.upload-box p { font-size: 12px; color: var(--muted); }
-#preview-img { width: 100%; border-radius: 8px; margin-top: 10px; display: none; }
-#upload-status { margin-top: 8px; font-size: 12px; color: var(--green); display: none; }
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;}
+.card h3{font-size:11px;color:var(--accent);letter-spacing:1px;margin-bottom:12px;text-transform:uppercase;}
 
 /* FORMS */
-.row { margin-bottom: 10px; }
-.row label { display: block; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
-.row input, .row select { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-size: 13px; font-family: inherit; }
-.row input:focus, .row select:focus { outline: none; border-color: var(--accent); }
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.row{margin-bottom:10px;}
+.row label{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+.row input,.row select,.row textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:12px;font-family:inherit;}
+.row input:focus,.row select:focus,.row textarea:focus{outline:none;border-color:var(--accent);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;}
 
 /* BUTTONS */
-.btn { padding: 11px 18px; border-radius: 8px; border: none; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; justify-content: center; transition: filter 0.15s; }
-.btn-yellow { background: var(--accent); color: #000; }
-.btn-yellow:hover { filter: brightness(1.1); }
-.btn-yellow:disabled { opacity: 0.4; cursor: not-allowed; }
-.btn-outline { background: transparent; color: var(--text2); border: 1px solid var(--border); }
-.btn-outline:hover { border-color: var(--accent); color: var(--accent); }
-.btn-green { background: var(--green); color: #000; }
-.btn-red { background: var(--red); color: #fff; }
-.btn-full { width: 100%; }
-.btn-sm { padding: 6px 12px; font-size: 11px; }
-.nav { display: flex; gap: 8px; margin-top: 14px; }
+.btn{padding:10px 16px;border-radius:8px;border:none;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;justify-content:center;transition:filter .15s;}
+.btn-y{background:var(--accent);color:#000;}
+.btn-y:hover{filter:brightness(1.1);}
+.btn-y:disabled{opacity:.4;cursor:not-allowed;}
+.btn-o{background:transparent;color:var(--text2);border:1px solid var(--border);}
+.btn-o:hover{border-color:var(--accent);color:var(--accent);}
+.btn-g{background:var(--green);color:#000;}
+.btn-r{background:var(--red);color:#fff;}
+.btn-b{background:var(--blue);color:#000;}
+.btn-f{width:100%;}
+.btn-sm{padding:5px 10px;font-size:10px;}
+.nav{display:flex;gap:8px;margin-top:14px;}
 
 /* BANNERS */
-.banner { padding: 10px 14px; border-radius: 8px; font-size: 12px; margin-bottom: 10px; }
-.banner-ok  { background: rgba(61,214,140,.12); border: 1px solid var(--green); color: var(--green); }
-.banner-err { background: rgba(255,77,109,.12); border: 1px solid var(--red); color: var(--red); }
-.banner-warn{ background: rgba(255,159,28,.12); border: 1px solid var(--warn); color: var(--warn); }
-.banner-info{ background: rgba(245,200,66,.08); border: 1px solid var(--accent); color: var(--accent); }
+.ban{padding:9px 13px;border-radius:8px;font-size:11px;margin-bottom:10px;}
+.b-ok{background:rgba(61,214,140,.12);border:1px solid var(--green);color:var(--green);}
+.b-err{background:rgba(255,77,109,.12);border:1px solid var(--red);color:var(--red);}
+.b-warn{background:rgba(255,159,28,.12);border:1px solid var(--warn);color:var(--warn);}
+.b-info{background:rgba(245,200,66,.08);border:1px solid var(--accent);color:var(--accent);}
+.b-blue{background:rgba(96,165,250,.1);border:1px solid var(--blue);color:var(--blue);}
 
 /* AI STEPS */
-.step { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 11px; color: var(--muted); border-bottom: 1px solid var(--border); }
-.step:last-child { border-bottom: none; }
-.step.done { color: var(--green); }
-.step.active { color: var(--accent); }
-.step.fail { color: var(--red); }
-.spin { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.2); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.step{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);}
+.step:last-child{border-bottom:none;}
+.step.done{color:var(--green);}
+.step.active{color:var(--accent);}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
 
-/* PUMP TABLE - matches the physical sheet */
-.pump-wrap { overflow-x: auto; }
-table.pump { width: 100%; border-collapse: collapse; font-size: 11px; }
-table.pump th { font-size: 9px; color: var(--muted); font-weight: 700; padding: 5px 6px; text-align: right; border-bottom: 2px solid var(--border); text-transform: uppercase; white-space: nowrap; }
-table.pump th:first-child { text-align: left; }
-table.pump th.sale-h { color: var(--accent); border-bottom-color: var(--accent); }
-table.pump td { padding: 5px 6px; text-align: right; border-bottom: 1px solid rgba(42,45,62,.5); vertical-align: middle; }
-table.pump td:first-child { text-align: left; }
-table.pump tr:last-child td { border-bottom: none; }
-table.pump input { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 4px 6px; color: var(--text); font-size: 11px; font-family: inherit; width: 110px; text-align: right; }
-table.pump input:focus { outline: none; border-color: var(--accent); }
-table.pump input.warn { border-color: var(--warn); background: rgba(255,159,28,.07); }
-table.pump input.err  { border-color: var(--red);  background: rgba(255,77,109,.07); }
-.sale-cell { font-weight: 700; font-size: 12px; color: var(--green); background: rgba(245,200,66,.03); border-left: 1px solid rgba(245,200,66,.15) !important; white-space: nowrap; }
-.sale-cell.bad { color: var(--red); }
-.badge { display: inline-block; width: 22px; height: 22px; border-radius: 4px; font-size: 10px; font-weight: 900; text-align: center; line-height: 22px; }
-.U { background: var(--U); color: #000; } .P { background: var(--P); color: #fff; } .D { background: var(--D); color: #000; }
-.pump-total { text-align: right; font-size: 12px; font-weight: 700; color: var(--accent); padding: 8px 6px 0; border-top: 1px solid var(--border); margin-top: 4px; }
+/* UPLOAD */
+.upload-box{position:relative;border:2px dashed var(--border);border-radius:10px;padding:28px;text-align:center;transition:all .2s;cursor:pointer;}
+.upload-box:hover{border-color:var(--accent);background:rgba(245,200,66,.04);}
+.upload-box input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;}
+#preview-img{width:100%;border-radius:8px;margin-top:10px;display:none;}
+#upload-status{margin-top:8px;font-size:11px;}
 
-/* FUEL SUMMARY CARDS */
-.fuel-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-.fuel-card { background: var(--bg); border-radius: 8px; padding: 10px 12px; }
-.fuel-card label { font-size: 9px; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 3px; }
-.fuel-card .val { font-size: 14px; font-weight: 700; color: var(--accent); }
+/* PUMP TABLE */
+.pump-wrap{overflow-x:auto;}
+table.pump{width:100%;border-collapse:collapse;font-size:11px;}
+table.pump th{font-size:9px;color:var(--muted);font-weight:700;padding:5px 6px;text-align:right;border-bottom:2px solid var(--border);text-transform:uppercase;white-space:nowrap;}
+table.pump th:first-child{text-align:left;}
+table.pump th.sh{color:var(--accent);border-bottom-color:var(--accent);}
+table.pump td{padding:4px 5px;text-align:right;border-bottom:1px solid rgba(42,45,62,.5);vertical-align:top;}
+table.pump td:first-child{text-align:left;vertical-align:middle;}
+table.pump tr:last-child td{border-bottom:none;}
+table.pump input{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:4px 5px;color:var(--text);font-size:11px;font-family:inherit;width:115px;text-align:right;}
+table.pump input:focus{outline:none;border-color:var(--accent);}
+table.pump input.warn{border-color:var(--warn);background:rgba(255,159,28,.07);}
+table.pump input.err{border-color:var(--red);background:rgba(255,77,109,.07);}
+.fmt{font-size:8px;color:var(--muted);text-align:right;margin-top:1px;}
+.sc{font-weight:700;font-size:12px;color:var(--green);background:rgba(245,200,66,.03);border-left:1px solid rgba(245,200,66,.2)!important;white-space:nowrap;}
+.sc.bad{color:var(--red);}
+.sc.warn-s{color:var(--warn);}
+.badge{display:inline-block;width:22px;height:22px;border-radius:4px;font-size:10px;font-weight:900;text-align:center;line-height:22px;}
+.U{background:var(--U);color:#000;}.P{background:var(--P);color:#fff;}.D{background:var(--D);color:#000;}
+.pump-total{text-align:right;font-size:12px;font-weight:700;color:var(--accent);padding:8px 6px 0;border-top:1px solid var(--border);margin-top:4px;}
 
-/* CASH */
-.denom-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-.denom-row label { font-size: 11px; color: var(--text2); width: 65px; }
-.denom-row input { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; color: var(--text); font-size: 12px; font-family: inherit; width: 70px; text-align: center; }
-.denom-row input:focus { outline: none; border-color: var(--accent); }
-.denom-row .dv { font-size: 12px; color: var(--accent); min-width: 80px; text-align: right; }
+/* SUMMARY CARDS */
+.sc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;}
+.sc-item{background:var(--bg);border-radius:8px;padding:10px 12px;border:1px solid var(--border);}
+.sc-item label{font-size:9px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:3px;}
+.sc-item .val{font-size:13px;font-weight:700;color:var(--accent);}
+.sc-item .val.ok{color:var(--green);}
+.sc-item .val.bad{color:var(--red);}
+.sc-item .val.blue{color:var(--blue);}
 
-/* RECON */
-.recon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.recon-item { background: var(--bg); border-radius: 8px; padding: 10px 12px; }
-.recon-item label { font-size: 9px; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 3px; }
-.recon-item .val { font-size: 15px; font-weight: 700; color: var(--accent); }
-.recon-item .val.ok { color: var(--green); }
-.recon-item .val.bad { color: var(--red); }
+/* DENOM */
+.drow{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.drow label{font-size:11px;color:var(--text2);width:65px;}
+.drow input{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-size:12px;font-family:inherit;width:65px;text-align:center;}
+.drow input:focus{outline:none;border-color:var(--accent);}
+.drow .dv{font-size:12px;color:var(--accent);min-width:90px;text-align:right;}
 
 /* FLAGS */
-.flag { padding: 8px 10px; border-radius: 6px; margin-bottom: 6px; font-size: 11px; }
-.flag.err  { background: rgba(255,77,109,.1);  border-left: 3px solid var(--red); }
-.flag.warn { background: rgba(255,159,28,.1);  border-left: 3px solid var(--warn); }
-.flag.info { background: rgba(61,214,140,.08); border-left: 3px solid var(--green); }
+.flag{padding:8px 10px;border-radius:6px;margin-bottom:6px;font-size:11px;line-height:1.4;}
+.flag.err{background:rgba(255,77,109,.1);border-left:3px solid var(--red);}
+.flag.warn{background:rgba(255,159,28,.1);border-left:3px solid var(--warn);}
+.flag.info{background:rgba(61,214,140,.08);border-left:3px solid var(--green);}
+
+/* PAYABLES TABLE */
+table.pay{width:100%;border-collapse:collapse;font-size:11px;}
+table.pay th{font-size:9px;color:var(--muted);font-weight:700;padding:6px 8px;text-align:left;border-bottom:2px solid var(--border);text-transform:uppercase;}
+table.pay td{padding:6px 8px;border-bottom:1px solid rgba(42,45,62,.5);vertical-align:middle;}
+table.pay tr:last-child td{border-bottom:none;}
+table.pay input,table.pay select{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:4px 8px;color:var(--text);font-size:11px;font-family:inherit;width:100%;}
 
 /* MODAL */
-.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 200; display: none; align-items: flex-end; }
-.modal-bg.open { display: flex; }
-.modal { background: var(--surface); border-radius: 16px 16px 0 0; padding: 20px 16px 32px; width: 100%; max-height: 80vh; overflow-y: auto; border-top: 2px solid var(--accent); }
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:flex-end;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--surface);border-radius:16px 16px 0 0;padding:20px 16px 32px;width:100%;max-height:85vh;overflow-y:auto;border-top:2px solid var(--accent);}
+
+@media(max-width:500px){.g4{grid-template-columns:1fr 1fr;}.g3{grid-template-columns:1fr 1fr;}}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div>⛽</div>
-  <div>
-    <h1>POWERFILL SHIFT ENCODER</h1>
-    <p>Photo → AI Read → Verify → Submit</p>
-  </div>
+<div class="hdr">
+  <div style="font-size:24px;">⛽</div>
+  <div><h1>POWERFILL SHIFT ENCODER</h1><p>Photo → AI Read → Verify → Submit to Google Sheet</p></div>
   <button class="gear" onclick="openModal()">⚙️</button>
 </div>
 
-<div class="tabs">
+<div class="tabs" id="tab-bar">
   <div class="tab active" onclick="go('photo')"><span>📷</span>PHOTO</div>
   <div class="tab" onclick="go('shift')"><span>📋</span>SHIFT</div>
   <div class="tab" onclick="go('meters')"><span>⛽</span>METERS</div>
+  <div class="tab" onclick="go('inventory')"><span>📦</span>INVENTORY</div>
   <div class="tab" onclick="go('cash')"><span>💵</span>CASH</div>
+  <div class="tab" onclick="go('payables')"><span>📄</span>PAYABLES</div>
   <div class="tab" onclick="go('submit')"><span>✅</span>SUBMIT</div>
 </div>
 
-<!-- PHOTO -->
+<!-- ══════════════ PHOTO ══════════════ -->
 <div class="page active" id="pg-photo">
   <div class="card">
-    <h3>📷 UPLOAD SHIFT REPORT PHOTO</h3>
+    <h3>📷 Upload Shift Report Photo</h3>
     <div class="upload-box">
       <input type="file" accept="image/*" id="file-in" onchange="onFile(this)">
-      <div class="icon">📸</div>
+      <div style="font-size:38px;margin-bottom:8px;">📸</div>
       <p style="font-size:13px;font-weight:700;color:var(--accent);">Click here to select photo</p>
-      <p>Windows: click anywhere in this box · iPhone: camera or library</p>
+      <p style="font-size:10px;color:var(--muted);">Windows: click to browse · iPhone: camera or library · JPG PNG HEIC</p>
     </div>
     <div id="upload-status"></div>
     <img id="preview-img">
   </div>
 
   <div class="card">
-    <h3>🔑 CLAUDE API KEY</h3>
+    <h3>🔑 Claude API Key</h3>
     <div style="display:flex;gap:8px;">
-      <input type="password" id="api-key" placeholder="sk-ant-api03-..." style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:inherit;font-size:12px;">
-      <button class="btn btn-outline btn-sm" onclick="saveKey()">SAVE</button>
+      <input type="password" id="api-key" placeholder="sk-ant-api03-..." style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:12px;">
+      <button class="btn btn-o btn-sm" onclick="saveKey()">SAVE</button>
     </div>
-    <p style="font-size:10px;color:var(--muted);margin-top:6px;">Saved in your browser only · Get from console.anthropic.com</p>
+    <p style="font-size:10px;color:var(--muted);margin-top:5px;">Saved in your browser only · Get from console.anthropic.com</p>
   </div>
 
   <div id="ai-banner"></div>
-
   <div class="card" id="ai-status" style="display:none;">
-    <h3>🤖 AI READING STATUS</h3>
+    <h3>🤖 AI Reading Status</h3>
     <div id="steps"></div>
   </div>
 
   <div style="display:flex;gap:8px;">
-    <button class="btn btn-yellow" style="flex:1;" id="ai-btn" onclick="runAI()">🤖 READ WITH AI</button>
-    <button class="btn btn-outline" onclick="go('shift')">MANUAL →</button>
+    <button class="btn btn-y" style="flex:1;" id="ai-btn" onclick="runAI()">🤖 READ WITH AI</button>
+    <button class="btn btn-o" onclick="go('shift')">MANUAL →</button>
   </div>
 </div>
 
-<!-- SHIFT -->
+<!-- ══════════════ SHIFT ══════════════ -->
 <div class="page" id="pg-shift">
   <div class="card">
-    <h3>🏪 STATION & SHIFT INFO</h3>
-    <div class="row"><label>Station</label>
-      <select id="station">
-        <option value="GS1">GS1 — Powerfill Punta 2</option>
-        <option value="GS2">GS2 — Carissa Punta 1</option>
-        <option value="GS3">GS3 — GenTri Paskaw 2</option>
-        <option value="GS4">GS4 — Ternate Sapang</option>
-        <option value="GS5">GS5 — Bagtas</option>
-      </select>
-    </div>
-    <div class="grid2">
+    <h3>🏪 Station & Shift Info</h3>
+    <div class="g2">
+      <div class="row"><label>Station</label>
+        <select id="station">
+          <option value="GS1">GS1 — Powerfill Punta 2</option>
+          <option value="GS2">GS2 — Carissa Punta 1</option>
+          <option value="GS3">GS3 — GenTri Paskaw 2</option>
+          <option value="GS4">GS4 — Ternate Sapang</option>
+          <option value="GS5">GS5 — Bagtas</option>
+        </select>
+      </div>
       <div class="row"><label>Shift</label>
         <select id="shift"><option value="AM">AM</option><option value="PM">PM</option><option value="GY">GY (Graveyard)</option></select>
       </div>
+    </div>
+    <div class="g2">
       <div class="row"><label>Date</label><input type="date" id="sdate"></div>
-    </div>
-    <div class="grid2">
       <div class="row"><label>P/A (Cashier)</label><input type="text" id="cashier" placeholder="Name"></div>
-      <div class="row"><label>Pump 1 Attendant</label><input type="text" id="att1" placeholder="Name"></div>
     </div>
-    <div class="row"><label>Pump 2 Attendant</label><input type="text" id="att2" placeholder="Name"></div>
+    <div class="g2">
+      <div class="row"><label>Pump 1 Attendant</label><input type="text" id="att1" placeholder="Name"></div>
+      <div class="row"><label>Pump 2 Attendant</label><input type="text" id="att2" placeholder="Name"></div>
+    </div>
   </div>
-
   <div class="card">
-    <h3>💲 PRICE PER LITER</h3>
-    <div class="grid3">
+    <h3>💲 Selling Price per Liter</h3>
+    <div class="g3">
       <div class="row"><label>Unleaded (U)</label><input type="number" id="pU" placeholder="0.00" step="0.01"></div>
       <div class="row"><label>Premium (P)</label><input type="number" id="pP" placeholder="0.00" step="0.01"></div>
       <div class="row"><label>Diesel (D)</label><input type="number" id="pD" placeholder="0.00" step="0.01"></div>
     </div>
   </div>
-
-  <div class="card">
-    <h3>📊 DIPSTICK (Before / After)</h3>
-    <div class="grid3">
-      <div class="row"><label>U Before</label><input type="number" id="du1"></div>
-      <div class="row"><label>P Before</label><input type="number" id="dp1"></div>
-      <div class="row"><label>D Before</label><input type="number" id="dd1"></div>
-      <div class="row"><label>U After</label><input type="number" id="du2"></div>
-      <div class="row"><label>P After</label><input type="number" id="dp2"></div>
-      <div class="row"><label>D After</label><input type="number" id="dd2"></div>
-    </div>
-  </div>
-
   <div class="nav">
-    <button class="btn btn-outline" onclick="go('photo')">← BACK</button>
-    <button class="btn btn-yellow" style="flex:1;" onclick="go('meters')">NEXT: METERS →</button>
+    <button class="btn btn-o" onclick="go('photo')">← PHOTO</button>
+    <button class="btn btn-y" style="flex:1;" onclick="go('meters')">NEXT: METERS →</button>
   </div>
 </div>
 
-<!-- METERS -->
+<!-- ══════════════ METERS ══════════════ -->
 <div class="page" id="pg-meters">
   <div id="flags-box" style="display:none;" class="card">
-    <h3>⚠️ AI FLAGS — Please Review</h3>
+    <h3>⚠️ AI Flags — Please Review & Correct</h3>
     <div id="flags-list"></div>
-    <p style="font-size:10px;color:var(--muted);margin-top:6px;">🟡 Yellow = auto-corrected &nbsp;|&nbsp; 🔴 Red = needs encoder review</p>
+    <p style="font-size:10px;color:var(--muted);margin-top:6px;">🟡 Yellow border = auto-corrected by AI &nbsp;|&nbsp; 🔴 Red = needs your correction</p>
   </div>
 
   <div class="card">
-    <h3>⛽ PUMP 1</h3>
-    <div class="pump-wrap">
-      <table class="pump">
-        <thead><tr>
-          <th>HOSE</th>
-          <th>BEG. LITER<br><small style="font-weight:400">cumul.</small></th>
-          <th>BEG. SALES ₱<br><small style="font-weight:400">cumul.</small></th>
-          <th>END LITER<br><small style="font-weight:400">cumul.</small></th>
-          <th>END SALES ₱<br><small style="font-weight:400">cumul.</small></th>
-          <th class="sale-h">SHIFT SALES ₱<br><small style="font-weight:400">end − beg</small></th>
-        </tr></thead>
-        <tbody id="p1body"></tbody>
-      </table>
-    </div>
+    <h3>⛽ Pump 1</h3>
+    <div class="pump-wrap"><table class="pump">
+      <thead><tr>
+        <th>HOSE</th>
+        <th>BEG. LITER<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
+        <th>BEG. SALES ₱<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
+        <th>END LITER<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
+        <th>END SALES ₱<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
+        <th class="sh">SHIFT SALES ₱<br><span style="font-weight:400;font-size:8px;">end − beg</span></th>
+      </tr></thead>
+      <tbody id="p1body"></tbody>
+    </table></div>
     <div class="pump-total">PUMP 1 TOTAL: <span id="p1total">₱0.00</span></div>
   </div>
 
   <div class="card">
-    <h3>⛽ PUMP 2</h3>
-    <div class="pump-wrap">
-      <table class="pump">
-        <thead><tr>
-          <th>HOSE</th>
-          <th>BEG. LITER<br><small style="font-weight:400">cumul.</small></th>
-          <th>BEG. SALES ₱<br><small style="font-weight:400">cumul.</small></th>
-          <th>END LITER<br><small style="font-weight:400">cumul.</small></th>
-          <th>END SALES ₱<br><small style="font-weight:400">cumul.</small></th>
-          <th class="sale-h">SHIFT SALES ₱<br><small style="font-weight:400">end − beg</small></th>
-        </tr></thead>
-        <tbody id="p2body"></tbody>
-      </table>
-    </div>
+    <h3>⛽ Pump 2</h3>
+    <div class="pump-wrap"><table class="pump">
+      <thead><tr>
+        <th>HOSE</th>
+        <th>BEG. LITER<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
+        <th>BEG. SALES ₱<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
+        <th>END LITER<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
+        <th>END SALES ₱<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
+        <th class="sh">SHIFT SALES ₱<br><span style="font-weight:400;font-size:8px;">end − beg</span></th>
+      </tr></thead>
+      <tbody id="p2body"></tbody>
+    </table></div>
     <div class="pump-total">PUMP 2 TOTAL: <span id="p2total">₱0.00</span></div>
   </div>
 
-  <div class="card">
-    <h3>📦 LITER SUMMARY PER FUEL</h3>
-    <div class="fuel-cards" id="liter-summary"></div>
-  </div>
-
-  <div class="card">
-    <h3>💹 PESO SALES PER FUEL</h3>
-    <div class="fuel-cards" id="peso-summary"></div>
-  </div>
-
   <div class="nav">
-    <button class="btn btn-outline" onclick="go('shift')">← BACK</button>
-    <button class="btn btn-yellow" style="flex:1;" onclick="go('cash')">NEXT: CASH →</button>
+    <button class="btn btn-o" onclick="go('shift')">← SHIFT</button>
+    <button class="btn btn-y" style="flex:1;" onclick="go('inventory')">NEXT: INVENTORY →</button>
   </div>
 </div>
 
-<!-- CASH -->
+<!-- ══════════════ INVENTORY ══════════════ -->
+<div class="page" id="pg-inventory">
+  <div class="card">
+    <h3>📊 Dipstick Reading (Tank Level)</h3>
+    <div class="g3">
+      <div class="row"><label>U — Before (cm)</label><input type="number" id="du1" oninput="calcInv()"></div>
+      <div class="row"><label>P — Before (cm)</label><input type="number" id="dp1" oninput="calcInv()"></div>
+      <div class="row"><label>D — Before (cm)</label><input type="number" id="dd1" oninput="calcInv()"></div>
+      <div class="row"><label>U — After (cm)</label><input type="number" id="du2" oninput="calcInv()"></div>
+      <div class="row"><label>P — After (cm)</label><input type="number" id="dp2" oninput="calcInv()"></div>
+      <div class="row"><label>D — After (cm)</label><input type="number" id="dd2" oninput="calcInv()"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🚛 Fuel Received This Shift</h3>
+    <p style="font-size:10px;color:var(--muted);margin-bottom:10px;">Delivery from supplier, transfer from another station, or borrowed fuel</p>
+    <div id="delivery-list"></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+      <button class="btn btn-o btn-sm" onclick="addDelivery('DELIVERY')">+ Delivery</button>
+      <button class="btn btn-o btn-sm" onclick="addDelivery('TRANSFER IN')">+ Transfer In</button>
+      <button class="btn btn-o btn-sm" onclick="addDelivery('BORROWED')">+ Borrowed</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📤 Fuel Out This Shift</h3>
+    <p style="font-size:10px;color:var(--muted);margin-bottom:10px;">Transfer to another station or fuel returned</p>
+    <div id="fuelout-list"></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+      <button class="btn btn-o btn-sm" onclick="addFuelOut('TRANSFER OUT')">+ Transfer Out</button>
+      <button class="btn btn-o btn-sm" onclick="addFuelOut('RETURNED')">+ Returned</button>
+    </div>
+  </div>
+
+  <div class="card" id="inv-summary-card">
+    <h3>📦 Inventory Summary</h3>
+    <div id="inv-summary"></div>
+    <p style="font-size:9px;color:var(--muted);margin-top:8px;">Formula: Beg Stock + Received − Sold − Out = Expected Closing Stock<br>Compare with After Dipstick to detect variance.</p>
+  </div>
+
+  <div class="nav">
+    <button class="btn btn-o" onclick="go('meters')">← METERS</button>
+    <button class="btn btn-y" style="flex:1;" onclick="go('cash')">NEXT: CASH →</button>
+  </div>
+</div>
+
+<!-- ══════════════ CASH ══════════════ -->
 <div class="page" id="pg-cash">
   <div class="card">
-    <h3>💵 DENOMINATION COUNT</h3>
+    <h3>💵 Denomination Count</h3>
     <div id="denom-rows"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--border);margin-top:6px;">
       <span style="font-size:12px;font-weight:700;">CASH ON HAND</span>
       <span style="font-size:16px;font-weight:700;color:var(--accent);">₱<span id="coh">0.00</span></span>
     </div>
   </div>
-
   <div class="card">
-    <h3>📱 GCASH</h3>
-    <div class="grid2">
+    <h3>📱 GCash</h3>
+    <div class="g2">
       <div class="row"><label>Amount</label><input type="number" id="gcash-amt" placeholder="0.00" step="0.01" oninput="recon()"></div>
       <div class="row"><label>Reference #</label><input type="text" id="gcash-ref" placeholder="Ref #"></div>
     </div>
   </div>
-
   <div class="card">
-    <h3>🧾 TAKEAWAYS / EXPENSES</h3>
+    <h3>🧾 Takeaways / Expenses</h3>
+    <p style="font-size:10px;color:var(--muted);margin-bottom:8px;">Vehicle fills, cash advances, supplies — anything deducted from cash</p>
     <div id="takeaway-list"></div>
-    <button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="addTakeaway()">+ ADD</button>
+    <button class="btn btn-o btn-sm" style="margin-top:8px;" onclick="addTakeaway()">+ ADD</button>
+  </div>
+  <div class="card">
+    <h3>💰 Cash Reconciliation</h3>
+    <div class="sc-grid">
+      <div class="sc-item"><label>Total Pump Sales</label><div class="val" id="rc-sales">₱0.00</div></div>
+      <div class="sc-item"><label>Cash on Hand</label><div class="val" id="rc-coh">₱0.00</div></div>
+      <div class="sc-item"><label>GCash</label><div class="val" id="rc-gcash">₱0.00</div></div>
+      <div class="sc-item"><label>Takeaways</label><div class="val" id="rc-take">₱0.00</div></div>
+      <div class="sc-item"><label>Cash Remit</label><div class="val" id="rc-remit">₱0.00</div></div>
+      <div class="sc-item"><label>Over / Short</label><div class="val" id="rc-os">₱0.00</div></div>
+    </div>
+  </div>
+  <div class="nav">
+    <button class="btn btn-o" onclick="go('inventory')">← INVENTORY</button>
+    <button class="btn btn-y" style="flex:1;" onclick="go('payables')">NEXT: PAYABLES →</button>
+  </div>
+</div>
+
+<!-- ══════════════ PAYABLES ══════════════ -->
+<div class="page" id="pg-payables">
+  <div class="card">
+    <h3>📄 Outstanding Payables & Dues</h3>
+    <p style="font-size:10px;color:var(--muted);margin-bottom:10px;">Track unpaid product purchases, supplier dues, check issues, and borrowed fuel to be returned. This data is included in your Google Sheet submission.</p>
+    <div id="payables-list"></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;">
+      <button class="btn btn-o btn-sm" onclick="addPayable('SUPPLIER')">+ Supplier Due</button>
+      <button class="btn btn-o btn-sm" onclick="addPayable('CHECK')">+ Check Issued</button>
+      <button class="btn btn-o btn-sm" onclick="addPayable('FUEL LOAN')">+ Fuel to Return</button>
+      <button class="btn btn-o btn-sm" onclick="addPayable('OTHER')">+ Other</button>
+    </div>
   </div>
 
   <div class="card">
-    <h3>💰 CASH RECONCILIATION</h3>
-    <div class="recon-grid">
-      <div class="recon-item"><label>TOTAL PUMP SALES</label><div class="val" id="rc-sales">₱0.00</div></div>
-      <div class="recon-item"><label>CASH ON HAND</label><div class="val" id="rc-coh">₱0.00</div></div>
-      <div class="recon-item"><label>GCASH</label><div class="val" id="rc-gcash">₱0.00</div></div>
-      <div class="recon-item"><label>TAKEAWAYS</label><div class="val" id="rc-take">₱0.00</div></div>
-      <div class="recon-item"><label>CASH REMIT</label><div class="val" id="rc-remit">₱0.00</div></div>
-      <div class="recon-item"><label>OVER / SHORT</label><div class="val" id="rc-os">₱0.00</div></div>
+    <h3>📊 Payables Summary</h3>
+    <div class="sc-grid">
+      <div class="sc-item"><label>Total Payables</label><div class="val bad" id="pay-total">₱0.00</div></div>
+      <div class="sc-item"><label>Supplier Dues</label><div class="val" id="pay-supplier">₱0.00</div></div>
+      <div class="sc-item"><label>Checks Issued</label><div class="val" id="pay-check">₱0.00</div></div>
+      <div class="sc-item"><label>Fuel to Return (L)</label><div class="val blue" id="pay-fuel">0.00 L</div></div>
     </div>
   </div>
 
   <div class="nav">
-    <button class="btn btn-outline" onclick="go('meters')">← BACK</button>
-    <button class="btn btn-yellow" style="flex:1;" onclick="go('submit')">REVIEW & SUBMIT →</button>
+    <button class="btn btn-o" onclick="go('cash')">← CASH</button>
+    <button class="btn btn-y" style="flex:1;" onclick="go('submit')">REVIEW & SUBMIT →</button>
   </div>
 </div>
 
-<!-- SUBMIT -->
+<!-- ══════════════ SUBMIT ══════════════ -->
 <div class="page" id="pg-submit">
+  <div class="card" style="border-color:var(--accent);">
+    <h3>✅ What Happens When You Submit?</h3>
+    <p style="font-size:11px;color:var(--text2);line-height:1.6;">
+      Clicking <strong style="color:var(--green);">SUBMIT TO GOOGLE SHEET</strong> will send all shift data — meters, cash, inventory, payables — to your connected Google Sheet via Apps Script. Each shift becomes one row. Your manager or owner can view, filter, and analyze all shifts from the sheet in real time. Nothing is deleted from this app after submit — you can still review the data.
+    </p>
+  </div>
+
   <div class="card">
-    <h3>📋 FINAL SUMMARY</h3>
+    <h3>📋 Final Shift Summary</h3>
     <div id="final-summary"></div>
   </div>
+
   <div class="card">
-    <h3>🔗 GOOGLE SHEET URL</h3>
+    <h3>🔗 Google Sheet URL</h3>
     <div style="display:flex;gap:8px;">
-      <input type="text" id="sheet-url" placeholder="https://script.google.com/..." style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:inherit;font-size:11px;">
-      <button class="btn btn-outline btn-sm" onclick="saveSheet()">SAVE</button>
+      <input type="text" id="sheet-url" placeholder="https://script.google.com/macros/s/..." style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:11px;">
+      <button class="btn btn-o btn-sm" onclick="saveSheet()">SAVE</button>
     </div>
+    <p style="font-size:10px;color:var(--muted);margin-top:5px;">Google Sheet → Extensions → Apps Script → Deploy as Web App → paste URL here</p>
   </div>
+
   <div id="submit-result"></div>
   <div class="nav">
-    <button class="btn btn-outline" onclick="go('cash')">← BACK</button>
-    <button class="btn btn-green" style="flex:1;" onclick="submitSheet()">📤 SUBMIT TO GOOGLE SHEET</button>
+    <button class="btn btn-o" onclick="go('payables')">← PAYABLES</button>
+    <button class="btn btn-g" style="flex:1;" onclick="submitSheet()">📤 SUBMIT TO GOOGLE SHEET</button>
   </div>
 </div>
 
-<!-- SETTINGS MODAL -->
+<!-- ══════════════ SETTINGS MODAL ══════════════ -->
 <div class="modal-bg" id="modal">
   <div class="modal">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <span style="font-size:14px;font-weight:700;color:var(--accent);">⚙️ SETTINGS</span>
-      <button class="btn btn-outline btn-sm" onclick="closeModal()">✕ CLOSE</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <span style="font-size:13px;font-weight:700;color:var(--accent);">⚙️ Settings</span>
+      <button class="btn btn-o btn-sm" onclick="closeModal()">✕ CLOSE</button>
     </div>
-    <div style="font-size:11px;color:var(--muted);margin-bottom:16px;">Manage expense categories and vehicle lists.</div>
-    <h4 style="font-size:11px;color:var(--accent);margin-bottom:8px;">🚗 VEHICLES</h4>
+    <h4 style="font-size:10px;color:var(--accent);margin-bottom:8px;text-transform:uppercase;">🚗 Vehicles</h4>
     <div id="v-list"></div>
-    <div style="display:flex;gap:8px;margin-bottom:16px;">
-      <input type="text" id="new-v" placeholder="Vehicle" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:inherit;font-size:12px;">
-      <button class="btn btn-outline btn-sm" onclick="addItem('vehicles','new-v')">ADD</button>
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <input type="text" id="new-v" placeholder="Vehicle name" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:12px;">
+      <button class="btn btn-o btn-sm" onclick="addItem('vehicles','new-v')">ADD</button>
     </div>
-    <h4 style="font-size:11px;color:var(--accent);margin-bottom:8px;">👤 STAFF</h4>
+    <h4 style="font-size:10px;color:var(--accent);margin-bottom:8px;text-transform:uppercase;">👤 Staff</h4>
     <div id="s-list"></div>
-    <div style="display:flex;gap:8px;margin-bottom:16px;">
-      <input type="text" id="new-s" placeholder="Staff name" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:inherit;font-size:12px;">
-      <button class="btn btn-outline btn-sm" onclick="addItem('staff','new-s')">ADD</button>
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <input type="text" id="new-s" placeholder="Staff name" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:12px;">
+      <button class="btn btn-o btn-sm" onclick="addItem('staff','new-s')">ADD</button>
     </div>
-    <button class="btn btn-yellow btn-full" onclick="closeModal()">DONE</button>
+    <h4 style="font-size:10px;color:var(--accent);margin-bottom:8px;text-transform:uppercase;">🏢 Suppliers</h4>
+    <div id="sup-list"></div>
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <input type="text" id="new-sup" placeholder="Supplier name" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:12px;">
+      <button class="btn btn-o btn-sm" onclick="addItem('suppliers','new-sup')">ADD</button>
+    </div>
+    <button class="btn btn-y btn-f" onclick="closeModal()">DONE</button>
   </div>
 </div>
 
 <script>
-// ─── STATE ───────────────────────────────────────────────────
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
 const S = {
-  photoB64: null, photoMime: 'image/jpeg',
-  pump1: [], pump2: [],
-  takeaways: [],
-  flags: [],
-  vehicles: JSON.parse(localStorage.getItem('pf_v') || '["VIOS","PICKUP"]'),
-  staff:    JSON.parse(localStorage.getItem('pf_s') || '["GARY","KENNY"]'),
+  photoB64:null, photoMime:'image/jpeg',
+  pump1:[], pump2:[],
+  takeaways:[], deliveries:[], fuelouts:[], payables:[],
+  flags:[],
+  vehicles:  JSON.parse(localStorage.getItem('pf_v')   || '["VIOS","PICKUP","TRUCK"]'),
+  staff:     JSON.parse(localStorage.getItem('pf_s')   || '["GARY","KENNY","MARK"]'),
+  suppliers: JSON.parse(localStorage.getItem('pf_sup') || '["PETRON","SHELL","SEAOIL"]'),
 };
-const DENOMS = [1000,500,200,100,50,20,10,5,1];
+const DENOMS=[1000,500,200,100,50,20,10,5,1];
+const TABS=['photo','shift','meters','inventory','cash','payables','submit'];
 
-// ─── INIT ────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  const k = localStorage.getItem('pf_key');
-  if (k) document.getElementById('api-key').value = k;
-  const u = localStorage.getItem('pf_sheet');
-  if (u) document.getElementById('sheet-url').value = u;
-  document.getElementById('sdate').value = new Date().toISOString().split('T')[0];
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  const k=localStorage.getItem('pf_key'); if(k) document.getElementById('api-key').value=k;
+  const u=localStorage.getItem('pf_sheet'); if(u) document.getElementById('sheet-url').value=u;
+  document.getElementById('sdate').value=new Date().toISOString().split('T')[0];
   buildDenoms();
-  buildPumpRows(1); buildPumpRows(2);
+  buildPumpRows(1,[]); buildPumpRows(2,[]);
+  renderTakeaways(); renderDeliveries(); renderFuelOut(); renderPayables();
   renderSettings();
 });
 
-// ─── TABS ────────────────────────────────────────────────────
-function go(tab) {
-  document.querySelectorAll('.tab').forEach((t,i) => {
-    const ids = ['photo','shift','meters','cash','submit'];
-    t.classList.toggle('active', ids[i] === tab);
-  });
-  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'pg-'+tab));
-  if (tab === 'meters') { recalcAll(); }
-  if (tab === 'cash')   { recon(); }
-  if (tab === 'submit') { buildFinal(); }
+// ══════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════
+function go(tab){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',TABS[i]===tab));
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='pg-'+tab));
+  if(tab==='meters'){recalcAll();}
+  if(tab==='inventory'){calcInv();}
+  if(tab==='cash'){recon();}
+  if(tab==='payables'){calcPayables();}
+  if(tab==='submit'){buildFinal();}
 }
 
-// ─── FILE UPLOAD ─────────────────────────────────────────────
-function onFile(input) {
-  const file = input.files[0];
-  if (!file) return;
-  S.photoMime = file.type || 'image/jpeg';
-  const st = document.getElementById('upload-status');
-  const pr = document.getElementById('preview-img');
-  st.style.display = 'block';
-  st.className = 'banner banner-info';
-  st.textContent = '⏳ Loading ' + file.name + '...';
-  const reader = new FileReader();
-  reader.onload = e => {
-    S.photoB64 = e.target.result.split(',')[1];
-    pr.src = e.target.result;
-    pr.style.display = 'block';
-    st.className = 'banner banner-ok';
-    st.textContent = '✅ Loaded: ' + file.name + ' (' + (file.size/1024).toFixed(0) + ' KB) — ready to READ WITH AI';
+// ══════════════════════════════════════════
+// FILE UPLOAD
+// ══════════════════════════════════════════
+function onFile(inp){
+  const file=inp.files[0]; if(!file) return;
+  S.photoMime=file.type||'image/jpeg';
+  const st=document.getElementById('upload-status');
+  const pr=document.getElementById('preview-img');
+  st.className='ban b-info'; st.textContent='⏳ Loading '+file.name+'...';
+  const reader=new FileReader();
+  reader.onload=e=>{
+    S.photoB64=e.target.result.split(',')[1];
+    pr.src=e.target.result; pr.style.display='block';
+    st.className='ban b-ok';
+    st.textContent='✅ Loaded: '+file.name+' ('+Math.round(file.size/1024)+' KB) — ready to READ WITH AI';
   };
-  reader.onerror = () => {
-    st.className = 'banner banner-err';
-    st.textContent = '❌ Could not read file. Try again.';
-  };
+  reader.onerror=()=>{st.className='ban b-err'; st.textContent='❌ Could not read file. Try again.';};
   reader.readAsDataURL(file);
 }
 
-// ─── SAVE KEY ────────────────────────────────────────────────
-function saveKey() {
-  const k = document.getElementById('api-key').value.trim();
-  if (!k) { banner('ai-banner','err','❌ Please enter your API key first.'); return; }
-  localStorage.setItem('pf_key', k);
-  banner('ai-banner','ok','✅ API key saved.');
+// ══════════════════════════════════════════
+// SAVE KEY / SHEET
+// ══════════════════════════════════════════
+function saveKey(){
+  const k=document.getElementById('api-key').value.trim();
+  if(!k){ban('ai-banner','err','❌ Enter your API key first.');return;}
+  localStorage.setItem('pf_key',k); ban('ai-banner','ok','✅ API key saved.');
 }
-function saveSheet() {
-  const u = document.getElementById('sheet-url').value.trim();
-  if (u) localStorage.setItem('pf_sheet', u);
+function saveSheet(){
+  const u=document.getElementById('sheet-url').value.trim();
+  if(u) localStorage.setItem('pf_sheet',u);
 }
 
-// ─── AI READ ─────────────────────────────────────────────────
-async function runAI() {
-  const key = document.getElementById('api-key').value.trim() || localStorage.getItem('pf_key');
-  if (!key) { banner('ai-banner','err','❌ Enter and save your Claude API key first.'); return; }
-  if (!S.photoB64) { banner('ai-banner','err','❌ Please upload a photo first.'); return; }
+// ══════════════════════════════════════════
+// AI READ
+// ══════════════════════════════════════════
+async function runAI(){
+  const key=document.getElementById('api-key').value.trim()||localStorage.getItem('pf_key');
+  if(!key){ban('ai-banner','err','❌ Enter and save your Claude API key first.');return;}
+  if(!S.photoB64){ban('ai-banner','err','❌ Upload a photo first.');return;}
+  ban('ai-banner','','');
+  document.getElementById('ai-status').style.display='block';
+  document.getElementById('ai-btn').disabled=true;
+  const pU=v('pU'),pP=v('pP'),pD=v('pD');
+  const prompt=`You are reading a handwritten gas station shift report photo for a Philippine gas station.
 
-  banner('ai-banner','','');
-  document.getElementById('ai-status').style.display = 'block';
-  document.getElementById('ai-btn').disabled = true;
+FUEL PRICES: U=₱${pU||'?'}/L  P=₱${pP||'?'}/L  D=₱${pD||'?'}/L
 
-  const pU = v('pU'), pP = v('pP'), pD = v('pD');
+CORE RULES:
+- shift_sales = end_sales - beg_sales (ALWAYS positive, cumulative odometer meters only go forward)
+- shift_liters = end_liter - beg_liter (ALWAYS positive)
+- Reasonable per hose per shift: sales ₱0-20000, liters 0-300
+- If result is NEGATIVE or over ₱20000: one number was misread — check the sheet tally section and flag it
 
-  const prompt = `You are reading a handwritten gas station shift report photo for a Philippine gas station.
+DENOMINATIONS: The table has COUNT column and TOTAL VALUE column.
+"1000 x 4 | 4,000" → COUNT=4. Return 4 NOT 4000.
+SELF-CHECK: sum of (count × denom) must equal cash_on_hand shown on sheet.
 
-FUEL PRICES (for validation): U=₱${pU||'?'}/L  P=₱${pP||'?'}/L  D=₱${pD||'?'}/L
+SELF-CHECK all before outputting:
+1. shift_sales 0-20000 for each hose? If not, re-read.
+2. shift_liters 0-300? If not, re-read.
+3. denom counts × values = cash_on_hand? If not, re-read counts.
 
-CORE RULE — shift_sales = end_sales - beg_sales (always positive, meters only go forward like odometers)
-CORE RULE — shift_liters = end_meter - beg_meter (always positive)
-
-MISREAD DETECTION per hose:
-- If end_sales - beg_sales is NEGATIVE → one number was misread, flag it
-- If end_sales - beg_sales is over ₱50,000 for one hose → misread, flag it
-- Reasonable range per hose per shift: ₱0–₱20,000 and 0–300 liters
-- Cross-check with the sheet tally section (handwritten subtotals on left side) to find correct values
-- Common OCR errors: 3↔8, 6↔0, 1↔7, 9↔4, transposed digits
-
-DENOMINATIONS — CRITICAL:
-The sheet shows two columns: COUNT and TOTAL VALUE.
-"1000 x 4 | 4,000" means COUNT=4, TOTAL=4,000. Return COUNT=4 NOT 4000.
-"500 x 9 | 4,500" means COUNT=9. Return 9 NOT 4500.
-SELF-CHECK: sum of (count × denom) must equal cash_on_hand. If not, you read wrong column.
-
-SELF-CHECK before outputting:
-1. Every shift_sales between 0 and 20000? If not re-examine.
-2. Every shift_liters between 0 and 300? If not re-examine.
-3. Sum of (denom_count × denom_value) = cash_on_hand? If not re-examine counts.
-
-Return ONLY valid JSON, no markdown:
-{"date":"","shift":"","cashier":"","price_U":0,"price_P":0,"price_D":0,
+Return ONLY valid JSON no markdown:
+{"date":"MM/DD/YYYY","shift":"AM or PM or GY","cashier":"","price_U":0,"price_P":0,"price_D":0,
 "dipstick":{"U_before":0,"U_after":0,"P_before":0,"P_after":0,"D_before":0,"D_after":0},
 "pump1":[{"fuel":"U","beg_liter":0,"beg_sales":0,"end_liter":0,"end_sales":0,"shift_liters":0,"shift_sales":0,"fixed":false,"fix_note":""}],
 "pump2":[{"fuel":"U","beg_liter":0,"beg_sales":0,"end_liter":0,"end_sales":0,"shift_liters":0,"shift_sales":0,"fixed":false,"fix_note":""}],
@@ -504,414 +570,552 @@ Return ONLY valid JSON, no markdown:
 "gcash_amount":0,"gcash_ref":"",
 "flags":[{"sev":"error","field":"","msg":""}]}`;
 
-  setSteps([
-    {l:'Reading photo and extracting data...', s:'active'},
-    {l:'Checking meter differences (end − beg)...', s:''},
-    {l:'Validating denomination counts vs cash on hand...', s:''},
-    {l:'Flagging misreads for encoder review...', s:''},
-  ], 0);
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 4000,
-        messages: [{role:'user', content:[
-          {type:'image', source:{type:'base64', media_type:S.photoMime, data:S.photoB64}},
-          {type:'text', text:prompt}
-        ]}]
-      })
+  setSteps(0);
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,
+        messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:S.photoMime,data:S.photoB64}},
+          {type:'text',text:prompt}
+        ]}]})
     });
-
-    setSteps(null, 1);
-
-    if (!res.ok) {
-      const e = await res.json();
-      throw new Error(e.error?.message || 'HTTP ' + res.status);
-    }
-
-    const data = await res.json();
-    const raw = data.content.map(c=>c.text||'').join('');
-    setSteps(null, 2);
-
+    setSteps(1);
+    if(!res.ok){const e=await res.json();throw new Error(e.error?.message||'HTTP '+res.status);}
+    const data=await res.json();
+    const raw=data.content.map(c=>c.text||'').join('');
+    setSteps(2);
     let parsed;
-    try {
-      const s = raw.indexOf('{'), e = raw.lastIndexOf('}');
-      parsed = JSON.parse(raw.substring(s, e+1));
-    } catch(e) { throw new Error('Could not parse AI response. Try again.'); }
-
-    setSteps(null, 3);
+    try{const s=raw.indexOf('{'),e=raw.lastIndexOf('}');parsed=JSON.parse(raw.substring(s,e+1));}
+    catch(e){throw new Error('Could not parse AI response. Try again.');}
+    setSteps(3);
     applyData(parsed);
-    setSteps(null, 4);
-
-    banner('ai-banner','ok','✅ Done! Check METERS tab — flagged fields are highlighted.');
-    document.getElementById('ai-btn').disabled = false;
-    setTimeout(() => go('shift'), 1000);
-
-  } catch(err) {
-    banner('ai-banner','err','❌ ' + err.message);
-    document.getElementById('ai-status').style.display = 'none';
-    document.getElementById('ai-btn').disabled = false;
+    setSteps(4);
+    ban('ai-banner','ok','✅ Done! Review METERS tab — flagged fields are highlighted. Correct any 🔴 red values.');
+    document.getElementById('ai-btn').disabled=false;
+    setTimeout(()=>go('shift'),1000);
+  }catch(err){
+    ban('ai-banner','err','❌ '+err.message);
+    document.getElementById('ai-status').style.display='none';
+    document.getElementById('ai-btn').disabled=false;
   }
 }
 
-// ─── APPLY AI DATA ────────────────────────────────────────────
-function applyData(d) {
-  // Shift info
-  if (d.shift) { const s = document.getElementById('shift'); ['AM','PM','GY'].forEach(x => { if((d.shift+'').toUpperCase().includes(x)) s.value=x; }); }
-  if (d.cashier) document.getElementById('cashier').value = d.cashier;
-  if (d.price_U) document.getElementById('pU').value = d.price_U;
-  if (d.price_P) document.getElementById('pP').value = d.price_P;
-  if (d.price_D) document.getElementById('pD').value = d.price_D;
-  if (d.date) {
-    try {
-      const m = (d.date+'').match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
-      if (m) { const y = m[3].length===2?'20'+m[3]:m[3]; document.getElementById('sdate').value=`${y}-${m[1].padStart(2,'0')}-${m[2].padStart(2,'0')}`; }
-    } catch(e){}
-  }
-  if (d.dipstick) {
-    const dp = d.dipstick;
-    ['U','P','D'].forEach(f => {
-      if (dp[f+'_before']!=null) document.getElementById('d'+f.toLowerCase()+'1').value = dp[f+'_before'];
-      if (dp[f+'_after'] !=null) document.getElementById('d'+f.toLowerCase()+'2').value = dp[f+'_after'];
-    });
-  }
+const STEP_LABELS=['Reading photo & extracting all data...','Checking meter differences (end − beg)...','Validating denomination counts vs cash on hand...','Flagging misreads for encoder review...','Complete ✓'];
+function setSteps(active){
+  document.getElementById('steps').innerHTML=STEP_LABELS.map((l,i)=>{
+    const cls=i<active?'done':i===active?'active':'';
+    const ic=i<active?'✅':i===active?'<span class="spin"></span>':'⏳';
+    return `<div class="step ${cls}">${ic} ${l}</div>`;
+  }).join('');
+}
 
+// ══════════════════════════════════════════
+// APPLY AI DATA
+// ══════════════════════════════════════════
+function applyData(d){
+  if(d.shift){const s=document.getElementById('shift');['AM','PM','GY'].forEach(x=>{if((d.shift+'').toUpperCase().includes(x))s.value=x;});}
+  if(d.cashier) document.getElementById('cashier').value=d.cashier;
+  if(d.price_U) document.getElementById('pU').value=d.price_U;
+  if(d.price_P) document.getElementById('pP').value=d.price_P;
+  if(d.price_D) document.getElementById('pD').value=d.price_D;
+  // Date
+  if(d.date){
+    try{
+      const m=(d.date+'').match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+      if(m){const y=m[3].length===2?'20'+m[3]:m[3];document.getElementById('sdate').value=`${y}-${m[1].padStart(2,'0')}-${m[2].padStart(2,'0')}`;}
+    }catch(e){}
+  }
+  // Dipstick
+  if(d.dipstick){
+    const dp=d.dipstick;
+    if(dp.U_before!=null)document.getElementById('du1').value=dp.U_before;
+    if(dp.P_before!=null)document.getElementById('dp1').value=dp.P_before;
+    if(dp.D_before!=null)document.getElementById('dd1').value=dp.D_before;
+    if(dp.U_after!=null) document.getElementById('du2').value=dp.U_after;
+    if(dp.P_after!=null) document.getElementById('dp2').value=dp.P_after;
+    if(dp.D_after!=null) document.getElementById('dd2').value=dp.D_after;
+  }
   // Pumps
-  if (d.pump1) { S.pump1 = d.pump1; buildPumpRows(1, d.pump1); }
-  if (d.pump2) { S.pump2 = d.pump2; buildPumpRows(2, d.pump2); }
-
-  // Denominations — with agent check
-  if (d.denoms) {
-    const denoms = d.denoms;
-    const sheetCOH = parseFloat(d.cash_on_hand) || 0;
-    // Check if AI sent totals instead of counts
-    const computedFromRaw = DENOMS.reduce((sum,dn) => sum + (parseFloat(denoms[dn])||0)*dn, 0);
-    // If raw values produce something WAY bigger than sheetCOH, they are totals not counts
-    DENOMS.forEach(dn => {
-      let cnt = parseFloat(denoms[dn]) || 0;
-      // If this value seems like a total value (e.g. 4000 for 1000-peso), convert to count
-      if (cnt > 50 && cnt % dn === 0) {
-        const asCount = cnt / dn;
-        if (asCount <= 50) cnt = asCount; // trust the conversion
-      }
-      const inp = document.getElementById('dc-'+dn);
-      if (inp) inp.value = cnt || '';
+  if(d.pump1){S.pump1=d.pump1;buildPumpRows(1,d.pump1);}
+  if(d.pump2){S.pump2=d.pump2;buildPumpRows(2,d.pump2);}
+  // Denoms with agent check
+  if(d.denoms){
+    const sheetCOH=parseFloat(d.cash_on_hand)||0;
+    DENOMS.forEach(dn=>{
+      let cnt=parseFloat(d.denoms[dn])||0;
+      if(cnt>50&&cnt%dn===0){const asCount=cnt/dn;if(asCount<=50)cnt=asCount;}
+      const inp=document.getElementById('dc-'+dn);
+      if(inp)inp.value=cnt||'';
     });
     calcCOH();
-    // Agent double-check
-    const computedCOH = getDenomTotal();
-    if (sheetCOH > 0 && Math.abs(computedCOH - sheetCOH) > 5) {
-      S.flags.push({sev:'error', field:'Cash on Hand', msg:`Denomination counts sum to ₱${p(computedCOH)} but sheet shows ₱${p(sheetCOH)}. Please verify denomination counts (COUNT column, not total column).`});
+    const computed=getDenomTotal();
+    if(sheetCOH>0&&Math.abs(computed-sheetCOH)>5){
+      S.flags.push({sev:'error',field:'Cash on Hand',msg:`Denomination counts sum to ₱${p(computed)} but sheet shows ₱${p(sheetCOH)}. Please verify denomination COUNTS (not total values).`});
     }
   }
-
-  if (d.gcash_amount) document.getElementById('gcash-amt').value = d.gcash_amount;
-  if (d.gcash_ref)    document.getElementById('gcash-ref').value  = d.gcash_ref;
-  if (d.takeaways && Array.isArray(d.takeaways)) {
-    S.takeaways = d.takeaways.filter(t=>t.amount>0).map(t=>({label:t.label||'',amount:parseFloat(t.amount)||0}));
+  if(d.gcash_amount)document.getElementById('gcash-amt').value=d.gcash_amount;
+  if(d.gcash_ref)   document.getElementById('gcash-ref').value=d.gcash_ref;
+  if(d.takeaways&&Array.isArray(d.takeaways)){
+    S.takeaways=d.takeaways.filter(t=>t.amount>0).map(t=>({label:t.label||'',amount:parseFloat(t.amount)||0}));
     renderTakeaways();
   }
-
-  // Flags
-  S.flags = [...(d.flags||[]), ...S.flags];
+  S.flags=[...(d.flags||[]),...S.flags];
   renderFlags();
-  recalcAll();
-  recon();
+  recalcAll(); calcInv(); recon();
 }
 
-// ─── PUMP TABLE ──────────────────────────────────────────────
-function buildPumpRows(pump, hoses) {
-  const tbody = document.getElementById('p'+pump+'body');
-  const rows = hoses && hoses.length ? hoses : [{fuel:'U'},{fuel:'U'},{fuel:'D'},{fuel:'D'}];
-  tbody.innerHTML = rows.map((h,i) => {
-    const f = (h.fuel||h.fuel_type||'U').toUpperCase();
-    const bm = h.beg_liter||h.beg_meter||'';
-    const bs = h.beg_sales||'';
-    const em = h.end_liter||h.end_meter||'';
-    const es = h.end_sales||'';
-    const cls = h.fixed ? 'warn' : '';
-    const tip = h.fixed ? (h.fix_note||'Auto-corrected') : '';
-    const ss = (parseFloat(es)||0) - (parseFloat(bs)||0);
-    let ssDisp, ssCls = 'sale-cell';
-    if (ss < 0) {
-      ssDisp = '🔴 NEGATIVE — CHECK BEG/END'; ssCls = 'sale-cell bad';
-    } else if (ss > 20000) {
-      ssDisp = '🟡 ₱'+p(ss)+'<br><small style="font-size:9px;color:var(--warn);">MISREAD? &gt;₱20,000</small>'; ssCls = 'sale-cell bad';
-    } else if (ss === 0) {
-      ssDisp = '—';
-    } else {
-      ssDisp = '₱'+p(ss);
-    }
+// ══════════════════════════════════════════
+// PUMP TABLE
+// ══════════════════════════════════════════
+function buildPumpRows(pump,hoses){
+  const tbody=document.getElementById('p'+pump+'body');
+  const rows=hoses&&hoses.length?hoses:[{fuel:'D'},{fuel:'U'},{fuel:'U'},{fuel:'D'}];
+  tbody.innerHTML=rows.map((h,i)=>{
+    const f=(h.fuel||h.fuel_type||'U').toUpperCase();
+    const bm=h.beg_liter||h.beg_meter||'';
+    const bs=h.beg_sales||'';
+    const em=h.end_liter||h.end_meter||'';
+    const es=h.end_sales||'';
+    const cls=h.fixed?'warn':'';
+    const tip=h.fixed?(h.fix_note||'Auto-corrected by AI'):'';
+    const ss=(parseFloat(es)||0)-(parseFloat(bs)||0);
+    const {html:ssH,cls:ssC}=ssDisplay(ss);
     return `<tr>
-      <td><span class="badge ${f}" title="${tip}">${f}</span>${h.fixed?'<span style="font-size:9px;color:var(--warn);margin-left:2px;">✎</span>':''}</td>
-      <td><input type="number" id="p${pump}bm${i}" value="${bm}" step="0.01" class="${cls}" onchange="rowCalc(${pump},${i})" title="${tip||bm}"><div style="font-size:9px;color:var(--muted);text-align:right;margin-top:1px;">${bm?p(parseFloat(bm)):''}</div></td>
-      <td><input type="number" id="p${pump}bs${i}" value="${bs}" step="0.01" class="${cls}" onchange="rowCalc(${pump},${i})" title="${tip||bs}"><div style="font-size:9px;color:var(--muted);text-align:right;margin-top:1px;">${bs?p(parseFloat(bs)):''}</div></td>
-      <td><input type="number" id="p${pump}em${i}" value="${em}" step="0.01" onchange="rowCalc(${pump},${i})" title="${em}"><div style="font-size:9px;color:var(--muted);text-align:right;margin-top:1px;">${em?p(parseFloat(em)):''}</div></td>
-      <td><input type="number" id="p${pump}es${i}" value="${es}" step="0.01" onchange="rowCalc(${pump},${i})" title="${es}"><div style="font-size:9px;color:var(--muted);text-align:right;margin-top:1px;">${es?p(parseFloat(es)):''}</div></td>
-      <td class="${ssCls}" id="p${pump}ss${i}">${ssDisp}</td>
+      <td><span class="badge ${f}" title="${tip}">${f}</span>${h.fixed?'<span style="font-size:9px;color:var(--warn);margin-left:2px;" title="${tip}">✎</span>':''}</td>
+      <td><input type="number" id="p${pump}bm${i}" value="${bm}" step="0.01" class="${cls}" onchange="rowCalc(${pump},${i})"><div class="fmt">${bm?p(parseFloat(bm)):''}</div></td>
+      <td><input type="number" id="p${pump}bs${i}" value="${bs}" step="0.01" class="${cls}" onchange="rowCalc(${pump},${i})"><div class="fmt">${bs?p(parseFloat(bs)):''}</div></td>
+      <td><input type="number" id="p${pump}em${i}" value="${em}" step="0.01" onchange="rowCalc(${pump},${i})"><div class="fmt">${em?p(parseFloat(em)):''}</div></td>
+      <td><input type="number" id="p${pump}es${i}" value="${es}" step="0.01" onchange="rowCalc(${pump},${i})"><div class="fmt">${es?p(parseFloat(es)):''}</div></td>
+      <td class="${ssC}" id="p${pump}ss${i}">${ssH}</td>
     </tr>`;
   }).join('');
 }
 
-function rowCalc(pump, i) {
-  const es = parseFloat(document.getElementById(`p${pump}es${i}`)?.value)||0;
-  const bs = parseFloat(document.getElementById(`p${pump}bs${i}`)?.value)||0;
-  const ss = es - bs;
-  const cell = document.getElementById(`p${pump}ss${i}`);
-  if (!cell) return;
-  if (ss < 0) {
-    cell.innerHTML = '🔴 NEGATIVE — CHECK BEG/END';
-    cell.className = 'sale-cell bad';
-  } else if (ss > 20000) {
-    cell.innerHTML = '🟡 ₱'+p(ss)+'<br><small style="font-size:9px;color:var(--warn);">MISREAD? &gt;₱20,000</small>';
-    cell.className = 'sale-cell bad';
-  } else if (ss === 0) {
-    cell.innerHTML = '—';
-    cell.className = 'sale-cell';
-  } else {
-    cell.innerHTML = '₱'+p(ss);
-    cell.className = 'sale-cell';
-  }
-  // Update formatted display below each input
-  ['bm','bs','em','es'].forEach(field => {
-    const inp = document.getElementById(`p${pump}${field}${i}`);
-    if (inp && inp.nextElementSibling) {
-      const val = parseFloat(inp.value);
-      inp.nextElementSibling.textContent = val ? p(val) : '';
-    }
-  });
-  recalcAll(); recon();
+function ssDisplay(ss){
+  if(ss<0)      return {html:'🔴 NEGATIVE<br><small>CHECK BEG/END</small>',cls:'sc bad'};
+  if(ss>20000)  return {html:'🟡 ₱'+p(ss)+'<br><small style="font-size:9px;">MISREAD? &gt;₱20,000</small>',cls:'sc warn-s'};
+  if(ss===0)    return {html:'—',cls:'sc'};
+  return {html:'₱'+p(ss),cls:'sc'};
 }
 
-function pumpTotal(pump) {
-  const hoses = pump===1 ? S.pump1 : S.pump2;
-  const count = Math.max((hoses||[]).length, 4);
-  let t = 0;
-  for (let i=0;i<count;i++) {
-    const es = parseFloat(document.getElementById(`p${pump}es${i}`)?.value)||0;
-    const bs = parseFloat(document.getElementById(`p${pump}bs${i}`)?.value)||0;
-    t += Math.max(0, es-bs);
+function rowCalc(pump,i){
+  const es=parseFloat(document.getElementById(`p${pump}es${i}`)?.value)||0;
+  const bs=parseFloat(document.getElementById(`p${pump}bs${i}`)?.value)||0;
+  const ss=es-bs;
+  const cell=document.getElementById(`p${pump}ss${i}`);
+  if(cell){const {html,cls}=ssDisplay(ss);cell.innerHTML=html;cell.className=cls;}
+  // Update formatted displays
+  ['bm','bs','em','es'].forEach(f=>{
+    const inp=document.getElementById(`p${pump}${f}${i}`);
+    if(inp&&inp.nextElementSibling){
+      const val=parseFloat(inp.value);
+      inp.nextElementSibling.textContent=val?p(val):'';
+    }
+  });
+  recalcAll(); calcInv(); recon();
+}
+
+function pumpTotal(pump){
+  const hoses=pump===1?S.pump1:S.pump2;
+  const count=Math.max((hoses||[]).length,4);
+  let t=0;
+  for(let i=0;i<count;i++){
+    const es=parseFloat(document.getElementById(`p${pump}es${i}`)?.value)||0;
+    const bs=parseFloat(document.getElementById(`p${pump}bs${i}`)?.value)||0;
+    t+=Math.max(0,es-bs);
   }
   return t;
 }
 
-function recalcAll() {
-  const t1 = pumpTotal(1), t2 = pumpTotal(2);
-  document.getElementById('p1total').textContent = '₱'+p(t1);
-  document.getElementById('p2total').textContent = '₱'+p(t2);
-  // Fuel summaries
-  const fuels = {U:{L:0,S:0},P:{L:0,S:0},D:{L:0,S:0}};
-  [1,2].forEach(pump => {
-    const hoses = pump===1 ? S.pump1 : S.pump2;
-    const count = Math.max((hoses||[]).length, 4);
-    for (let i=0;i<count;i++) {
-      const fuel = (hoses[i]?.fuel||hoses[i]?.fuel_type||'U').toUpperCase();
-      const em = parseFloat(document.getElementById(`p${pump}em${i}`)?.value)||0;
-      const bm = parseFloat(document.getElementById(`p${pump}bm${i}`)?.value)||0;
-      const es = parseFloat(document.getElementById(`p${pump}es${i}`)?.value)||0;
-      const bs = parseFloat(document.getElementById(`p${pump}bs${i}`)?.value)||0;
-      if (fuels[fuel]) { fuels[fuel].L += Math.max(0,em-bm); fuels[fuel].S += Math.max(0,es-bs); }
-    }
-  });
-  const lc = document.getElementById('liter-summary');
-  const pc = document.getElementById('peso-summary');
-  if (lc) lc.innerHTML = ['U','P','D'].map(f=>`<div class="fuel-card"><label><span class="badge ${f}" style="width:16px;height:16px;line-height:16px;font-size:8px;">${f}</span> LITERS</label><div class="val">${fuels[f].L.toFixed(2)}L</div></div>`).join('');
-  if (pc) pc.innerHTML = ['U','P','D'].map(f=>`<div class="fuel-card"><label><span class="badge ${f}" style="width:16px;height:16px;line-height:16px;font-size:8px;">${f}</span> SALES</label><div class="val">₱${p(fuels[f].S)}</div></div>`).join('');
+function pumpLiters(pump){
+  const hoses=pump===1?S.pump1:S.pump2;
+  const count=Math.max((hoses||[]).length,4);
+  let t=0;
+  for(let i=0;i<count;i++){
+    const em=parseFloat(document.getElementById(`p${pump}em${i}`)?.value)||0;
+    const bm=parseFloat(document.getElementById(`p${pump}bm${i}`)?.value)||0;
+    t+=Math.max(0,em-bm);
+  }
+  return t;
 }
 
-// ─── FLAGS ────────────────────────────────────────────────────
-function renderFlags() {
-  const box = document.getElementById('flags-box');
-  const list = document.getElementById('flags-list');
-  if (!S.flags||!S.flags.length) { box.style.display='none'; return; }
-  box.style.display = 'block';
-  list.innerHTML = S.flags.map(f=>{
-    const cls = f.sev==='error'?'err':f.sev==='warn'?'warn':'info';
-    const ic = f.sev==='error'?'🔴':f.sev==='warn'?'🟡':'🟢';
+function fuelSales(){
+  const fuels={U:{L:0,S:0},P:{L:0,S:0},D:{L:0,S:0}};
+  [1,2].forEach(pump=>{
+    const hoses=pump===1?S.pump1:S.pump2;
+    const count=Math.max((hoses||[]).length,4);
+    for(let i=0;i<count;i++){
+      const fuel=(hoses[i]?.fuel||hoses[i]?.fuel_type||'U').toUpperCase();
+      const em=parseFloat(document.getElementById(`p${pump}em${i}`)?.value)||0;
+      const bm=parseFloat(document.getElementById(`p${pump}bm${i}`)?.value)||0;
+      const es=parseFloat(document.getElementById(`p${pump}es${i}`)?.value)||0;
+      const bs=parseFloat(document.getElementById(`p${pump}bs${i}`)?.value)||0;
+      if(fuels[fuel]){fuels[fuel].L+=Math.max(0,em-bm);fuels[fuel].S+=Math.max(0,es-bs);}
+    }
+  });
+  return fuels;
+}
+
+function recalcAll(){
+  const t1=pumpTotal(1),t2=pumpTotal(2);
+  document.getElementById('p1total').textContent='₱'+p(t1);
+  document.getElementById('p2total').textContent='₱'+p(t2);
+}
+
+// ══════════════════════════════════════════
+// INVENTORY
+// ══════════════════════════════════════════
+function addDelivery(type){
+  S.deliveries.push({type,fuel:'U',liters:0,supplier:'',dr:''});
+  renderDeliveries();
+}
+function removeDelivery(i){S.deliveries.splice(i,1);renderDeliveries();calcInv();}
+function renderDeliveries(){
+  document.getElementById('delivery-list').innerHTML=S.deliveries.length?S.deliveries.map((d,i)=>`
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-size:11px;font-weight:700;color:var(--blue);">${d.type}</span>
+        <button class="btn btn-r btn-sm" onclick="removeDelivery(${i})">✕</button>
+      </div>
+      <div class="g4">
+        <div class="row"><label>Fuel</label><select oninput="S.deliveries[${i}].fuel=this.value;calcInv();" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text);font-family:inherit;font-size:11px;width:100%;">
+          <option ${d.fuel==='U'?'selected':''}>U</option><option ${d.fuel==='P'?'selected':''}>P</option><option ${d.fuel==='D'?'selected':''}>D</option>
+        </select></div>
+        <div class="row"><label>Liters</label><input type="number" value="${d.liters||''}" placeholder="0.00" oninput="S.deliveries[${i}].liters=parseFloat(this.value)||0;calcInv();"></div>
+        <div class="row"><label>Supplier/From</label><input type="text" value="${d.supplier||''}" placeholder="Supplier" oninput="S.deliveries[${i}].supplier=this.value;"></div>
+        <div class="row"><label>DR / SI #</label><input type="text" value="${d.dr||''}" placeholder="DR #" oninput="S.deliveries[${i}].dr=this.value;"></div>
+      </div>
+    </div>`).join(''):'<p style="font-size:11px;color:var(--muted);padding:8px 0;">No fuel received this shift.</p>';
+}
+
+function addFuelOut(type){
+  S.fuelouts.push({type,fuel:'U',liters:0,to:'',note:''});
+  renderFuelOut();
+}
+function removeFuelOut(i){S.fuelouts.splice(i,1);renderFuelOut();calcInv();}
+function renderFuelOut(){
+  document.getElementById('fuelout-list').innerHTML=S.fuelouts.length?S.fuelouts.map((d,i)=>`
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-size:11px;font-weight:700;color:var(--warn);">${d.type}</span>
+        <button class="btn btn-r btn-sm" onclick="removeFuelOut(${i})">✕</button>
+      </div>
+      <div class="g3">
+        <div class="row"><label>Fuel</label><select oninput="S.fuelouts[${i}].fuel=this.value;calcInv();" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text);font-family:inherit;font-size:11px;width:100%;">
+          <option ${d.fuel==='U'?'selected':''}>U</option><option ${d.fuel==='P'?'selected':''}>P</option><option ${d.fuel==='D'?'selected':''}>D</option>
+        </select></div>
+        <div class="row"><label>Liters</label><input type="number" value="${d.liters||''}" placeholder="0.00" oninput="S.fuelouts[${i}].liters=parseFloat(this.value)||0;calcInv();"></div>
+        <div class="row"><label>To / Note</label><input type="text" value="${d.to||''}" placeholder="Station / reason" oninput="S.fuelouts[${i}].to=this.value;"></div>
+      </div>
+    </div>`).join(''):'<p style="font-size:11px;color:var(--muted);padding:8px 0;">No fuel transferred out this shift.</p>';
+}
+
+function calcInv(){
+  const fuels=fuelSales();
+  const FUELS=['U','P','D'];
+  // Dipstick before/after
+  const dip={
+    U:{b:n('du1'),a:n('du2')},
+    P:{b:n('dp1'),a:n('dp2')},
+    D:{b:n('dd1'),a:n('dd2')}
+  };
+  // Received
+  const recv={U:0,P:0,D:0};
+  S.deliveries.forEach(d=>{if(recv[d.fuel]!==undefined)recv[d.fuel]+=parseFloat(d.liters)||0;});
+  // Out
+  const out={U:0,P:0,D:0};
+  S.fuelouts.forEach(d=>{if(out[d.fuel]!==undefined)out[d.fuel]+=parseFloat(d.liters)||0;});
+
+  const html=`<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:11px;">
+    <thead><tr>
+      <th style="text-align:left;padding:5px 8px;font-size:9px;color:var(--muted);border-bottom:2px solid var(--border);">FUEL</th>
+      <th style="text-align:right;padding:5px 8px;font-size:9px;color:var(--muted);border-bottom:2px solid var(--border);">BEG STOCK<br><span style="font-weight:400">(dipstick bef.)</span></th>
+      <th style="text-align:right;padding:5px 8px;font-size:9px;color:var(--blue);border-bottom:2px solid var(--border);">+ RECEIVED<br><span style="font-weight:400">(delivery/transfer)</span></th>
+      <th style="text-align:right;padding:5px 8px;font-size:9px;color:var(--red);border-bottom:2px solid var(--border);">− SOLD<br><span style="font-weight:400">(meter liters)</span></th>
+      <th style="text-align:right;padding:5px 8px;font-size:9px;color:var(--warn);border-bottom:2px solid var(--border);">− OUT<br><span style="font-weight:400">(transfer out)</span></th>
+      <th style="text-align:right;padding:5px 8px;font-size:9px;color:var(--accent);border-bottom:2px solid var(--border);">EXPECTED<br><span style="font-weight:400">closing</span></th>
+      <th style="text-align:right;padding:5px 8px;font-size:9px;color:var(--green);border-bottom:2px solid var(--border);">ACTUAL<br><span style="font-weight:400">(dipstick aft.)</span></th>
+      <th style="text-align:right;padding:5px 8px;font-size:9px;color:var(--muted);border-bottom:2px solid var(--border);">VARIANCE</th>
+    </tr></thead>
+    <tbody>${FUELS.map(f=>{
+      const beg=dip[f].b;
+      const soldL=fuels[f].L;
+      const rcv=recv[f];
+      const ot=out[f];
+      const expected=beg+rcv-soldL-ot;
+      const actual=dip[f].a;
+      const variance=actual>0?actual-expected:null;
+      const varColor=variance===null?'var(--muted)':Math.abs(variance)<2?'var(--green)':variance<0?'var(--red)':'var(--warn)';
+      return `<tr>
+        <td style="padding:6px 8px;"><span class="badge ${f}" style="width:20px;height:20px;line-height:20px;font-size:9px;">${f}</span></td>
+        <td style="text-align:right;padding:6px 8px;">${beg?beg.toFixed(1)+' cm':'—'}</td>
+        <td style="text-align:right;padding:6px 8px;color:var(--blue);">+${p(rcv)} L</td>
+        <td style="text-align:right;padding:6px 8px;color:var(--red);">−${p(soldL)} L</td>
+        <td style="text-align:right;padding:6px 8px;color:var(--warn);">−${p(ot)} L</td>
+        <td style="text-align:right;padding:6px 8px;font-weight:700;color:var(--accent);">${beg?p(expected)+' L':'—'}</td>
+        <td style="text-align:right;padding:6px 8px;color:var(--green);">${actual?actual.toFixed(1)+' cm':'—'}</td>
+        <td style="text-align:right;padding:6px 8px;font-weight:700;color:${varColor};">${variance!==null?(variance>=0?'+':'')+p(variance)+' L':'—'}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>`;
+  const el=document.getElementById('inv-summary');
+  if(el)el.innerHTML=html;
+}
+
+// ══════════════════════════════════════════
+// FLAGS
+// ══════════════════════════════════════════
+function renderFlags(){
+  const box=document.getElementById('flags-box');
+  const list=document.getElementById('flags-list');
+  if(!S.flags||!S.flags.length){box.style.display='none';return;}
+  box.style.display='block';
+  list.innerHTML=S.flags.map(f=>{
+    const cls=f.sev==='error'?'err':f.sev==='warn'?'warn':'info';
+    const ic=f.sev==='error'?'🔴':f.sev==='warn'?'🟡':'🟢';
     return `<div class="flag ${cls}">${ic} <strong>${f.field||''}</strong>${f.field?' — ':''}${f.msg||f.message||''}</div>`;
   }).join('');
 }
 
-// ─── DENOMINATIONS ────────────────────────────────────────────
-function buildDenoms() {
-  document.getElementById('denom-rows').innerHTML = DENOMS.map(d=>`
-    <div class="denom-row">
+// ══════════════════════════════════════════
+// DENOMINATIONS
+// ══════════════════════════════════════════
+function buildDenoms(){
+  document.getElementById('denom-rows').innerHTML=DENOMS.map(d=>`
+    <div class="drow">
       <label>₱${d.toLocaleString()} ×</label>
       <input type="number" id="dc-${d}" placeholder="0" min="0" step="1" oninput="calcCOH()">
       <div class="dv" id="dv-${d}">₱0</div>
     </div>`).join('');
 }
-
-function getDenomTotal() {
-  let t = 0;
-  DENOMS.forEach(d => { t += (parseInt(document.getElementById('dc-'+d)?.value)||0)*d; });
+function getDenomTotal(){
+  let t=0;
+  DENOMS.forEach(d=>{t+=(parseInt(document.getElementById('dc-'+d)?.value)||0)*d;});
   return t;
 }
-
-function calcCOH() {
-  let t = 0;
-  DENOMS.forEach(d => {
-    const cnt = parseInt(document.getElementById('dc-'+d)?.value)||0;
-    const val = cnt * d;
-    t += val;
-    const el = document.getElementById('dv-'+d);
-    if (el) el.textContent = val > 0 ? '₱'+val.toLocaleString() : '₱0';
+function calcCOH(){
+  let t=0;
+  DENOMS.forEach(d=>{
+    const cnt=parseInt(document.getElementById('dc-'+d)?.value)||0;
+    const val=cnt*d; t+=val;
+    const el=document.getElementById('dv-'+d);
+    if(el)el.textContent=val>0?'₱'+val.toLocaleString():'₱0';
   });
-  const el = document.getElementById('coh');
-  if (el) el.textContent = p(t);
+  const el=document.getElementById('coh');
+  if(el)el.textContent=p(t);
   recon();
   return t;
 }
 
-// ─── TAKEAWAYS ────────────────────────────────────────────────
-function addTakeaway() { S.takeaways.push({label:'',amount:0}); renderTakeaways(); }
-function removeTakeaway(i) { S.takeaways.splice(i,1); renderTakeaways(); recon(); }
-function renderTakeaways() {
-  document.getElementById('takeaway-list').innerHTML = S.takeaways.map((t,i)=>`
+// ══════════════════════════════════════════
+// TAKEAWAYS
+// ══════════════════════════════════════════
+function addTakeaway(){S.takeaways.push({label:'',amount:0});renderTakeaways();}
+function removeTakeaway(i){S.takeaways.splice(i,1);renderTakeaways();recon();}
+function renderTakeaways(){
+  document.getElementById('takeaway-list').innerHTML=S.takeaways.map((t,i)=>`
     <div style="display:flex;gap:6px;margin-bottom:6px;">
-      <input type="text" value="${t.label}" placeholder="Description" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:11px;font-family:inherit;" oninput="S.takeaways[${i}].label=this.value">
-      <input type="number" value="${t.amount||''}" placeholder="₱0" style="width:90px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:11px;font-family:inherit;text-align:right;" oninput="S.takeaways[${i}].amount=parseFloat(this.value)||0;recon()">
-      <button class="btn btn-red btn-sm" onclick="removeTakeaway(${i})">✕</button>
+      <input type="text" value="${t.label}" placeholder="Description (e.g. VIOS-GARY)" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-size:11px;font-family:inherit;" oninput="S.takeaways[${i}].label=this.value">
+      <input type="number" value="${t.amount||''}" placeholder="₱0" style="width:90px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-size:11px;font-family:inherit;text-align:right;" oninput="S.takeaways[${i}].amount=parseFloat(this.value)||0;recon()">
+      <button class="btn btn-r btn-sm" onclick="removeTakeaway(${i})">✕</button>
     </div>`).join('');
 }
 
-// ─── RECONCILIATION ───────────────────────────────────────────
-function recon() {
-  const sales = pumpTotal(1) + pumpTotal(2);
-  const coh   = getDenomTotal();
-  const gcash = parseFloat(document.getElementById('gcash-amt')?.value)||0;
-  const take  = S.takeaways.reduce((s,t)=>s+(parseFloat(t.amount)||0),0);
-  const remit = coh + gcash;
-  const os    = remit + take - sales;
-  set('rc-sales', '₱'+p(sales));
-  set('rc-coh',   '₱'+p(coh));
-  set('rc-gcash', '₱'+p(gcash));
-  set('rc-take',  '₱'+p(take));
-  set('rc-remit', '₱'+p(remit));
-  const osEl = document.getElementById('rc-os');
-  if (osEl) {
-    osEl.textContent = (os>=0?'+':'-')+'₱'+p(Math.abs(os));
-    osEl.className = 'val '+(Math.abs(os)<0.05?'ok':os<0?'bad':'');
+// ══════════════════════════════════════════
+// PAYABLES
+// ══════════════════════════════════════════
+function addPayable(type){
+  S.payables.push({type,description:'',amount:0,due_date:'',status:'UNPAID',check_no:'',liters:0});
+  renderPayables(); calcPayables();
+}
+function removePayable(i){S.payables.splice(i,1);renderPayables();calcPayables();}
+function renderPayables(){
+  const el=document.getElementById('payables-list');
+  if(!S.payables.length){
+    el.innerHTML='<p style="font-size:11px;color:var(--muted);padding:8px 0;">No payables recorded.</p>';
+    return;
+  }
+  el.innerHTML=S.payables.map((pay,i)=>`
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-size:11px;font-weight:700;color:${pay.type==='CHECK'?'var(--warn)':pay.type==='FUEL LOAN'?'var(--blue)':'var(--red)'};">${pay.type}</span>
+        <button class="btn btn-r btn-sm" onclick="removePayable(${i})">✕</button>
+      </div>
+      <div class="g2">
+        <div class="row"><label>Description</label><input type="text" value="${pay.description}" placeholder="Details" oninput="S.payables[${i}].description=this.value;"></div>
+        <div class="row"><label>${pay.type==='FUEL LOAN'?'Liters':'Amount ₱'}</label>
+          <input type="number" value="${pay.type==='FUEL LOAN'?pay.liters:pay.amount||''}" placeholder="0.00" oninput="S.payables[${i}].${pay.type==='FUEL LOAN'?'liters':'amount'}=parseFloat(this.value)||0;calcPayables();">
+        </div>
+        <div class="row"><label>Due Date</label><input type="date" value="${pay.due_date}" oninput="S.payables[${i}].due_date=this.value;"></div>
+        ${pay.type==='CHECK'?`<div class="row"><label>Check #</label><input type="text" value="${pay.check_no}" placeholder="Check number" oninput="S.payables[${i}].check_no=this.value;"></div>`:'<div></div>'}
+      </div>
+      <div class="row" style="margin-top:4px;"><label>Status</label>
+        <select oninput="S.payables[${i}].status=this.value;" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text);font-family:inherit;font-size:11px;width:100%;">
+          <option ${pay.status==='UNPAID'?'selected':''}>UNPAID</option>
+          <option ${pay.status==='PARTIAL'?'selected':''}>PARTIAL</option>
+          <option ${pay.status==='PAID'?'selected':''}>PAID</option>
+        </select>
+      </div>
+    </div>`).join('');
+}
+function calcPayables(){
+  const total=S.payables.reduce((s,p)=>s+(parseFloat(p.amount)||0),0);
+  const supplier=S.payables.filter(p=>p.type==='SUPPLIER').reduce((s,p)=>s+(parseFloat(p.amount)||0),0);
+  const check=S.payables.filter(p=>p.type==='CHECK').reduce((s,p)=>s+(parseFloat(p.amount)||0),0);
+  const fuelL=S.payables.filter(p=>p.type==='FUEL LOAN').reduce((s,p)=>s+(parseFloat(p.liters)||0),0);
+  set('pay-total','₱'+p(total));
+  set('pay-supplier','₱'+p(supplier));
+  set('pay-check','₱'+p(check));
+  set('pay-fuel',p(fuelL)+' L');
+}
+
+// ══════════════════════════════════════════
+// RECONCILIATION
+// ══════════════════════════════════════════
+function recon(){
+  const sales=pumpTotal(1)+pumpTotal(2);
+  const coh=getDenomTotal();
+  const gcash=parseFloat(document.getElementById('gcash-amt')?.value)||0;
+  const take=S.takeaways.reduce((s,t)=>s+(parseFloat(t.amount)||0),0);
+  const remit=coh+gcash;
+  const os=remit+take-sales;
+  set('rc-sales','₱'+p(sales));
+  set('rc-coh','₱'+p(coh));
+  set('rc-gcash','₱'+p(gcash));
+  set('rc-take','₱'+p(take));
+  set('rc-remit','₱'+p(remit));
+  const osEl=document.getElementById('rc-os');
+  if(osEl){
+    osEl.textContent=(os>=0?'+':'-')+'₱'+p(Math.abs(os));
+    osEl.className='val '+(Math.abs(os)<0.05?'ok':os<0?'bad':'');
   }
 }
 
-// ─── FINAL SUMMARY ────────────────────────────────────────────
-function buildFinal() {
-  const sales = pumpTotal(1)+pumpTotal(2);
-  const coh   = getDenomTotal();
-  const gcash = parseFloat(document.getElementById('gcash-amt')?.value)||0;
-  const take  = S.takeaways.reduce((s,t)=>s+(parseFloat(t.amount)||0),0);
-  const os    = coh+gcash+take-sales;
-  document.getElementById('final-summary').innerHTML = `
-    <div class="recon-grid">
-      <div class="recon-item"><label>Date</label><div class="val" style="font-size:13px;">${v('sdate')}</div></div>
-      <div class="recon-item"><label>Shift</label><div class="val" style="font-size:13px;">${v('shift')}</div></div>
-      <div class="recon-item"><label>Cashier</label><div class="val" style="font-size:13px;">${v('cashier')||'—'}</div></div>
-      <div class="recon-item"><label>Station</label><div class="val" style="font-size:13px;">${v('station')}</div></div>
-      <div class="recon-item"><label>Pump 1 Sales</label><div class="val">₱${p(pumpTotal(1))}</div></div>
-      <div class="recon-item"><label>Pump 2 Sales</label><div class="val">₱${p(pumpTotal(2))}</div></div>
-      <div class="recon-item"><label>Total Sales</label><div class="val">₱${p(sales)}</div></div>
-      <div class="recon-item"><label>Cash on Hand</label><div class="val">₱${p(coh)}</div></div>
-      <div class="recon-item"><label>GCash</label><div class="val">₱${p(gcash)}</div></div>
-      <div class="recon-item"><label>Takeaways</label><div class="val">₱${p(take)}</div></div>
-      <div class="recon-item"><label>Over / Short</label><div class="val ${Math.abs(os)<0.05?'ok':os<0?'bad':''}">${os>=0?'+':'-'}₱${p(Math.abs(os))}</div></div>
+// ══════════════════════════════════════════
+// FINAL SUMMARY
+// ══════════════════════════════════════════
+function buildFinal(){
+  const fuels=fuelSales();
+  const totalL=pumpLiters(1)+pumpLiters(2);
+  const totalS=pumpTotal(1)+pumpTotal(2);
+  const coh=getDenomTotal();
+  const gcash=parseFloat(document.getElementById('gcash-amt')?.value)||0;
+  const take=S.takeaways.reduce((s,t)=>s+(parseFloat(t.amount)||0),0);
+  const os=coh+gcash+take-totalS;
+  const totalRecv=S.deliveries.reduce((s,d)=>s+(parseFloat(d.liters)||0),0);
+
+  document.getElementById('final-summary').innerHTML=`
+    <div class="sc-grid" style="margin-bottom:12px;">
+      <div class="sc-item"><label>Date</label><div class="val" style="font-size:13px;">${v('sdate')}</div></div>
+      <div class="sc-item"><label>Shift</label><div class="val" style="font-size:13px;">${v('shift')}</div></div>
+      <div class="sc-item"><label>Station</label><div class="val" style="font-size:13px;">${v('station')}</div></div>
+      <div class="sc-item"><label>Cashier</label><div class="val" style="font-size:13px;">${v('cashier')||'—'}</div></div>
+    </div>
+    <div style="font-size:10px;color:var(--accent);font-weight:700;letter-spacing:1px;margin-bottom:8px;">📦 LITERS SOLD</div>
+    <div class="sc-grid" style="margin-bottom:12px;">
+      <div class="sc-item"><label><span class="badge U" style="width:16px;height:16px;line-height:16px;font-size:8px;">U</span> Unleaded</label><div class="val blue">${p(fuels.U.L)} L</div></div>
+      <div class="sc-item"><label><span class="badge P" style="width:16px;height:16px;line-height:16px;font-size:8px;">P</span> Premium</label><div class="val blue">${p(fuels.P.L)} L</div></div>
+      <div class="sc-item"><label><span class="badge D" style="width:16px;height:16px;line-height:16px;font-size:8px;">D</span> Diesel</label><div class="val blue">${p(fuels.D.L)} L</div></div>
+      <div class="sc-item"><label>TOTAL LITERS SOLD</label><div class="val blue">${p(totalL)} L</div></div>
+    </div>
+    <div style="font-size:10px;color:var(--accent);font-weight:700;letter-spacing:1px;margin-bottom:8px;">💹 PESO SALES</div>
+    <div class="sc-grid" style="margin-bottom:12px;">
+      <div class="sc-item"><label>U Sales</label><div class="val">₱${p(fuels.U.S)}</div></div>
+      <div class="sc-item"><label>P Sales</label><div class="val">₱${p(fuels.P.S)}</div></div>
+      <div class="sc-item"><label>D Sales</label><div class="val">₱${p(fuels.D.S)}</div></div>
+      <div class="sc-item"><label>TOTAL SALES</label><div class="val ok">₱${p(totalS)}</div></div>
+    </div>
+    <div style="font-size:10px;color:var(--accent);font-weight:700;letter-spacing:1px;margin-bottom:8px;">💰 CASH</div>
+    <div class="sc-grid" style="margin-bottom:12px;">
+      <div class="sc-item"><label>Cash on Hand</label><div class="val">₱${p(coh)}</div></div>
+      <div class="sc-item"><label>GCash</label><div class="val">₱${p(gcash)}</div></div>
+      <div class="sc-item"><label>Takeaways</label><div class="val">₱${p(take)}</div></div>
+      <div class="sc-item"><label>Over / Short</label><div class="val ${Math.abs(os)<0.05?'ok':os<0?'bad':''}">${os>=0?'+':'-'}₱${p(Math.abs(os))}</div></div>
+    </div>
+    <div style="font-size:10px;color:var(--accent);font-weight:700;letter-spacing:1px;margin-bottom:8px;">📦 INVENTORY</div>
+    <div class="sc-grid">
+      <div class="sc-item"><label>Fuel Received</label><div class="val blue">${p(totalRecv)} L</div></div>
+      <div class="sc-item"><label>Payables</label><div class="val bad">₱${p(S.payables.reduce((s,p)=>s+(parseFloat(p.amount)||0),0))}</div></div>
     </div>`;
 }
 
-// ─── SUBMIT ───────────────────────────────────────────────────
-async function submitSheet() {
-  const url = document.getElementById('sheet-url').value.trim() || localStorage.getItem('pf_sheet');
-  if (!url) { banner('submit-result','err','❌ Please enter your Google Sheet Apps Script URL.'); return; }
-  banner('submit-result','info','⏳ Submitting...');
-  const payload = buildPayload();
-  try {
-    await fetch(url, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-    banner('submit-result','ok','✅ Submitted! Check your Google Sheet.');
-  } catch(e) { banner('submit-result','err','❌ '+e.message); }
+// ══════════════════════════════════════════
+// SUBMIT
+// ══════════════════════════════════════════
+async function submitSheet(){
+  const url=document.getElementById('sheet-url').value.trim()||localStorage.getItem('pf_sheet');
+  if(!url){ban('submit-result','err','❌ Please enter your Google Sheet Apps Script URL.');return;}
+  ban('submit-result','info','⏳ Submitting to Google Sheet...');
+  try{
+    await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(buildPayload())});
+    ban('submit-result','ok','✅ Submitted successfully! Open your Google Sheet to view the data.');
+  }catch(e){ban('submit-result','err','❌ '+e.message);}
 }
 
-function buildPayload() {
+function buildPayload(){
   const p1=[],p2=[];
-  const c1=Math.max((S.pump1||[]).length,4), c2=Math.max((S.pump2||[]).length,4);
-  for(let i=0;i<c1;i++){
-    const fuel=(S.pump1[i]?.fuel||S.pump1[i]?.fuel_type||'U').toUpperCase();
-    p1.push({fuel,beg_liter:n(`p1bm${i}`),beg_sales:n(`p1bs${i}`),end_liter:n(`p1em${i}`),end_sales:n(`p1es${i}`),shift_liters:Math.max(0,n(`p1em${i}`)-n(`p1bm${i}`)),shift_sales:Math.max(0,n(`p1es${i}`)-n(`p1bs${i}`))});
-  }
-  for(let i=0;i<c2;i++){
-    const fuel=(S.pump2[i]?.fuel||S.pump2[i]?.fuel_type||'U').toUpperCase();
-    p2.push({fuel,beg_liter:n(`p2bm${i}`),beg_sales:n(`p2bs${i}`),end_liter:n(`p2em${i}`),end_sales:n(`p2es${i}`),shift_liters:Math.max(0,n(`p2em${i}`)-n(`p2bm${i}`)),shift_sales:Math.max(0,n(`p2es${i}`)-n(`p2bs${i}`))});
-  }
-  const denoms={};
-  DENOMS.forEach(d=>{denoms[d]=parseInt(document.getElementById('dc-'+d)?.value)||0;});
+  const c1=Math.max((S.pump1||[]).length,4),c2=Math.max((S.pump2||[]).length,4);
+  for(let i=0;i<c1;i++){const fuel=(S.pump1[i]?.fuel||'U').toUpperCase();p1.push({fuel,beg_liter:n('p1bm'+i),beg_sales:n('p1bs'+i),end_liter:n('p1em'+i),end_sales:n('p1es'+i),shift_liters:Math.max(0,n('p1em'+i)-n('p1bm'+i)),shift_sales:Math.max(0,n('p1es'+i)-n('p1bs'+i))});}
+  for(let i=0;i<c2;i++){const fuel=(S.pump2[i]?.fuel||'U').toUpperCase();p2.push({fuel,beg_liter:n('p2bm'+i),beg_sales:n('p2bs'+i),end_liter:n('p2em'+i),end_sales:n('p2es'+i),shift_liters:Math.max(0,n('p2em'+i)-n('p2bm'+i)),shift_sales:Math.max(0,n('p2es'+i)-n('p2bs'+i))});}
+  const denoms={};DENOMS.forEach(d=>{denoms[d]=parseInt(document.getElementById('dc-'+d)?.value)||0;});
+  const fuels=fuelSales();
   return {
-    date:v('sdate'),shift:v('shift'),station:v('station'),cashier:v('cashier'),
-    att1:v('att1'),att2:v('att2'),
+    date:v('sdate'),shift:v('shift'),station:v('station'),cashier:v('cashier'),att1:v('att1'),att2:v('att2'),
     price_U:n('pU'),price_P:n('pP'),price_D:n('pD'),
     dipstick:{U_before:n('du1'),U_after:n('du2'),P_before:n('dp1'),P_after:n('dp2'),D_before:n('dd1'),D_after:n('dd2')},
     pump1:p1,pump2:p2,
-    pump1_total:pumpTotal(1),pump2_total:pumpTotal(2),total_sales:pumpTotal(1)+pumpTotal(2),
+    pump1_total:pumpTotal(1),pump2_total:pumpTotal(2),
+    total_sales:pumpTotal(1)+pumpTotal(2),
+    total_liters_U:fuels.U.L,total_liters_P:fuels.P.L,total_liters_D:fuels.D.L,
+    total_liters:pumpLiters(1)+pumpLiters(2),
     denominations:denoms,cash_on_hand:getDenomTotal(),
     gcash_amount:n('gcash-amt'),gcash_ref:v('gcash-ref'),
-    takeaways:S.takeaways,timestamp:new Date().toISOString()
+    takeaways:S.takeaways,
+    deliveries:S.deliveries,fuelouts:S.fuelouts,payables:S.payables,
+    timestamp:new Date().toISOString()
   };
 }
 
-// ─── AI STEPS UI ─────────────────────────────────────────────
-const STEP_LABELS = [
-  'Reading photo and extracting all data...',
-  'Checking meter differences (end − beg)...',
-  'Validating denominations vs cash on hand...',
-  'Flagging misreads for encoder review...',
-  'Complete ✓'
-];
-function setSteps(_, active) {
-  document.getElementById('steps').innerHTML = STEP_LABELS.map((l,i)=>{
-    const cls = i < active ? 'done' : i === active ? 'active' : '';
-    const icon = i < active ? '✅' : i === active ? '<span class="spin"></span>' : '⏳';
-    return `<div class="step ${cls}">${icon} ${l}</div>`;
-  }).join('');
-}
-
-// ─── SETTINGS ────────────────────────────────────────────────
-function openModal()  { document.getElementById('modal').classList.add('open'); renderSettings(); }
-function closeModal() { document.getElementById('modal').classList.remove('open'); }
-function renderSettings() {
-  ['vehicles','staff'].forEach(key => {
-    const el = document.getElementById(key==='vehicles'?'v-list':'s-list');
-    if (!el) return;
-    el.innerHTML = S[key].map((item,i)=>`
+// ══════════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════════
+function openModal(){document.getElementById('modal').classList.add('open');renderSettings();}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+function renderSettings(){
+  [['vehicles','v-list'],['staff','s-list'],['suppliers','sup-list']].forEach(([key,id])=>{
+    const el=document.getElementById(id);if(!el)return;
+    el.innerHTML=(S[key]||[]).map((item,i)=>`
       <div style="display:flex;gap:6px;margin-bottom:6px;align-items:center;">
         <span style="flex:1;font-size:12px;padding:6px 10px;background:var(--bg);border-radius:6px;">${item}</span>
-        <button class="btn btn-red btn-sm" onclick="removeItem('${key}',${i})">✕</button>
+        <button class="btn btn-r btn-sm" onclick="removeItem('${key}',${i})">✕</button>
       </div>`).join('');
   });
 }
-function addItem(key, inputId) {
-  const val = document.getElementById(inputId).value.trim();
-  if (!val) return;
+function addItem(key,inputId){
+  const val=document.getElementById(inputId).value.trim();if(!val)return;
   S[key].push(val);
-  localStorage.setItem('pf_'+key[0], JSON.stringify(S[key]));
-  document.getElementById(inputId).value = '';
-  renderSettings();
+  const lsKey=key==='vehicles'?'pf_v':key==='staff'?'pf_s':'pf_sup';
+  localStorage.setItem(lsKey,JSON.stringify(S[key]));
+  document.getElementById(inputId).value='';renderSettings();
 }
-function removeItem(key, i) {
+function removeItem(key,i){
   S[key].splice(i,1);
-  localStorage.setItem('pf_'+key[0], JSON.stringify(S[key]));
-  renderSettings();
+  const lsKey=key==='vehicles'?'pf_v':key==='staff'?'pf_s':'pf_sup';
+  localStorage.setItem(lsKey,JSON.stringify(S[key]));renderSettings();
 }
 
-// ─── HELPERS ─────────────────────────────────────────────────
-function v(id) { return document.getElementById(id)?.value||''; }
-function n(id) { return parseFloat(document.getElementById(id)?.value)||0; }
-function set(id, val) { const el=document.getElementById(id); if(el) el.textContent=val; }
-function p(num) { return parseFloat(num).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-function banner(id, type, msg) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.innerHTML = msg ? `<div class="banner banner-${type}">${msg}</div>` : '';
+// ══════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════
+function v(id){return document.getElementById(id)?.value||'';}
+function n(id){return parseFloat(document.getElementById(id)?.value)||0;}
+function set(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
+function p(num){return parseFloat(num||0).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function ban(id,type,msg){
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML=msg?`<div class="ban b-${type}">${msg}</div>`:'';
 }
 </script>
 </body>
