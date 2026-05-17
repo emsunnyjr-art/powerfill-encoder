@@ -892,7 +892,7 @@ function initDenomRows() {
   container.innerHTML = DENOMS.map(d => `
     <div class="denom-row">
       <label>₱${d.toLocaleString()} ×</label>
-      <input type="number" id="denom-${d}" placeholder="0" min="0" step="1" oninput="calcDenomTotal()">
+      <input type="number" id="denom-${d}" placeholder="0" min="0" step="1" oninput="calcDenomTotal(); recalcCash();">
       <div class="denom-val" id="denom-val-${d}">₱0</div>
     </div>`).join('');
 }
@@ -906,17 +906,23 @@ function calcDenomTotal() {
     const el = document.getElementById('denom-val-' + d);
     if (el) el.textContent = val > 0 ? '₱' + val.toLocaleString() : '₱0';
   });
-  document.getElementById('denom-total').textContent = total.toLocaleString('en-PH', { minimumFractionDigits: 2 });
-  recalcCash();
+  const totalEl = document.getElementById('denom-total');
+  if (totalEl) totalEl.textContent = total.toLocaleString('en-PH', { minimumFractionDigits: 2 });
   return total;
 }
 
 // ============================================================
 // CASH RECONCILIATION
 // ============================================================
+function getDenomTotal() {
+  let total = 0;
+  DENOMS.forEach(d => { total += (parseInt(document.getElementById('denom-' + d)?.value) || 0) * d; });
+  return total;
+}
+
 function recalcCash() {
   const totalSales = getPumpTotal(1) + getPumpTotal(2);
-  const cashOnHand = calcDenomTotal();
+  const cashOnHand = getDenomTotal();
   const gcash = parseFloat(document.getElementById('gcash-amount')?.value) || 0;
   const takeawayTotal = state.takeaways.reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
   const cashRemit = cashOnHand + gcash;
@@ -959,7 +965,7 @@ function renderTakeaways() {
 // ============================================================
 function renderFinalSummary() {
   const totalSales = getPumpTotal(1) + getPumpTotal(2);
-  const cashOnHand = calcDenomTotal();
+  const cashOnHand = getDenomTotal();
   const gcash = parseFloat(document.getElementById('gcash-amount')?.value) || 0;
   const takeawayTotal = state.takeaways.reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
   const overShort = cashOnHand + gcash + takeawayTotal - totalSales;
@@ -1049,7 +1055,7 @@ function collectAllData() {
     pump2_total: getPumpTotal(2),
     total_sales: getPumpTotal(1) + getPumpTotal(2),
     denominations: denomData,
-    cash_on_hand: calcDenomTotal(),
+    cash_on_hand: getDenomTotal(),
     gcash_amount: parseFloat(document.getElementById('gcash-amount').value) || 0,
     gcash_ref: document.getElementById('gcash-ref').value,
     takeaways: state.takeaways,
