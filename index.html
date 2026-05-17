@@ -3,1120 +3,1012 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Powerfill Shift Encoder</title>
+<title>Powerfill Shift Encoder v3</title>
 <style>
 :root {
-  --bg:#0f1117;--surface:#1a1d27;--card:#1e2130;--border:#2a2d3e;
-  --accent:#f5c842;--green:#3dd68c;--red:#ff4d6d;--warn:#ff9f1c;--blue:#60a5fa;
-  --muted:#6b7280;--text:#e8eaf0;--text2:#a0a8c0;
-  --U:#3dd68c;--P:#a78bfa;--D:#f5c842;
+  --fuel: #e65c00;
+  --fuel2: #f9a825;
+  --dark: #1a1a2e;
+  --dark2: #16213e;
+  --dark3: #0f3460;
+  --card: #1e2a45;
+  --card2: #243352;
+  --text: #f0f4ff;
+  --muted: #8899bb;
+  --gold: #f9a825;
+  --green: #00e676;
+  --red: #ff5252;
+  --border: rgba(255,255,255,0.08);
+  --radius: 12px;
+  --font: 'Segoe UI', system-ui, sans-serif;
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'Courier New',monospace;min-height:100vh;}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { background: var(--dark); color: var(--text); font-family: var(--font); min-height: 100vh; overflow-x: hidden; }
 
-/* HEADER */
-.hdr{background:var(--surface);border-bottom:2px solid var(--accent);padding:10px 14px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;}
-.hdr h1{font-size:14px;font-weight:700;color:var(--accent);letter-spacing:1px;}
-.hdr p{font-size:9px;color:var(--muted);}
-.gear{background:none;border:none;font-size:20px;cursor:pointer;margin-left:auto;}
+/* TOP BAR */
+.topbar { background: linear-gradient(135deg, #e65c00 0%, #f9a825 100%); padding: 14px 16px 12px; display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.4); }
+.topbar-logo { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+.topbar-logo span { font-weight: 300; opacity: 0.8; }
+.topbar-sub { font-size: 11px; color: rgba(255,255,255,0.75); margin-top: 1px; }
+.topbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.station-badge { background: rgba(0,0,0,0.25); border-radius: 8px; padding: 5px 10px; font-size: 12px; font-weight: 700; color: #fff; cursor: pointer; border: 1.5px solid rgba(255,255,255,0.3); transition: all 0.2s; }
+.station-badge.active { background: rgba(0,0,0,0.45); border-color: #fff; }
 
 /* TABS */
-.tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;}
-.tab{flex:1;min-width:55px;padding:8px 4px 6px;text-align:center;font-size:8px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;text-transform:uppercase;white-space:nowrap;}
-.tab span{font-size:15px;display:block;margin-bottom:2px;}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tabs { display: flex; overflow-x: auto; background: var(--dark2); border-bottom: 1px solid var(--border); scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { flex: 0 0 auto; padding: 12px 16px; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2.5px solid transparent; white-space: nowrap; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
+.tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+.tab-icon { font-size: 15px; margin-right: 5px; vertical-align: -2px; }
 
-/* PAGES */
-.page{display:none;padding:12px;max-width:900px;margin:0 auto;}
-.page.active{display:block;}
+/* PANELS */
+.panel { display: none; padding: 16px; animation: fadeIn 0.2s ease; }
+.panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
 /* CARDS */
-.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;}
-.card h3{font-size:11px;color:var(--accent);letter-spacing:1px;margin-bottom:12px;text-transform:uppercase;}
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 14px; }
+.card-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+.card-title-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); }
 
-/* FORMS */
-.row{margin-bottom:10px;}
-.row label{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
-.row input,.row select,.row textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:12px;font-family:inherit;}
-.row input:focus,.row select:focus,.row textarea:focus{outline:none;border-color:var(--accent);}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
-.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;}
+/* PHOTO TAB */
+.photo-area { border: 2px dashed rgba(249,168,37,0.4); border-radius: var(--radius); padding: 24px; text-align: center; cursor: pointer; background: rgba(249,168,37,0.04); transition: all 0.2s; position: relative; margin-bottom: 14px; }
+.photo-area:hover { border-color: var(--gold); background: rgba(249,168,37,0.08); }
+.photo-area input[type=file] { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; font-size: 0; }
+.photo-icon { font-size: 40px; color: var(--gold); opacity: 0.7; }
+.photo-label { color: var(--muted); font-size: 13px; margin-top: 8px; }
+.photo-label strong { color: var(--text); }
+.photo-preview { width: 100%; border-radius: 8px; max-height: 240px; object-fit: contain; background: #000; display: none; }
+.ai-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #e65c00, #f9a825); border: none; border-radius: var(--radius); color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 14px; }
+.ai-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.ai-btn:hover:not(:disabled) { opacity: 0.9; }
+.ai-response { background: var(--card2); border-radius: var(--radius); padding: 14px; font-size: 13px; line-height: 1.7; color: var(--text); white-space: pre-wrap; max-height: 300px; overflow-y: auto; display: none; }
+.apply-btn { width: 100%; padding: 12px; background: var(--dark3); border: 1.5px solid var(--gold); border-radius: var(--radius); color: var(--gold); font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 10px; display: none; transition: all 0.2s; }
+.apply-btn:hover { background: rgba(249,168,37,0.1); }
 
-/* BUTTONS */
-.btn{padding:10px 16px;border-radius:8px;border:none;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;justify-content:center;transition:filter .15s;}
-.btn-y{background:var(--accent);color:#000;}
-.btn-y:hover{filter:brightness(1.1);}
-.btn-y:disabled{opacity:.4;cursor:not-allowed;}
-.btn-o{background:transparent;color:var(--text2);border:1px solid var(--border);}
-.btn-o:hover{border-color:var(--accent);color:var(--accent);}
-.btn-g{background:var(--green);color:#000;}
-.btn-r{background:var(--red);color:#fff;}
-.btn-b{background:var(--blue);color:#000;}
-.btn-f{width:100%;}
-.btn-sm{padding:5px 10px;font-size:10px;}
-.nav{display:flex;gap:8px;margin-top:14px;}
+/* STATION SELECTOR */
+.station-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+.stn-tab { flex: 1; padding: 10px 6px; background: var(--card2); border: 1.5px solid var(--border); border-radius: 8px; text-align: center; font-size: 12px; font-weight: 700; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+.stn-tab.active { background: rgba(230,92,0,0.2); border-color: var(--fuel); color: #fff; }
+.stn-tab.inactive { opacity: 0.35; cursor: default; }
 
-/* BANNERS */
-.ban{padding:9px 13px;border-radius:8px;font-size:11px;margin-bottom:10px;}
-.b-ok{background:rgba(61,214,140,.12);border:1px solid var(--green);color:var(--green);}
-.b-err{background:rgba(255,77,109,.12);border:1px solid var(--red);color:var(--red);}
-.b-warn{background:rgba(255,159,28,.12);border:1px solid var(--warn);color:var(--warn);}
-.b-info{background:rgba(245,200,66,.08);border:1px solid var(--accent);color:var(--accent);}
-.b-blue{background:rgba(96,165,250,.1);border:1px solid var(--blue);color:var(--blue);}
+/* FORM FIELDS */
+.field-group { margin-bottom: 12px; }
+.field-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+input[type=text], input[type=number], select, textarea {
+  width: 100%; background: var(--dark2); border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); font-size: 14px; padding: 9px 12px; font-family: var(--font);
+  -webkit-appearance: none; transition: border-color 0.2s;
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); }
+select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238899bb'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
 
-/* AI STEPS */
-.step{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);}
-.step:last-child{border-bottom:none;}
-.step.done{color:var(--green);}
-.step.active{color:var(--accent);}
-.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-
-/* UPLOAD */
-.upload-box{position:relative;border:2px dashed var(--border);border-radius:10px;padding:28px;text-align:center;transition:all .2s;cursor:pointer;}
-.upload-box:hover{border-color:var(--accent);background:rgba(245,200,66,.04);}
-.upload-box input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;}
-#preview-img{width:100%;border-radius:8px;margin-top:10px;display:none;}
-#upload-status{margin-top:8px;font-size:11px;}
-
-/* PUMP TABLE */
-.pump-wrap{overflow-x:auto;}
-table.pump{width:100%;border-collapse:collapse;font-size:11px;}
-table.pump th{font-size:9px;color:var(--muted);font-weight:700;padding:5px 6px;text-align:right;border-bottom:2px solid var(--border);text-transform:uppercase;white-space:nowrap;}
-table.pump th:first-child{text-align:left;}
-table.pump th.sh{color:var(--accent);border-bottom-color:var(--accent);}
-table.pump td{padding:4px 5px;text-align:right;border-bottom:1px solid rgba(42,45,62,.5);vertical-align:top;}
-table.pump td:first-child{text-align:left;vertical-align:middle;}
-table.pump tr:last-child td{border-bottom:none;}
-table.pump input{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:4px 5px;color:var(--text);font-size:11px;font-family:inherit;width:115px;text-align:right;}
-table.pump input:focus{outline:none;border-color:var(--accent);}
-table.pump input.warn{border-color:var(--warn);background:rgba(255,159,28,.07);}
-table.pump input.err{border-color:var(--red);background:rgba(255,77,109,.07);}
-.fmt{font-size:8px;color:var(--muted);text-align:right;margin-top:1px;}
-.sc{font-weight:700;font-size:12px;color:var(--green);background:rgba(245,200,66,.03);border-left:1px solid rgba(245,200,66,.2)!important;white-space:nowrap;}
-.sc.bad{color:var(--red);}
-.sc.warn-s{color:var(--warn);}
-.badge{display:inline-block;width:22px;height:22px;border-radius:4px;font-size:10px;font-weight:900;text-align:center;line-height:22px;}
-.U{background:var(--U);color:#000;}.P{background:var(--P);color:#fff;}.D{background:var(--D);color:#000;}
-.pump-total{text-align:right;font-size:12px;font-weight:700;color:var(--accent);padding:8px 6px 0;border-top:1px solid var(--border);margin-top:4px;}
+/* HOSE TABLE */
+.hose-table-wrap { overflow-x: auto; margin-bottom: 10px; }
+.hose-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 480px; }
+.hose-table th { background: var(--dark3); color: var(--gold); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; padding: 8px 8px; text-align: center; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.hose-table th:first-child { text-align: left; }
+.hose-table td { padding: 6px 6px; border-bottom: 1px solid var(--border); text-align: center; vertical-align: middle; }
+.hose-table td:first-child { text-align: left; font-weight: 600; font-size: 11px; color: var(--muted); }
+.hose-table input[type=number] { padding: 6px 8px; font-size: 13px; text-align: right; background: var(--dark); }
+.hose-table .shift-cell { background: rgba(249,168,37,0.1); color: var(--gold); font-weight: 700; font-size: 13px; }
+.hose-table .product-tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+.tag-diesel { background: rgba(0,230,118,0.15); color: var(--green); }
+.tag-gas { background: rgba(230,92,0,0.2); color: #ff9800; }
+.tag-kerosene { background: rgba(100,120,255,0.15); color: #9fa8da; }
 
 /* SUMMARY CARDS */
-.sc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;}
-.sc-item{background:var(--bg);border-radius:8px;padding:10px 12px;border:1px solid var(--border);}
-.sc-item label{font-size:9px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:3px;}
-.sc-item .val{font-size:13px;font-weight:700;color:var(--accent);}
-.sc-item .val.ok{color:var(--green);}
-.sc-item .val.bad{color:var(--red);}
-.sc-item .val.blue{color:var(--blue);}
+.summ-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.summ-card { background: var(--card2); border-radius: 10px; padding: 12px; border: 1px solid var(--border); }
+.summ-card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); margin-bottom: 4px; }
+.summ-card-value { font-size: 20px; font-weight: 800; color: var(--text); }
+.summ-card-value.gold { color: var(--gold); }
+.summ-card-value.green { color: var(--green); }
+.summ-card-value.red { color: var(--red); }
 
-/* DENOM */
-.drow{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
-.drow label{font-size:11px;color:var(--text2);width:65px;}
-.drow input{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-size:12px;font-family:inherit;width:65px;text-align:center;}
-.drow input:focus{outline:none;border-color:var(--accent);}
-.drow .dv{font-size:12px;color:var(--accent);min-width:90px;text-align:right;}
+/* INVENTORY */
+.inv-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.inv-label { font-size: 13px; color: var(--text); flex: 1; }
+.inv-sub { font-size: 11px; color: var(--muted); }
+.inv-input-wrap { width: 110px; }
 
-/* FLAGS */
-.flag{padding:8px 10px;border-radius:6px;margin-bottom:6px;font-size:11px;line-height:1.4;}
-.flag.err{background:rgba(255,77,109,.1);border-left:3px solid var(--red);}
-.flag.warn{background:rgba(255,159,28,.1);border-left:3px solid var(--warn);}
-.flag.info{background:rgba(61,214,140,.08);border-left:3px solid var(--green);}
+/* SECTION HEADER */
+.section-header { font-size: 13px; font-weight: 700; color: var(--gold); margin: 16px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 6px; }
 
-/* PAYABLES TABLE */
-table.pay{width:100%;border-collapse:collapse;font-size:11px;}
-table.pay th{font-size:9px;color:var(--muted);font-weight:700;padding:6px 8px;text-align:left;border-bottom:2px solid var(--border);text-transform:uppercase;}
-table.pay td{padding:6px 8px;border-bottom:1px solid rgba(42,45,62,.5);vertical-align:middle;}
-table.pay tr:last-child td{border-bottom:none;}
-table.pay input,table.pay select{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:4px 8px;color:var(--text);font-size:11px;font-family:inherit;width:100%;}
+/* PAYABLES */
+.payable-row { background: var(--card2); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+.payable-name { flex: 1; font-size: 13px; }
+.payable-amt { width: 120px; }
+.add-row-btn { background: transparent; border: 1.5px dashed var(--border); border-radius: 8px; padding: 10px; width: 100%; color: var(--muted); font-size: 13px; cursor: pointer; transition: all 0.2s; }
+.add-row-btn:hover { border-color: var(--gold); color: var(--gold); }
+.del-btn { background: transparent; border: none; color: var(--red); opacity: 0.6; cursor: pointer; font-size: 18px; padding: 4px; }
 
-/* MODAL */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:flex-end;}
-.modal-bg.open{display:flex;}
-.modal{background:var(--surface);border-radius:16px 16px 0 0;padding:20px 16px 32px;width:100%;max-height:85vh;overflow-y:auto;border-top:2px solid var(--accent);}
+/* SUBMIT */
+.submit-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #e65c00, #f9a825); border: none; border-radius: var(--radius); color: #fff; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 8px; letter-spacing: 0.3px; transition: opacity 0.2s; }
+.submit-btn:hover { opacity: 0.9; }
+.submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.status-msg { text-align: center; font-size: 13px; padding: 12px; border-radius: 8px; margin-top: 10px; display: none; }
+.status-msg.success { background: rgba(0,230,118,0.1); color: var(--green); border: 1px solid rgba(0,230,118,0.3); }
+.status-msg.error { background: rgba(255,82,82,0.1); color: var(--red); border: 1px solid rgba(255,82,82,0.3); }
 
-@media(max-width:500px){.g4{grid-template-columns:1fr 1fr;}.g3{grid-template-columns:1fr 1fr;}}
+/* SHIFT INFO */
+.shift-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.info-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(249,168,37,0.12); border: 1px solid rgba(249,168,37,0.25); border-radius: 6px; padding: 4px 8px; font-size: 11px; color: var(--gold); font-weight: 600; }
+
+/* LOADING */
+.spinner { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* DENOM TABLE */
+.denom-table { width: 100%; border-collapse: collapse; }
+.denom-table td { padding: 6px 4px; border-bottom: 1px solid var(--border); font-size: 13px; }
+.denom-table td:last-child { width: 100px; }
+.denom-label { color: var(--text); }
+.denom-equiv { font-size: 11px; color: var(--muted); }
+
+/* TOTALS ROW */
+.totals-row { background: rgba(249,168,37,0.08); border-top: 2px solid var(--gold); }
+.totals-row td { color: var(--gold); font-weight: 700; font-size: 14px; padding: 10px 8px; }
+
+/* NAV HINT */
+.nav-hint { text-align: center; font-size: 11px; color: var(--muted); padding: 6px 0 2px; }
+
+/* RESPONSIVE TWEAKS */
+@media (max-width: 400px) {
+  .summ-card-value { font-size: 17px; }
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 </style>
 </head>
 <body>
 
-<div class="hdr">
-  <div style="font-size:24px;">⛽</div>
-  <div><h1>POWERFILL SHIFT ENCODER</h1><p>Photo → AI Read → Verify → Submit to Google Sheet</p></div>
-  <button class="gear" onclick="openModal()">⚙️</button>
+<div class="topbar">
+  <div>
+    <div class="topbar-logo">Power<span>fill</span> ⛽</div>
+    <div class="topbar-sub">Shift Encoder v3</div>
+  </div>
+  <div class="topbar-right">
+    <div class="info-badge" id="current-date-badge">—</div>
+    <div class="info-badge" id="current-shift-badge">AM</div>
+  </div>
 </div>
 
-<div class="tabs" id="tab-bar">
-  <div class="tab active" onclick="go('photo')"><span>📷</span>PHOTO</div>
-  <div class="tab" onclick="go('shift')"><span>📋</span>SHIFT</div>
-  <div class="tab" onclick="go('meters')"><span>⛽</span>METERS</div>
-  <div class="tab" onclick="go('inventory')"><span>📦</span>INVENTORY</div>
-  <div class="tab" onclick="go('cash')"><span>💵</span>CASH</div>
-  <div class="tab" onclick="go('payables')"><span>📄</span>PAYABLES</div>
-  <div class="tab" onclick="go('submit')"><span>✅</span>SUBMIT</div>
+<div class="tabs" id="tabs">
+  <div class="tab active" onclick="switchTab('photo')">📷 Photo</div>
+  <div class="tab" onclick="switchTab('shift')">📋 Shift</div>
+  <div class="tab" onclick="switchTab('meters')">⛽ Meters</div>
+  <div class="tab" onclick="switchTab('inventory')">🛢 Inventory</div>
+  <div class="tab" onclick="switchTab('cash')">💵 Cash</div>
+  <div class="tab" onclick="switchTab('payables')">📄 Payables</div>
+  <div class="tab" onclick="switchTab('submit')">✅ Submit</div>
 </div>
 
-<!-- ══════════════ PHOTO ══════════════ -->
-<div class="page active" id="pg-photo">
+<!-- PHOTO TAB -->
+<div class="panel active" id="panel-photo">
   <div class="card">
-    <h3>📷 Upload Shift Report Photo</h3>
-    <div class="upload-box">
-      <input type="file" accept="image/*" id="file-in" onchange="onFile(this)">
-      <div style="font-size:38px;margin-bottom:8px;">📸</div>
-      <p style="font-size:13px;font-weight:700;color:var(--accent);">Click here to select photo</p>
-      <p style="font-size:10px;color:var(--muted);">Windows: click to browse · iPhone: camera or library · JPG PNG HEIC</p>
+    <div class="card-title"><span class="card-title-dot"></span>Station</div>
+    <div class="station-tabs">
+      <div class="stn-tab active" onclick="setStation('GS1')">GS1</div>
+      <div class="stn-tab" onclick="setStation('GS2')">GS2</div>
+      <div class="stn-tab inactive" title="Not yet active">GS3</div>
+      <div class="stn-tab inactive" title="Not yet active">GS4</div>
+      <div class="stn-tab" onclick="setStation('GS5')">GS5</div>
     </div>
-    <div id="upload-status"></div>
-    <img id="preview-img">
   </div>
 
   <div class="card">
-    <h3>🔑 Claude API Key</h3>
-    <div style="display:flex;gap:8px;">
-      <input type="password" id="api-key" placeholder="sk-ant-api03-..." style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:12px;">
-      <button class="btn btn-o btn-sm" onclick="saveKey()">SAVE</button>
+    <div class="card-title"><span class="card-title-dot"></span>Upload Shift Report Photo</div>
+    <div class="photo-area" id="photo-drop-zone" onclick="triggerFileInput()">
+      <input type="file" id="photo-input" accept="image/*" onchange="onPhotoChange(event)">
+      <div class="photo-icon">📷</div>
+      <div class="photo-label">Tap to <strong>capture or upload</strong><br>handwritten shift report</div>
     </div>
-    <p style="font-size:10px;color:var(--muted);margin-top:5px;">Saved in your browser only · Get from console.anthropic.com</p>
+    <img class="photo-preview" id="photo-preview" alt="Shift report preview">
   </div>
 
-  <div id="ai-banner"></div>
-  <div class="card" id="ai-status" style="display:none;">
-    <h3>🤖 AI Reading Status</h3>
-    <div id="steps"></div>
+  <button class="ai-btn" id="ai-read-btn" onclick="readWithAI()" disabled>
+    <span id="ai-btn-content">🤖 Read with AI</span>
+  </button>
+
+  <div class="card" id="ai-result-card" style="display:none">
+    <div class="card-title"><span class="card-title-dot"></span>AI Reading Result</div>
+    <div class="ai-response" id="ai-response"></div>
+    <button class="apply-btn" id="apply-btn" onclick="applyAIData()">✅ Apply Data to Form</button>
   </div>
 
-  <div style="display:flex;gap:8px;">
-    <button class="btn btn-y" style="flex:1;" id="ai-btn" onclick="runAI()">🤖 READ WITH AI</button>
-    <button class="btn btn-o" onclick="go('shift')">MANUAL →</button>
-  </div>
+  <div class="nav-hint">After reading, go to Shift tab to review →</div>
 </div>
 
-<!-- ══════════════ SHIFT ══════════════ -->
-<div class="page" id="pg-shift">
+<!-- SHIFT TAB -->
+<div class="panel" id="panel-shift">
   <div class="card">
-    <h3>🏪 Station & Shift Info</h3>
-    <div class="g2">
-      <div class="row"><label>Station</label>
-        <select id="station">
-          <option value="GS1">GS1 — Powerfill Punta 2</option>
-          <option value="GS2">GS2 — Carissa Punta 1</option>
-          <option value="GS3">GS3 — GenTri Paskaw 2</option>
-          <option value="GS4">GS4 — Ternate Sapang</option>
-          <option value="GS5">GS5 — Bagtas</option>
+    <div class="card-title"><span class="card-title-dot"></span>Shift Information</div>
+    <div class="shift-info-grid">
+      <div class="field-group">
+        <div class="field-label">Date</div>
+        <input type="text" id="shift-date" placeholder="e.g. 2025-06-15">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Shift</div>
+        <select id="shift-type" onchange="updateShiftBadge()">
+          <option value="AM">AM</option>
+          <option value="PM">PM</option>
+          <option value="NIGHT">Night</option>
         </select>
       </div>
-      <div class="row"><label>Shift</label>
-        <select id="shift"><option value="AM">AM</option><option value="PM">PM</option><option value="GY">GY (Graveyard)</option></select>
+      <div class="field-group">
+        <div class="field-label">Attendant</div>
+        <input type="text" id="attendant" placeholder="Name">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Supervisor</div>
+        <input type="text" id="supervisor" placeholder="Name">
       </div>
     </div>
-    <div class="g2">
-      <div class="row"><label>Date</label><input type="date" id="sdate"></div>
-      <div class="row"><label>P/A (Cashier)</label><input type="text" id="cashier" placeholder="Name"></div>
-    </div>
-    <div class="g2">
-      <div class="row"><label>Pump 1 Attendant</label><input type="text" id="att1" placeholder="Name"></div>
-      <div class="row"><label>Pump 2 Attendant</label><input type="text" id="att2" placeholder="Name"></div>
-    </div>
   </div>
+
   <div class="card">
-    <h3>💲 Selling Price per Liter</h3>
-    <div class="g3">
-      <div class="row"><label>Unleaded (U)</label><input type="number" id="pU" placeholder="0.00" step="0.01"></div>
-      <div class="row"><label>Premium (P)</label><input type="number" id="pP" placeholder="0.00" step="0.01"></div>
-      <div class="row"><label>Diesel (D)</label><input type="number" id="pD" placeholder="0.00" step="0.01"></div>
+    <div class="card-title"><span class="card-title-dot"></span>Active Station</div>
+    <div class="station-tabs">
+      <div class="stn-tab active" id="stn-shift-gs1" onclick="setStation('GS1')">GS1</div>
+      <div class="stn-tab" id="stn-shift-gs2" onclick="setStation('GS2')">GS2</div>
+      <div class="stn-tab inactive">GS3</div>
+      <div class="stn-tab inactive">GS4</div>
+      <div class="stn-tab" id="stn-shift-gs5" onclick="setStation('GS5')">GS5</div>
     </div>
-  </div>
-  <div class="nav">
-    <button class="btn btn-o" onclick="go('photo')">← PHOTO</button>
-    <button class="btn btn-y" style="flex:1;" onclick="go('meters')">NEXT: METERS →</button>
+    <div class="field-group" style="margin-top:8px">
+      <div class="field-label">Price per Liter (₱)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div>
+          <div class="field-label" style="font-size:10px">Diesel</div>
+          <input type="number" id="price-diesel" step="0.01" placeholder="0.00" oninput="recalcAll()">
+        </div>
+        <div>
+          <div class="field-label" style="font-size:10px">Gasoline</div>
+          <input type="number" id="price-gas" step="0.01" placeholder="0.00" oninput="recalcAll()">
+        </div>
+        <div>
+          <div class="field-label" style="font-size:10px">Kerosene</div>
+          <input type="number" id="price-kerosene" step="0.01" placeholder="0.00" oninput="recalcAll()">
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ══════════════ METERS ══════════════ -->
-<div class="page" id="pg-meters">
-  <div id="flags-box" style="display:none;" class="card">
-    <h3>⚠️ AI Flags — Please Review & Correct</h3>
-    <div id="flags-list"></div>
-    <p style="font-size:10px;color:var(--muted);margin-top:6px;">🟡 Yellow border = auto-corrected by AI &nbsp;|&nbsp; 🔴 Red = needs your correction</p>
-  </div>
-
+<!-- METERS TAB -->
+<div class="panel" id="panel-meters">
   <div class="card">
-    <h3>⛽ Pump 1</h3>
-    <div class="pump-wrap"><table class="pump">
-      <thead><tr>
-        <th>HOSE</th>
-        <th>BEG. LITER<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
-        <th>BEG. SALES ₱<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
-        <th>END LITER<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
-        <th>END SALES ₱<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
-        <th class="sh">SHIFT SALES ₱<br><span style="font-weight:400;font-size:8px;">end − beg</span></th>
-      </tr></thead>
-      <tbody id="p1body"></tbody>
-    </table></div>
-    <div class="pump-total">PUMP 1 TOTAL: <span id="p1total">₱0.00</span></div>
+    <div class="card-title"><span class="card-title-dot"></span>Pump Meter Readings</div>
+    <div class="hose-table-wrap">
+      <table class="hose-table" id="meter-table">
+        <thead>
+          <tr>
+            <th>Hose</th>
+            <th>Product</th>
+            <th>Beg Ltr</th>
+            <th>Beg ₱</th>
+            <th>End Ltr</th>
+            <th>End ₱</th>
+            <th style="background:rgba(249,168,37,0.15);color:var(--gold)">Shift Ltr</th>
+            <th style="background:rgba(249,168,37,0.15);color:var(--gold)">Shift ₱</th>
+          </tr>
+        </thead>
+        <tbody id="meter-tbody">
+        </tbody>
+        <tfoot>
+          <tr class="totals-row">
+            <td colspan="2">TOTAL</td>
+            <td id="tot-beg-ltr">0</td>
+            <td id="tot-beg-sales">0</td>
+            <td id="tot-end-ltr">0</td>
+            <td id="tot-end-sales">0</td>
+            <td id="tot-shift-ltr">0</td>
+            <td id="tot-shift-sales">0</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <button class="add-row-btn" onclick="addHoseRow()">+ Add Hose Row</button>
   </div>
 
-  <div class="card">
-    <h3>⛽ Pump 2</h3>
-    <div class="pump-wrap"><table class="pump">
-      <thead><tr>
-        <th>HOSE</th>
-        <th>BEG. LITER<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
-        <th>BEG. SALES ₱<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
-        <th>END LITER<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
-        <th>END SALES ₱<br><span style="font-weight:400;font-size:8px;">cumul.</span></th>
-        <th class="sh">SHIFT SALES ₱<br><span style="font-weight:400;font-size:8px;">end − beg</span></th>
-      </tr></thead>
-      <tbody id="p2body"></tbody>
-    </table></div>
-    <div class="pump-total">PUMP 2 TOTAL: <span id="p2total">₱0.00</span></div>
-  </div>
-
-  <div class="nav">
-    <button class="btn btn-o" onclick="go('shift')">← SHIFT</button>
-    <button class="btn btn-y" style="flex:1;" onclick="go('inventory')">NEXT: INVENTORY →</button>
+  <div class="summ-grid">
+    <div class="summ-card">
+      <div class="summ-card-label">Total Liters Sold</div>
+      <div class="summ-card-value gold" id="summ-liters">0 L</div>
+    </div>
+    <div class="summ-card">
+      <div class="summ-card-label">Total Peso Sales</div>
+      <div class="summ-card-value gold" id="summ-sales">₱0</div>
+    </div>
   </div>
 </div>
 
-<!-- ══════════════ INVENTORY ══════════════ -->
-<div class="page" id="pg-inventory">
+<!-- INVENTORY TAB -->
+<div class="panel" id="panel-inventory">
   <div class="card">
-    <h3>📊 Dipstick Reading (Tank Level)</h3>
-    <div class="g3">
-      <div class="row"><label>U — Before (cm)</label><input type="number" id="du1" oninput="calcInv()"></div>
-      <div class="row"><label>P — Before (cm)</label><input type="number" id="dp1" oninput="calcInv()"></div>
-      <div class="row"><label>D — Before (cm)</label><input type="number" id="dd1" oninput="calcInv()"></div>
-      <div class="row"><label>U — After (cm)</label><input type="number" id="du2" oninput="calcInv()"></div>
-      <div class="row"><label>P — After (cm)</label><input type="number" id="dp2" oninput="calcInv()"></div>
-      <div class="row"><label>D — After (cm)</label><input type="number" id="dd2" oninput="calcInv()"></div>
+    <div class="card-title"><span class="card-title-dot"></span>Dipstick Reading (End of Shift)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div class="field-group">
+        <div class="field-label" style="color:var(--green)">Diesel (L)</div>
+        <input type="number" id="dip-diesel" placeholder="0" oninput="calcInventory()">
+      </div>
+      <div class="field-group">
+        <div class="field-label" style="color:#ff9800">Gasoline (L)</div>
+        <input type="number" id="dip-gas" placeholder="0" oninput="calcInventory()">
+      </div>
+      <div class="field-group">
+        <div class="field-label" style="color:#9fa8da">Kerosene (L)</div>
+        <input type="number" id="dip-kerosene" placeholder="0" oninput="calcInventory()">
+      </div>
     </div>
   </div>
 
   <div class="card">
-    <h3>🚛 Fuel Received This Shift</h3>
-    <p style="font-size:10px;color:var(--muted);margin-bottom:10px;">Delivery from supplier, transfer from another station, or borrowed fuel</p>
-    <div id="delivery-list"></div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
-      <button class="btn btn-o btn-sm" onclick="addDelivery('DELIVERY')">+ Delivery</button>
-      <button class="btn btn-o btn-sm" onclick="addDelivery('TRANSFER IN')">+ Transfer In</button>
-      <button class="btn btn-o btn-sm" onclick="addDelivery('BORROWED')">+ Borrowed</button>
+    <div class="card-title"><span class="card-title-dot"></span>Fuel In (Delivery / Transfer)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div class="field-group">
+        <div class="field-label">Diesel (L)</div>
+        <input type="number" id="fuel-in-diesel" placeholder="0" oninput="calcInventory()">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Gasoline (L)</div>
+        <input type="number" id="fuel-in-gas" placeholder="0" oninput="calcInventory()">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Kerosene (L)</div>
+        <input type="number" id="fuel-in-kerosene" placeholder="0" oninput="calcInventory()">
+      </div>
     </div>
   </div>
 
   <div class="card">
-    <h3>📤 Fuel Out This Shift</h3>
-    <p style="font-size:10px;color:var(--muted);margin-bottom:10px;">Transfer to another station or fuel returned</p>
-    <div id="fuelout-list"></div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
-      <button class="btn btn-o btn-sm" onclick="addFuelOut('TRANSFER OUT')">+ Transfer Out</button>
-      <button class="btn btn-o btn-sm" onclick="addFuelOut('RETURNED')">+ Returned</button>
-    </div>
-  </div>
-
-  <div class="card" id="inv-summary-card">
-    <h3>📦 Inventory Summary</h3>
-    <div id="inv-summary"></div>
-    <p style="font-size:9px;color:var(--muted);margin-top:8px;">Formula: Beg Stock + Received − Sold − Out = Expected Closing Stock<br>Compare with After Dipstick to detect variance.</p>
-  </div>
-
-  <div class="nav">
-    <button class="btn btn-o" onclick="go('meters')">← METERS</button>
-    <button class="btn btn-y" style="flex:1;" onclick="go('cash')">NEXT: CASH →</button>
+    <div class="card-title"><span class="card-title-dot"></span>Inventory Summary</div>
+    <table style="width:100%;font-size:13px;border-collapse:collapse">
+      <tr style="color:var(--muted);font-size:11px">
+        <th style="padding:6px 4px;text-align:left">Product</th>
+        <th style="padding:6px 4px;text-align:right">Sold (L)</th>
+        <th style="padding:6px 4px;text-align:right">Fuel In (L)</th>
+        <th style="padding:6px 4px;text-align:right">Dipstick (L)</th>
+      </tr>
+      <tr>
+        <td style="padding:6px 4px"><span class="product-tag tag-diesel">Diesel</span></td>
+        <td style="padding:6px 4px;text-align:right" id="inv-sold-diesel">0</td>
+        <td style="padding:6px 4px;text-align:right" id="inv-in-diesel">0</td>
+        <td style="padding:6px 4px;text-align:right" id="inv-dip-diesel">0</td>
+      </tr>
+      <tr>
+        <td style="padding:6px 4px"><span class="product-tag tag-gas">Gasoline</span></td>
+        <td style="padding:6px 4px;text-align:right" id="inv-sold-gas">0</td>
+        <td style="padding:6px 4px;text-align:right" id="inv-in-gas">0</td>
+        <td style="padding:6px 4px;text-align:right" id="inv-dip-gas">0</td>
+      </tr>
+      <tr>
+        <td style="padding:6px 4px"><span class="product-tag tag-kerosene">Kerosene</span></td>
+        <td style="padding:6px 4px;text-align:right" id="inv-sold-kerosene">0</td>
+        <td style="padding:6px 4px;text-align:right" id="inv-in-kerosene">0</td>
+        <td style="padding:6px 4px;text-align:right" id="inv-dip-kerosene">0</td>
+      </tr>
+    </table>
   </div>
 </div>
 
-<!-- ══════════════ CASH ══════════════ -->
-<div class="page" id="pg-cash">
+<!-- CASH TAB -->
+<div class="panel" id="panel-cash">
   <div class="card">
-    <h3>💵 Denomination Count</h3>
-    <div id="denom-rows"></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--border);margin-top:6px;">
-      <span style="font-size:12px;font-weight:700;">CASH ON HAND</span>
-      <span style="font-size:16px;font-weight:700;color:var(--accent);">₱<span id="coh">0.00</span></span>
+    <div class="card-title"><span class="card-title-dot"></span>Cash Sales & Collections</div>
+    <div class="field-group">
+      <div class="field-label">Gross Sales (₱) — from meters</div>
+      <input type="number" id="gross-sales" placeholder="auto-filled from meters" readonly style="color:var(--gold)">
+    </div>
+    <div class="field-group">
+      <div class="field-label">AR / Charge Sales (₱)</div>
+      <input type="number" id="ar-sales" placeholder="0.00" oninput="calcCash()">
+    </div>
+    <div class="field-group">
+      <div class="field-label">Other Income (₱)</div>
+      <input type="number" id="other-income" placeholder="0.00" oninput="calcCash()">
     </div>
   </div>
+
   <div class="card">
-    <h3>📱 GCash</h3>
-    <div class="g2">
-      <div class="row"><label>Amount</label><input type="number" id="gcash-amt" placeholder="0.00" step="0.01" oninput="recon()"></div>
-      <div class="row"><label>Reference #</label><input type="text" id="gcash-ref" placeholder="Ref #"></div>
+    <div class="card-title"><span class="card-title-dot"></span>Denominations (Count of Bills/Coins)</div>
+    <table class="denom-table">
+      <tbody id="denom-body">
+        <tr><td class="denom-label">₱1,000</td><td><input type="number" min="0" class="denom-count" data-val="1000" placeholder="0" oninput="calcCash()"></td></tr>
+        <tr><td class="denom-label">₱500</td><td><input type="number" min="0" class="denom-count" data-val="500" placeholder="0" oninput="calcCash()"></td></tr>
+        <tr><td class="denom-label">₱200</td><td><input type="number" min="0" class="denom-count" data-val="200" placeholder="0" oninput="calcCash()"></td></tr>
+        <tr><td class="denom-label">₱100</td><td><input type="number" min="0" class="denom-count" data-val="100" placeholder="0" oninput="calcCash()"></td></tr>
+        <tr><td class="denom-label">₱50</td><td><input type="number" min="0" class="denom-count" data-val="50" placeholder="0" oninput="calcCash()"></td></tr>
+        <tr><td class="denom-label">₱20</td><td><input type="number" min="0" class="denom-count" data-val="20" placeholder="0" oninput="calcCash()"></td></tr>
+        <tr><td class="denom-label">₱10</td><td><input type="number" min="0" class="denom-count" data-val="10" placeholder="0" oninput="calcCash()"></td></tr>
+        <tr><td class="denom-label">₱5</td><td><input type="number" min="0" class="denom-count" data-val="5" placeholder="0" oninput="calcCash()"></td></tr>
+        <tr><td class="denom-label">₱1</td><td><input type="number" min="0" class="denom-count" data-val="1" placeholder="0" oninput="calcCash()"></td></tr>
+      </tbody>
+      <tfoot>
+        <tr class="totals-row"><td>Cash Total</td><td style="padding:10px 8px;color:var(--gold);font-weight:700" id="cash-total">₱0</td></tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="summ-grid">
+    <div class="summ-card">
+      <div class="summ-card-label">Cash on Hand</div>
+      <div class="summ-card-value" id="summ-cash">₱0</div>
     </div>
-  </div>
-  <div class="card">
-    <h3>🧾 Takeaways / Expenses</h3>
-    <p style="font-size:10px;color:var(--muted);margin-bottom:8px;">Vehicle fills, cash advances, supplies — anything deducted from cash</p>
-    <div id="takeaway-list"></div>
-    <button class="btn btn-o btn-sm" style="margin-top:8px;" onclick="addTakeaway()">+ ADD</button>
-  </div>
-  <div class="card">
-    <h3>💰 Cash Reconciliation</h3>
-    <div class="sc-grid">
-      <div class="sc-item"><label>Total Pump Sales</label><div class="val" id="rc-sales">₱0.00</div></div>
-      <div class="sc-item"><label>Cash on Hand</label><div class="val" id="rc-coh">₱0.00</div></div>
-      <div class="sc-item"><label>GCash</label><div class="val" id="rc-gcash">₱0.00</div></div>
-      <div class="sc-item"><label>Takeaways</label><div class="val" id="rc-take">₱0.00</div></div>
-      <div class="sc-item"><label>Cash Remit</label><div class="val" id="rc-remit">₱0.00</div></div>
-      <div class="sc-item"><label>Over / Short</label><div class="val" id="rc-os">₱0.00</div></div>
+    <div class="summ-card">
+      <div class="summ-card-label">Over / Short</div>
+      <div class="summ-card-value" id="summ-os">₱0</div>
     </div>
-  </div>
-  <div class="nav">
-    <button class="btn btn-o" onclick="go('inventory')">← INVENTORY</button>
-    <button class="btn btn-y" style="flex:1;" onclick="go('payables')">NEXT: PAYABLES →</button>
   </div>
 </div>
 
-<!-- ══════════════ PAYABLES ══════════════ -->
-<div class="page" id="pg-payables">
-  <div class="card">
-    <h3>📄 Outstanding Payables & Dues</h3>
-    <p style="font-size:10px;color:var(--muted);margin-bottom:10px;">Track unpaid product purchases, supplier dues, check issues, and borrowed fuel to be returned. This data is included in your Google Sheet submission.</p>
-    <div id="payables-list"></div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;">
-      <button class="btn btn-o btn-sm" onclick="addPayable('SUPPLIER')">+ Supplier Due</button>
-      <button class="btn btn-o btn-sm" onclick="addPayable('CHECK')">+ Check Issued</button>
-      <button class="btn btn-o btn-sm" onclick="addPayable('FUEL LOAN')">+ Fuel to Return</button>
-      <button class="btn btn-o btn-sm" onclick="addPayable('OTHER')">+ Other</button>
-    </div>
-  </div>
+<!-- PAYABLES TAB -->
+<div class="panel" id="panel-payables">
+  <div class="section-header">⛽ Supplier Dues</div>
+  <div id="supplier-rows"></div>
+  <button class="add-row-btn" onclick="addPayable('supplier')">+ Add Supplier</button>
 
-  <div class="card">
-    <h3>📊 Payables Summary</h3>
-    <div class="sc-grid">
-      <div class="sc-item"><label>Total Payables</label><div class="val bad" id="pay-total">₱0.00</div></div>
-      <div class="sc-item"><label>Supplier Dues</label><div class="val" id="pay-supplier">₱0.00</div></div>
-      <div class="sc-item"><label>Checks Issued</label><div class="val" id="pay-check">₱0.00</div></div>
-      <div class="sc-item"><label>Fuel to Return (L)</label><div class="val blue" id="pay-fuel">0.00 L</div></div>
-    </div>
-  </div>
+  <div class="section-header">🏦 Checks Issued</div>
+  <div id="check-rows"></div>
+  <button class="add-row-btn" onclick="addPayable('check')">+ Add Check</button>
 
-  <div class="nav">
-    <button class="btn btn-o" onclick="go('cash')">← CASH</button>
-    <button class="btn btn-y" style="flex:1;" onclick="go('submit')">REVIEW & SUBMIT →</button>
+  <div class="section-header">⛽ Fuel Loans / Withdrawals</div>
+  <div id="loan-rows"></div>
+  <button class="add-row-btn" onclick="addPayable('loan')">+ Add Fuel Loan</button>
+
+  <div class="card" style="margin-top:14px">
+    <div class="card-title"><span class="card-title-dot"></span>Payables Summary</div>
+    <div class="summ-grid">
+      <div class="summ-card">
+        <div class="summ-card-label">Total Payables</div>
+        <div class="summ-card-value red" id="total-payables">₱0</div>
+      </div>
+      <div class="summ-card">
+        <div class="summ-card-label">Net Collectible</div>
+        <div class="summ-card-value green" id="net-collectible">₱0</div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ══════════════ SUBMIT ══════════════ -->
-<div class="page" id="pg-submit">
-  <div class="card" style="border-color:var(--accent);">
-    <h3>✅ What Happens When You Submit?</h3>
-    <p style="font-size:11px;color:var(--text2);line-height:1.6;">
-      Clicking <strong style="color:var(--green);">SUBMIT TO GOOGLE SHEET</strong> will send all shift data — meters, cash, inventory, payables — to your connected Google Sheet via Apps Script. Each shift becomes one row. Your manager or owner can view, filter, and analyze all shifts from the sheet in real time. Nothing is deleted from this app after submit — you can still review the data.
-    </p>
+<!-- SUBMIT TAB -->
+<div class="panel" id="panel-submit">
+  <div class="card">
+    <div class="card-title"><span class="card-title-dot"></span>Shift Summary</div>
+    <div class="summ-grid">
+      <div class="summ-card">
+        <div class="summ-card-label">Station</div>
+        <div class="summ-card-value" id="sub-station">—</div>
+      </div>
+      <div class="summ-card">
+        <div class="summ-card-label">Shift</div>
+        <div class="summ-card-value" id="sub-shift">—</div>
+      </div>
+      <div class="summ-card">
+        <div class="summ-card-label">Liters Sold</div>
+        <div class="summ-card-value gold" id="sub-liters">0 L</div>
+      </div>
+      <div class="summ-card">
+        <div class="summ-card-label">Peso Sales</div>
+        <div class="summ-card-value gold" id="sub-sales">₱0</div>
+      </div>
+      <div class="summ-card">
+        <div class="summ-card-label">Cash on Hand</div>
+        <div class="summ-card-value" id="sub-cash">₱0</div>
+      </div>
+      <div class="summ-card">
+        <div class="summ-card-label">Over/Short</div>
+        <div class="summ-card-value" id="sub-os">₱0</div>
+      </div>
+    </div>
   </div>
 
   <div class="card">
-    <h3>📋 Final Shift Summary</h3>
-    <div id="final-summary"></div>
+    <div class="card-title"><span class="card-title-dot"></span>Google Sheets Destination</div>
+    <div class="field-group">
+      <div class="field-label">Web App URL (from Apps Script)</div>
+      <input type="text" id="sheets-url" placeholder="https://script.google.com/macros/s/…/exec">
+    </div>
+    <div style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:4px">
+      Data goes to your Google Sheet automatically. Free & unlimited. See setup guide below.
+    </div>
+  </div>
+
+  <button class="submit-btn" id="submit-btn" onclick="submitToSheets()">📤 Submit Shift Report</button>
+  <div class="status-msg" id="status-msg"></div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-title"><span class="card-title-dot"></span>📌 Free Google Sheets Setup</div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.8">
+      1. Open <strong style="color:var(--text)">Google Sheets</strong> → create new sheet<br>
+      2. Extensions → <strong style="color:var(--text)">Apps Script</strong><br>
+      3. Paste the doPost() script (see README in your GitHub repo)<br>
+      4. Deploy → <strong style="color:var(--text)">New deployment → Web App</strong><br>
+      5. Set "Anyone can access" → copy the URL → paste above<br>
+      6. Done! All shifts go to your sheet for free ✅
+    </div>
   </div>
 
   <div class="card">
-    <h3>🔗 Google Sheet URL</h3>
-    <div style="display:flex;gap:8px;">
-      <input type="text" id="sheet-url" placeholder="https://script.google.com/macros/s/..." style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:11px;">
-      <button class="btn btn-o btn-sm" onclick="saveSheet()">SAVE</button>
+    <div class="card-title"><span class="card-title-dot"></span>📌 GitHub Pages Deployment (Free)</div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.8">
+      1. Create repo: <strong style="color:var(--text)">powerfill-encoder</strong><br>
+      2. Upload this <strong style="color:var(--text)">index.html</strong> file<br>
+      3. Settings → Pages → Branch: main / root<br>
+      4. Your app URL: <strong style="color:var(--gold)">username.github.io/powerfill-encoder</strong><br>
+      5. Bookmark it on your phone as a PWA — it works offline! 📱
     </div>
-    <p style="font-size:10px;color:var(--muted);margin-top:5px;">Google Sheet → Extensions → Apps Script → Deploy as Web App → paste URL here</p>
-  </div>
-
-  <div id="submit-result"></div>
-  <div class="nav">
-    <button class="btn btn-o" onclick="go('payables')">← PAYABLES</button>
-    <button class="btn btn-g" style="flex:1;" onclick="submitSheet()">📤 SUBMIT TO GOOGLE SHEET</button>
-  </div>
-</div>
-
-<!-- ══════════════ SETTINGS MODAL ══════════════ -->
-<div class="modal-bg" id="modal">
-  <div class="modal">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <span style="font-size:13px;font-weight:700;color:var(--accent);">⚙️ Settings</span>
-      <button class="btn btn-o btn-sm" onclick="closeModal()">✕ CLOSE</button>
-    </div>
-    <h4 style="font-size:10px;color:var(--accent);margin-bottom:8px;text-transform:uppercase;">🚗 Vehicles</h4>
-    <div id="v-list"></div>
-    <div style="display:flex;gap:8px;margin-bottom:14px;">
-      <input type="text" id="new-v" placeholder="Vehicle name" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:12px;">
-      <button class="btn btn-o btn-sm" onclick="addItem('vehicles','new-v')">ADD</button>
-    </div>
-    <h4 style="font-size:10px;color:var(--accent);margin-bottom:8px;text-transform:uppercase;">👤 Staff</h4>
-    <div id="s-list"></div>
-    <div style="display:flex;gap:8px;margin-bottom:14px;">
-      <input type="text" id="new-s" placeholder="Staff name" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:12px;">
-      <button class="btn btn-o btn-sm" onclick="addItem('staff','new-s')">ADD</button>
-    </div>
-    <h4 style="font-size:10px;color:var(--accent);margin-bottom:8px;text-transform:uppercase;">🏢 Suppliers</h4>
-    <div id="sup-list"></div>
-    <div style="display:flex;gap:8px;margin-bottom:14px;">
-      <input type="text" id="new-sup" placeholder="Supplier name" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:12px;">
-      <button class="btn btn-o btn-sm" onclick="addItem('suppliers','new-sup')">ADD</button>
-    </div>
-    <button class="btn btn-y btn-f" onclick="closeModal()">DONE</button>
   </div>
 </div>
 
 <script>
-// ══════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════
-const S = {
-  photoB64:null, photoMime:'image/jpeg',
-  pump1:[], pump2:[],
-  takeaways:[], deliveries:[], fuelouts:[], payables:[],
-  flags:[],
-  vehicles:  JSON.parse(localStorage.getItem('pf_v')   || '["VIOS","PICKUP","TRUCK"]'),
-  staff:     JSON.parse(localStorage.getItem('pf_s')   || '["GARY","KENNY","MARK"]'),
-  suppliers: JSON.parse(localStorage.getItem('pf_sup') || '["PETRON","SHELL","SEAOIL"]'),
-};
-const DENOMS=[1000,500,200,100,50,20,10,5,1];
-const TABS=['photo','shift','meters','inventory','cash','payables','submit'];
+// ===================== STATE =====================
+const STATIONS = { GS1: true, GS2: true, GS3: false, GS4: false, GS5: true };
+let currentStation = 'GS1';
+let photoBase64 = null;
+let aiParsedData = null;
+let hoseRows = [];
+let payableRows = { supplier: [], check: [], loan: [] };
 
-// ══════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════
-document.addEventListener('DOMContentLoaded',()=>{
-  const k=localStorage.getItem('pf_key'); if(k) document.getElementById('api-key').value=k;
-  const u=localStorage.getItem('pf_sheet'); if(u) document.getElementById('sheet-url').value=u;
-  document.getElementById('sdate').value=new Date().toISOString().split('T')[0];
-  buildDenoms();
-  buildPumpRows(1,[]); buildPumpRows(2,[]);
-  renderTakeaways(); renderDeliveries(); renderFuelOut(); renderPayables();
-  renderSettings();
+// ===================== INIT =====================
+document.addEventListener('DOMContentLoaded', () => {
+  const now = new Date();
+  const dateStr = now.toISOString().split('T')[0];
+  document.getElementById('shift-date').value = dateStr;
+  document.getElementById('current-date-badge').textContent = dateStr;
+  const hr = now.getHours();
+  const shift = hr < 12 ? 'AM' : hr < 20 ? 'PM' : 'Night';
+  document.getElementById('shift-type').value = shift;
+  document.getElementById('current-shift-badge').textContent = shift;
+  initHoseTable();
+  addPayable('supplier');
+  updateSummaryTab();
 });
 
-// ══════════════════════════════════════════
-// TABS
-// ══════════════════════════════════════════
-function go(tab){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',TABS[i]===tab));
-  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='pg-'+tab));
-  if(tab==='meters'){recalcAll();}
-  if(tab==='inventory'){calcInv();}
-  if(tab==='cash'){recon();}
-  if(tab==='payables'){calcPayables();}
-  if(tab==='submit'){buildFinal();}
+// ===================== TABS =====================
+function switchTab(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  const tabs = document.querySelectorAll('.tab');
+  const map = { photo: 0, shift: 1, meters: 2, inventory: 3, cash: 4, payables: 5, submit: 6 };
+  tabs[map[name]].classList.add('active');
+  if (name === 'submit') updateSummaryTab();
 }
 
-// ══════════════════════════════════════════
-// FILE UPLOAD
-// ══════════════════════════════════════════
-function onFile(inp){
-  const file=inp.files[0]; if(!file) return;
-  S.photoMime=file.type||'image/jpeg';
-  const st=document.getElementById('upload-status');
-  const pr=document.getElementById('preview-img');
-  st.className='ban b-info'; st.textContent='⏳ Loading '+file.name+'...';
-  const reader=new FileReader();
-  reader.onload=e=>{
-    S.photoB64=e.target.result.split(',')[1];
-    pr.src=e.target.result; pr.style.display='block';
-    st.className='ban b-ok';
-    st.textContent='✅ Loaded: '+file.name+' ('+Math.round(file.size/1024)+' KB) — ready to READ WITH AI';
+function updateShiftBadge() {
+  document.getElementById('current-shift-badge').textContent = document.getElementById('shift-type').value;
+}
+
+// ===================== STATION =====================
+function setStation(stn) {
+  if (!STATIONS[stn]) return;
+  currentStation = stn;
+  document.querySelectorAll('.stn-tab').forEach(t => {
+    if (t.textContent === stn) t.classList.add('active');
+    else if (!t.classList.contains('inactive')) t.classList.remove('active');
+  });
+}
+
+// ===================== PHOTO / FILE INPUT =====================
+function triggerFileInput() {
+  document.getElementById('photo-input').click();
+}
+
+function onPhotoChange(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = evt => {
+    const data = evt.target.result;
+    photoBase64 = data.split(',')[1];
+    const preview = document.getElementById('photo-preview');
+    preview.src = data;
+    preview.style.display = 'block';
+    document.getElementById('photo-drop-zone').style.display = 'none';
+    document.getElementById('ai-read-btn').disabled = false;
   };
-  reader.onerror=()=>{st.className='ban b-err'; st.textContent='❌ Could not read file. Try again.';};
   reader.readAsDataURL(file);
 }
 
-// ══════════════════════════════════════════
-// SAVE KEY / SHEET
-// ══════════════════════════════════════════
-function saveKey(){
-  const k=document.getElementById('api-key').value.trim();
-  if(!k){ban('ai-banner','err','❌ Enter your API key first.');return;}
-  localStorage.setItem('pf_key',k); ban('ai-banner','ok','✅ API key saved.');
+// ===================== AI READING =====================
+async function readWithAI() {
+  if (!photoBase64) return;
+  const btn = document.getElementById('ai-read-btn');
+  const content = document.getElementById('ai-btn-content');
+  btn.disabled = true;
+  content.innerHTML = '<div class="spinner"></div> Reading...';
+
+  const prompt = `You are reading a handwritten gas station shift report. Extract ALL data visible and return it as a JSON object with this exact structure:
+{
+  "date": "YYYY-MM-DD or as written",
+  "shift": "AM or PM or Night",
+  "attendant": "name",
+  "supervisor": "name",
+  "prices": { "diesel": 0.00, "gasoline": 0.00, "kerosene": 0.00 },
+  "hoses": [
+    { "hose": "H1", "product": "Diesel", "beg_liter": 0, "beg_sales": 0, "end_liter": 0, "end_sales": 0 }
+  ],
+  "dipstick": { "diesel": 0, "gasoline": 0, "kerosene": 0 },
+  "fuel_in": { "diesel": 0, "gasoline": 0, "kerosene": 0 },
+  "denominations": { "1000": 0, "500": 0, "200": 0, "100": 0, "50": 0, "20": 0, "10": 0, "5": 0, "1": 0 },
+  "ar_sales": 0,
+  "other_income": 0,
+  "payables": [{ "type": "supplier", "name": "", "amount": 0 }]
 }
-function saveSheet(){
-  const u=document.getElementById('sheet-url').value.trim();
-  if(u) localStorage.setItem('pf_sheet',u);
-}
+shift_sales for each hose = end - beginning, always positive. If a value is unclear, use 0. Return ONLY the JSON, no explanation.`;
 
-// ══════════════════════════════════════════
-// AI READ
-// ══════════════════════════════════════════
-async function runAI(){
-  const key=document.getElementById('api-key').value.trim()||localStorage.getItem('pf_key');
-  if(!key){ban('ai-banner','err','❌ Enter and save your Claude API key first.');return;}
-  if(!S.photoB64){ban('ai-banner','err','❌ Upload a photo first.');return;}
-  ban('ai-banner','','');
-  document.getElementById('ai-status').style.display='block';
-  document.getElementById('ai-btn').disabled=true;
-  const pU=v('pU'),pP=v('pP'),pD=v('pD');
-  const prompt=`You are reading a handwritten gas station shift report photo for a Philippine gas station.
-
-FUEL PRICES: U=₱${pU||'?'}/L  P=₱${pP||'?'}/L  D=₱${pD||'?'}/L
-
-CORE RULES:
-- shift_sales = end_sales - beg_sales (ALWAYS positive, cumulative odometer meters only go forward)
-- shift_liters = end_liter - beg_liter (ALWAYS positive)
-- Reasonable per hose per shift: sales ₱0-20000, liters 0-300
-- If result is NEGATIVE or over ₱20000: one number was misread — check the sheet tally section and flag it
-
-DENOMINATIONS: The table has COUNT column and TOTAL VALUE column.
-"1000 x 4 | 4,000" → COUNT=4. Return 4 NOT 4000.
-SELF-CHECK: sum of (count × denom) must equal cash_on_hand shown on sheet.
-
-SELF-CHECK all before outputting:
-1. shift_sales 0-20000 for each hose? If not, re-read.
-2. shift_liters 0-300? If not, re-read.
-3. denom counts × values = cash_on_hand? If not, re-read counts.
-
-Return ONLY valid JSON no markdown:
-{"date":"MM/DD/YYYY","shift":"AM or PM or GY","cashier":"","price_U":0,"price_P":0,"price_D":0,
-"dipstick":{"U_before":0,"U_after":0,"P_before":0,"P_after":0,"D_before":0,"D_after":0},
-"pump1":[{"fuel":"U","beg_liter":0,"beg_sales":0,"end_liter":0,"end_sales":0,"shift_liters":0,"shift_sales":0,"fixed":false,"fix_note":""}],
-"pump2":[{"fuel":"U","beg_liter":0,"beg_sales":0,"end_liter":0,"end_sales":0,"shift_liters":0,"shift_sales":0,"fixed":false,"fix_note":""}],
-"cash_sales":0,"cash_remit":0,"cash_on_hand":0,
-"denoms":{"1000":0,"500":0,"200":0,"100":0,"50":0,"20":0,"10":0,"5":0,"1":0},
-"takeaways":[{"label":"","amount":0}],
-"gcash_amount":0,"gcash_ref":"",
-"flags":[{"sev":"error","field":"","msg":""}]}`;
-
-  setSteps(0);
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,
-        messages:[{role:'user',content:[
-          {type:'image',source:{type:'base64',media_type:S.photoMime,data:S.photoB64}},
-          {type:'text',text:prompt}
-        ]}]})
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: photoBase64 } },
+            { type: 'text', text: prompt }
+          ]
+        }]
+      })
     });
-    setSteps(1);
-    if(!res.ok){const e=await res.json();throw new Error(e.error?.message||'HTTP '+res.status);}
-    const data=await res.json();
-    const raw=data.content.map(c=>c.text||'').join('');
-    setSteps(2);
-    let parsed;
-    try{const s=raw.indexOf('{'),e=raw.lastIndexOf('}');parsed=JSON.parse(raw.substring(s,e+1));}
-    catch(e){throw new Error('Could not parse AI response. Try again.');}
-    setSteps(3);
-    applyData(parsed);
-    setSteps(4);
-    ban('ai-banner','ok','✅ Done! Review METERS tab — flagged fields are highlighted. Correct any 🔴 red values.');
-    document.getElementById('ai-btn').disabled=false;
-    setTimeout(()=>go('shift'),1000);
-  }catch(err){
-    ban('ai-banner','err','❌ '+err.message);
-    document.getElementById('ai-status').style.display='none';
-    document.getElementById('ai-btn').disabled=false;
+    const data = await resp.json();
+    const text = data.content.map(b => b.text || '').join('');
+    document.getElementById('ai-result-card').style.display = 'block';
+    const responseEl = document.getElementById('ai-response');
+    responseEl.style.display = 'block';
+    responseEl.textContent = text;
+    try {
+      const clean = text.replace(/```json|```/g, '').trim();
+      aiParsedData = JSON.parse(clean);
+      document.getElementById('apply-btn').style.display = 'block';
+    } catch {
+      document.getElementById('apply-btn').style.display = 'none';
+    }
+  } catch (err) {
+    document.getElementById('ai-result-card').style.display = 'block';
+    document.getElementById('ai-response').style.display = 'block';
+    document.getElementById('ai-response').textContent = 'Error: ' + err.message;
+  } finally {
+    btn.disabled = false;
+    content.innerHTML = '🤖 Read Again';
   }
 }
 
-const STEP_LABELS=['Reading photo & extracting all data...','Checking meter differences (end − beg)...','Validating denomination counts vs cash on hand...','Flagging misreads for encoder review...','Complete ✓'];
-function setSteps(active){
-  document.getElementById('steps').innerHTML=STEP_LABELS.map((l,i)=>{
-    const cls=i<active?'done':i===active?'active':'';
-    const ic=i<active?'✅':i===active?'<span class="spin"></span>':'⏳';
-    return `<div class="step ${cls}">${ic} ${l}</div>`;
-  }).join('');
-}
-
-// ══════════════════════════════════════════
-// APPLY AI DATA
-// ══════════════════════════════════════════
-function applyData(d){
-  if(d.shift){const s=document.getElementById('shift');['AM','PM','GY'].forEach(x=>{if((d.shift+'').toUpperCase().includes(x))s.value=x;});}
-  if(d.cashier) document.getElementById('cashier').value=d.cashier;
-  if(d.price_U) document.getElementById('pU').value=d.price_U;
-  if(d.price_P) document.getElementById('pP').value=d.price_P;
-  if(d.price_D) document.getElementById('pD').value=d.price_D;
-  // Date
-  if(d.date){
-    try{
-      const m=(d.date+'').match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
-      if(m){const y=m[3].length===2?'20'+m[3]:m[3];document.getElementById('sdate').value=`${y}-${m[1].padStart(2,'0')}-${m[2].padStart(2,'0')}`;}
-    }catch(e){}
+function applyAIData() {
+  if (!aiParsedData) return;
+  const d = aiParsedData;
+  if (d.date) document.getElementById('shift-date').value = d.date;
+  if (d.shift) document.getElementById('shift-type').value = d.shift;
+  if (d.attendant) document.getElementById('attendant').value = d.attendant;
+  if (d.supervisor) document.getElementById('supervisor').value = d.supervisor;
+  if (d.prices) {
+    if (d.prices.diesel) document.getElementById('price-diesel').value = d.prices.diesel;
+    if (d.prices.gasoline) document.getElementById('price-gas').value = d.prices.gasoline;
+    if (d.prices.kerosene) document.getElementById('price-kerosene').value = d.prices.kerosene;
   }
-  // Dipstick
-  if(d.dipstick){
-    const dp=d.dipstick;
-    if(dp.U_before!=null)document.getElementById('du1').value=dp.U_before;
-    if(dp.P_before!=null)document.getElementById('dp1').value=dp.P_before;
-    if(dp.D_before!=null)document.getElementById('dd1').value=dp.D_before;
-    if(dp.U_after!=null) document.getElementById('du2').value=dp.U_after;
-    if(dp.P_after!=null) document.getElementById('dp2').value=dp.P_after;
-    if(dp.D_after!=null) document.getElementById('dd2').value=dp.D_after;
+  if (d.hoses && d.hoses.length) {
+    hoseRows = [];
+    document.getElementById('meter-tbody').innerHTML = '';
+    d.hoses.forEach(h => addHoseRowFromData(h));
   }
-  // Pumps
-  if(d.pump1){S.pump1=d.pump1;buildPumpRows(1,d.pump1);}
-  if(d.pump2){S.pump2=d.pump2;buildPumpRows(2,d.pump2);}
-  // Denoms with agent check
-  if(d.denoms){
-    const sheetCOH=parseFloat(d.cash_on_hand)||0;
-    DENOMS.forEach(dn=>{
-      let cnt=parseFloat(d.denoms[dn])||0;
-      if(cnt>50&&cnt%dn===0){const asCount=cnt/dn;if(asCount<=50)cnt=asCount;}
-      const inp=document.getElementById('dc-'+dn);
-      if(inp)inp.value=cnt||'';
+  if (d.dipstick) {
+    if (d.dipstick.diesel !== undefined) document.getElementById('dip-diesel').value = d.dipstick.diesel;
+    if (d.dipstick.gasoline !== undefined) document.getElementById('dip-gas').value = d.dipstick.gasoline;
+    if (d.dipstick.kerosene !== undefined) document.getElementById('dip-kerosene').value = d.dipstick.kerosene;
+  }
+  if (d.fuel_in) {
+    if (d.fuel_in.diesel !== undefined) document.getElementById('fuel-in-diesel').value = d.fuel_in.diesel;
+    if (d.fuel_in.gasoline !== undefined) document.getElementById('fuel-in-gas').value = d.fuel_in.gasoline;
+    if (d.fuel_in.kerosene !== undefined) document.getElementById('fuel-in-kerosene').value = d.fuel_in.kerosene;
+  }
+  if (d.denominations) {
+    document.querySelectorAll('.denom-count').forEach(inp => {
+      const val = inp.dataset.val;
+      if (d.denominations[val] !== undefined) inp.value = d.denominations[val];
     });
-    calcCOH();
-    const computed=getDenomTotal();
-    if(sheetCOH>0&&Math.abs(computed-sheetCOH)>5){
-      S.flags.push({sev:'error',field:'Cash on Hand',msg:`Denomination counts sum to ₱${p(computed)} but sheet shows ₱${p(sheetCOH)}. Please verify denomination COUNTS (not total values).`});
-    }
   }
-  if(d.gcash_amount)document.getElementById('gcash-amt').value=d.gcash_amount;
-  if(d.gcash_ref)   document.getElementById('gcash-ref').value=d.gcash_ref;
-  if(d.takeaways&&Array.isArray(d.takeaways)){
-    S.takeaways=d.takeaways.filter(t=>t.amount>0).map(t=>({label:t.label||'',amount:parseFloat(t.amount)||0}));
-    renderTakeaways();
+  if (d.ar_sales) document.getElementById('ar-sales').value = d.ar_sales;
+  if (d.other_income) document.getElementById('other-income').value = d.other_income;
+  if (d.payables && d.payables.length) {
+    payableRows = { supplier: [], check: [], loan: [] };
+    ['supplier-rows', 'check-rows', 'loan-rows'].forEach(id => document.getElementById(id).innerHTML = '');
+    d.payables.forEach(p => addPayableFromData(p.type || 'supplier', p.name, p.amount));
   }
-  S.flags=[...(d.flags||[]),...S.flags];
-  renderFlags();
-  recalcAll(); calcInv(); recon();
+  recalcAll();
+  calcCash();
+  calcInventory();
+  calcPayables();
+  switchTab('shift');
 }
 
-// ══════════════════════════════════════════
-// PUMP TABLE
-// ══════════════════════════════════════════
-function buildPumpRows(pump,hoses){
-  const tbody=document.getElementById('p'+pump+'body');
-  const rows=hoses&&hoses.length?hoses:[{fuel:'D'},{fuel:'U'},{fuel:'U'},{fuel:'D'}];
-  tbody.innerHTML=rows.map((h,i)=>{
-    const f=(h.fuel||h.fuel_type||'U').toUpperCase();
-    const bm=h.beg_liter||h.beg_meter||'';
-    const bs=h.beg_sales||'';
-    const em=h.end_liter||h.end_meter||'';
-    const es=h.end_sales||'';
-    const cls=h.fixed?'warn':'';
-    const tip=h.fixed?(h.fix_note||'Auto-corrected by AI'):'';
-    const ss=(parseFloat(es)||0)-(parseFloat(bs)||0);
-    const {html:ssH,cls:ssC}=ssDisplay(ss);
-    return `<tr>
-      <td><span class="badge ${f}" title="${tip}">${f}</span>${h.fixed?'<span style="font-size:9px;color:var(--warn);margin-left:2px;" title="${tip}">✎</span>':''}</td>
-      <td><input type="number" id="p${pump}bm${i}" value="${bm}" step="0.01" class="${cls}" onchange="rowCalc(${pump},${i})"><div class="fmt">${bm?p(parseFloat(bm)):''}</div></td>
-      <td><input type="number" id="p${pump}bs${i}" value="${bs}" step="0.01" class="${cls}" onchange="rowCalc(${pump},${i})"><div class="fmt">${bs?p(parseFloat(bs)):''}</div></td>
-      <td><input type="number" id="p${pump}em${i}" value="${em}" step="0.01" onchange="rowCalc(${pump},${i})"><div class="fmt">${em?p(parseFloat(em)):''}</div></td>
-      <td><input type="number" id="p${pump}es${i}" value="${es}" step="0.01" onchange="rowCalc(${pump},${i})"><div class="fmt">${es?p(parseFloat(es)):''}</div></td>
-      <td class="${ssC}" id="p${pump}ss${i}">${ssH}</td>
-    </tr>`;
-  }).join('');
+// ===================== HOSE TABLE =====================
+function initHoseTable() {
+  const defaults = [
+    { hose: 'H1', product: 'Diesel' }, { hose: 'H2', product: 'Diesel' },
+    { hose: 'H3', product: 'Gasoline' }, { hose: 'H4', product: 'Gasoline' },
+    { hose: 'H5', product: 'Kerosene' }
+  ];
+  defaults.forEach(h => addHoseRowFromData(h));
 }
 
-function ssDisplay(ss){
-  if(ss<0)      return {html:'🔴 NEGATIVE<br><small>CHECK BEG/END</small>',cls:'sc bad'};
-  if(ss>20000)  return {html:'🟡 ₱'+p(ss)+'<br><small style="font-size:9px;">MISREAD? &gt;₱20,000</small>',cls:'sc warn-s'};
-  if(ss===0)    return {html:'—',cls:'sc'};
-  return {html:'₱'+p(ss),cls:'sc'};
+let hoseIdCounter = 0;
+function addHoseRowFromData(data = {}) {
+  const id = hoseIdCounter++;
+  hoseRows.push(id);
+  const tbody = document.getElementById('meter-tbody');
+  const tr = document.createElement('tr');
+  tr.id = 'hose-' + id;
+  const product = data.product || 'Diesel';
+  const tagClass = product === 'Diesel' ? 'tag-diesel' : product === 'Gasoline' ? 'tag-gas' : 'tag-kerosene';
+  tr.innerHTML = `
+    <td>
+      <input type="text" value="${data.hose || 'H' + (id+1)}" style="width:48px;padding:5px 6px;font-size:12px" oninput="recalcAll()">
+    </td>
+    <td>
+      <select onchange="recalcAll()" style="font-size:11px;padding:4px 20px 4px 6px;width:90px">
+        <option${product==='Diesel'?' selected':''}>Diesel</option>
+        <option${product==='Gasoline'?' selected':''}>Gasoline</option>
+        <option${product==='Kerosene'?' selected':''}>Kerosene</option>
+      </select>
+    </td>
+    <td><input type="number" class="beg-ltr" value="${data.beg_liter||0}" oninput="recalcRow(${id})"></td>
+    <td><input type="number" class="beg-sales" value="${data.beg_sales||0}" oninput="recalcRow(${id})"></td>
+    <td><input type="number" class="end-ltr" value="${data.end_liter||0}" oninput="recalcRow(${id})"></td>
+    <td><input type="number" class="end-sales" value="${data.end_sales||0}" oninput="recalcRow(${id})"></td>
+    <td class="shift-cell" id="sl-${id}">0</td>
+    <td class="shift-cell" id="ss-${id}">0</td>
+  `;
+  tbody.appendChild(tr);
+  recalcRow(id);
 }
 
-function rowCalc(pump,i){
-  const es=parseFloat(document.getElementById(`p${pump}es${i}`)?.value)||0;
-  const bs=parseFloat(document.getElementById(`p${pump}bs${i}`)?.value)||0;
-  const ss=es-bs;
-  const cell=document.getElementById(`p${pump}ss${i}`);
-  if(cell){const {html,cls}=ssDisplay(ss);cell.innerHTML=html;cell.className=cls;}
-  // Update formatted displays
-  ['bm','bs','em','es'].forEach(f=>{
-    const inp=document.getElementById(`p${pump}${f}${i}`);
-    if(inp&&inp.nextElementSibling){
-      const val=parseFloat(inp.value);
-      inp.nextElementSibling.textContent=val?p(val):'';
-    }
+function addHoseRow() { addHoseRowFromData({}); recalcAll(); }
+
+function recalcRow(id) {
+  const tr = document.getElementById('hose-' + id);
+  if (!tr) return;
+  const begL = parseFloat(tr.querySelector('.beg-ltr').value) || 0;
+  const endL = parseFloat(tr.querySelector('.end-ltr').value) || 0;
+  const begS = parseFloat(tr.querySelector('.beg-sales').value) || 0;
+  const endS = parseFloat(tr.querySelector('.end-sales').value) || 0;
+  const shiftL = Math.max(0, endL - begL);
+  const shiftS = Math.max(0, endS - begS);
+  document.getElementById('sl-' + id).textContent = fmt(shiftL);
+  document.getElementById('ss-' + id).textContent = fmt(shiftS);
+  recalcTotals();
+}
+
+function recalcAll() {
+  hoseRows.forEach(id => recalcRow(id));
+}
+
+function recalcTotals() {
+  let totBegL = 0, totBegS = 0, totEndL = 0, totEndS = 0, totShiftL = 0, totShiftS = 0;
+  hoseRows.forEach(id => {
+    const tr = document.getElementById('hose-' + id);
+    if (!tr) return;
+    totBegL += parseFloat(tr.querySelector('.beg-ltr').value) || 0;
+    totBegS += parseFloat(tr.querySelector('.beg-sales').value) || 0;
+    totEndL += parseFloat(tr.querySelector('.end-ltr').value) || 0;
+    totEndS += parseFloat(tr.querySelector('.end-sales').value) || 0;
+    const sl = parseFloat(document.getElementById('sl-' + id)?.textContent) || 0;
+    const ss = parseFloat(document.getElementById('ss-' + id)?.textContent.replace(/,/g,'')) || 0;
+    totShiftL += sl; totShiftS += ss;
   });
-  recalcAll(); calcInv(); recon();
+  document.getElementById('tot-beg-ltr').textContent = fmt(totBegL);
+  document.getElementById('tot-beg-sales').textContent = fmt(totBegS);
+  document.getElementById('tot-end-ltr').textContent = fmt(totEndL);
+  document.getElementById('tot-end-sales').textContent = fmt(totEndS);
+  document.getElementById('tot-shift-ltr').textContent = fmt(totShiftL);
+  document.getElementById('tot-shift-sales').textContent = fmt(totShiftS);
+  document.getElementById('summ-liters').textContent = fmt(totShiftL) + ' L';
+  document.getElementById('summ-sales').textContent = '₱' + fmt(totShiftS);
+  document.getElementById('gross-sales').value = totShiftS.toFixed(2);
+  calcCash();
+  calcInventory();
 }
 
-function pumpTotal(pump){
-  const hoses=pump===1?S.pump1:S.pump2;
-  const count=Math.max((hoses||[]).length,4);
-  let t=0;
-  for(let i=0;i<count;i++){
-    const es=parseFloat(document.getElementById(`p${pump}es${i}`)?.value)||0;
-    const bs=parseFloat(document.getElementById(`p${pump}bs${i}`)?.value)||0;
-    t+=Math.max(0,es-bs);
-  }
-  return t;
-}
-
-function pumpLiters(pump){
-  const hoses=pump===1?S.pump1:S.pump2;
-  const count=Math.max((hoses||[]).length,4);
-  let t=0;
-  for(let i=0;i<count;i++){
-    const em=parseFloat(document.getElementById(`p${pump}em${i}`)?.value)||0;
-    const bm=parseFloat(document.getElementById(`p${pump}bm${i}`)?.value)||0;
-    t+=Math.max(0,em-bm);
-  }
-  return t;
-}
-
-function fuelSales(){
-  const fuels={U:{L:0,S:0},P:{L:0,S:0},D:{L:0,S:0}};
-  [1,2].forEach(pump=>{
-    const hoses=pump===1?S.pump1:S.pump2;
-    const count=Math.max((hoses||[]).length,4);
-    for(let i=0;i<count;i++){
-      const fuel=(hoses[i]?.fuel||hoses[i]?.fuel_type||'U').toUpperCase();
-      const em=parseFloat(document.getElementById(`p${pump}em${i}`)?.value)||0;
-      const bm=parseFloat(document.getElementById(`p${pump}bm${i}`)?.value)||0;
-      const es=parseFloat(document.getElementById(`p${pump}es${i}`)?.value)||0;
-      const bs=parseFloat(document.getElementById(`p${pump}bs${i}`)?.value)||0;
-      if(fuels[fuel]){fuels[fuel].L+=Math.max(0,em-bm);fuels[fuel].S+=Math.max(0,es-bs);}
-    }
+// ===================== INVENTORY =====================
+function calcInventory() {
+  let soldD = 0, soldG = 0, soldK = 0;
+  hoseRows.forEach(id => {
+    const tr = document.getElementById('hose-' + id);
+    if (!tr) return;
+    const product = tr.querySelector('select').value;
+    const sl = parseFloat(document.getElementById('sl-' + id)?.textContent) || 0;
+    if (product === 'Diesel') soldD += sl;
+    else if (product === 'Gasoline') soldG += sl;
+    else soldK += sl;
   });
-  return fuels;
+  document.getElementById('inv-sold-diesel').textContent = fmt(soldD);
+  document.getElementById('inv-sold-gas').textContent = fmt(soldG);
+  document.getElementById('inv-sold-kerosene').textContent = fmt(soldK);
+  document.getElementById('inv-in-diesel').textContent = fmt(parseFloat(document.getElementById('fuel-in-diesel').value) || 0);
+  document.getElementById('inv-in-gas').textContent = fmt(parseFloat(document.getElementById('fuel-in-gas').value) || 0);
+  document.getElementById('inv-in-kerosene').textContent = fmt(parseFloat(document.getElementById('fuel-in-kerosene').value) || 0);
+  document.getElementById('inv-dip-diesel').textContent = fmt(parseFloat(document.getElementById('dip-diesel').value) || 0);
+  document.getElementById('inv-dip-gas').textContent = fmt(parseFloat(document.getElementById('dip-gas').value) || 0);
+  document.getElementById('inv-dip-kerosene').textContent = fmt(parseFloat(document.getElementById('dip-kerosene').value) || 0);
 }
 
-function recalcAll(){
-  const t1=pumpTotal(1),t2=pumpTotal(2);
-  document.getElementById('p1total').textContent='₱'+p(t1);
-  document.getElementById('p2total').textContent='₱'+p(t2);
+// ===================== CASH =====================
+function calcCash() {
+  let cashTotal = 0;
+  document.querySelectorAll('.denom-count').forEach(inp => {
+    cashTotal += (parseFloat(inp.value) || 0) * parseFloat(inp.dataset.val);
+  });
+  document.getElementById('cash-total').textContent = '₱' + fmt(cashTotal);
+  document.getElementById('summ-cash').textContent = '₱' + fmt(cashTotal);
+  const gross = parseFloat(document.getElementById('gross-sales').value) || 0;
+  const ar = parseFloat(document.getElementById('ar-sales').value) || 0;
+  const other = parseFloat(document.getElementById('other-income').value) || 0;
+  const expected = gross - ar + other;
+  const os = cashTotal - expected;
+  const osEl = document.getElementById('summ-os');
+  osEl.textContent = (os >= 0 ? '+' : '') + '₱' + fmt(os);
+  osEl.className = 'summ-card-value ' + (os > 0 ? 'green' : os < 0 ? 'red' : '');
 }
 
-// ══════════════════════════════════════════
-// INVENTORY
-// ══════════════════════════════════════════
-function addDelivery(type){
-  S.deliveries.push({type,fuel:'U',liters:0,supplier:'',dr:''});
-  renderDeliveries();
-}
-function removeDelivery(i){S.deliveries.splice(i,1);renderDeliveries();calcInv();}
-function renderDeliveries(){
-  document.getElementById('delivery-list').innerHTML=S.deliveries.length?S.deliveries.map((d,i)=>`
-    <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <span style="font-size:11px;font-weight:700;color:var(--blue);">${d.type}</span>
-        <button class="btn btn-r btn-sm" onclick="removeDelivery(${i})">✕</button>
-      </div>
-      <div class="g4">
-        <div class="row"><label>Fuel</label><select oninput="S.deliveries[${i}].fuel=this.value;calcInv();" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text);font-family:inherit;font-size:11px;width:100%;">
-          <option ${d.fuel==='U'?'selected':''}>U</option><option ${d.fuel==='P'?'selected':''}>P</option><option ${d.fuel==='D'?'selected':''}>D</option>
-        </select></div>
-        <div class="row"><label>Liters</label><input type="number" value="${d.liters||''}" placeholder="0.00" oninput="S.deliveries[${i}].liters=parseFloat(this.value)||0;calcInv();"></div>
-        <div class="row"><label>Supplier/From</label><input type="text" value="${d.supplier||''}" placeholder="Supplier" oninput="S.deliveries[${i}].supplier=this.value;"></div>
-        <div class="row"><label>DR / SI #</label><input type="text" value="${d.dr||''}" placeholder="DR #" oninput="S.deliveries[${i}].dr=this.value;"></div>
-      </div>
-    </div>`).join(''):'<p style="font-size:11px;color:var(--muted);padding:8px 0;">No fuel received this shift.</p>';
+// ===================== PAYABLES =====================
+function addPayable(type) {
+  const container = document.getElementById(type + '-rows');
+  const rowId = Date.now();
+  payableRows[type].push(rowId);
+  const div = document.createElement('div');
+  div.className = 'payable-row';
+  div.id = 'pay-' + rowId;
+  div.innerHTML = `
+    <div class="payable-name"><input type="text" placeholder="${type === 'supplier' ? 'Supplier name' : type === 'check' ? 'Check #' : 'Borrower name'}"></div>
+    <div class="payable-amt"><input type="number" placeholder="₱0.00" oninput="calcPayables()" style="text-align:right"></div>
+    <button class="del-btn" onclick="removePayable('${type}',${rowId})">×</button>
+  `;
+  container.appendChild(div);
 }
 
-function addFuelOut(type){
-  S.fuelouts.push({type,fuel:'U',liters:0,to:'',note:''});
-  renderFuelOut();
-}
-function removeFuelOut(i){S.fuelouts.splice(i,1);renderFuelOut();calcInv();}
-function renderFuelOut(){
-  document.getElementById('fuelout-list').innerHTML=S.fuelouts.length?S.fuelouts.map((d,i)=>`
-    <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <span style="font-size:11px;font-weight:700;color:var(--warn);">${d.type}</span>
-        <button class="btn btn-r btn-sm" onclick="removeFuelOut(${i})">✕</button>
-      </div>
-      <div class="g3">
-        <div class="row"><label>Fuel</label><select oninput="S.fuelouts[${i}].fuel=this.value;calcInv();" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text);font-family:inherit;font-size:11px;width:100%;">
-          <option ${d.fuel==='U'?'selected':''}>U</option><option ${d.fuel==='P'?'selected':''}>P</option><option ${d.fuel==='D'?'selected':''}>D</option>
-        </select></div>
-        <div class="row"><label>Liters</label><input type="number" value="${d.liters||''}" placeholder="0.00" oninput="S.fuelouts[${i}].liters=parseFloat(this.value)||0;calcInv();"></div>
-        <div class="row"><label>To / Note</label><input type="text" value="${d.to||''}" placeholder="Station / reason" oninput="S.fuelouts[${i}].to=this.value;"></div>
-      </div>
-    </div>`).join(''):'<p style="font-size:11px;color:var(--muted);padding:8px 0;">No fuel transferred out this shift.</p>';
+function addPayableFromData(type, name, amount) {
+  if (!payableRows[type]) payableRows[type] = [];
+  const container = document.getElementById(type + '-rows');
+  if (!container) return;
+  const rowId = Date.now() + Math.random();
+  payableRows[type].push(rowId);
+  const div = document.createElement('div');
+  div.className = 'payable-row';
+  div.id = 'pay-' + rowId;
+  div.innerHTML = `
+    <div class="payable-name"><input type="text" value="${name||''}" placeholder="Name"></div>
+    <div class="payable-amt"><input type="number" value="${amount||0}" oninput="calcPayables()" style="text-align:right"></div>
+    <button class="del-btn" onclick="removePayable('${type}',${rowId})">×</button>
+  `;
+  container.appendChild(div);
 }
 
-function calcInv(){
-  const fuels=fuelSales();
-  const FUELS=['U','P','D'];
-  // Dipstick before/after
-  const dip={
-    U:{b:n('du1'),a:n('du2')},
-    P:{b:n('dp1'),a:n('dp2')},
-    D:{b:n('dd1'),a:n('dd2')}
+function removePayable(type, id) {
+  const el = document.getElementById('pay-' + id);
+  if (el) el.remove();
+  payableRows[type] = payableRows[type].filter(r => r !== id);
+  calcPayables();
+}
+
+function calcPayables() {
+  let total = 0;
+  document.querySelectorAll('.payable-amt input').forEach(inp => {
+    total += parseFloat(inp.value) || 0;
+  });
+  document.getElementById('total-payables').textContent = '₱' + fmt(total);
+  const gross = parseFloat(document.getElementById('gross-sales').value) || 0;
+  const ar = parseFloat(document.getElementById('ar-sales').value) || 0;
+  const net = gross - ar - total;
+  const el = document.getElementById('net-collectible');
+  el.textContent = '₱' + fmt(net);
+  el.className = 'summ-card-value ' + (net >= 0 ? 'green' : 'red');
+}
+
+// ===================== SUMMARY TAB UPDATE =====================
+function updateSummaryTab() {
+  document.getElementById('sub-station').textContent = currentStation;
+  document.getElementById('sub-shift').textContent =
+    (document.getElementById('shift-date').value || '—') + ' ' + (document.getElementById('shift-type').value || '');
+  document.getElementById('sub-liters').textContent = document.getElementById('summ-liters').textContent;
+  document.getElementById('sub-sales').textContent = document.getElementById('summ-sales').textContent;
+  document.getElementById('sub-cash').textContent = document.getElementById('summ-cash').textContent;
+  document.getElementById('sub-os').textContent = document.getElementById('summ-os').textContent;
+  const osVal = parseFloat((document.getElementById('summ-os').textContent || '0').replace(/[₱+,]/g,''));
+  document.getElementById('sub-os').className = 'summ-card-value ' + (osVal > 0 ? 'green' : osVal < 0 ? 'red' : '');
+}
+
+// ===================== SUBMIT =====================
+async function submitToSheets() {
+  const url = document.getElementById('sheets-url').value.trim();
+  if (!url) { showStatus('Please enter your Google Apps Script Web App URL', 'error'); return; }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true; btn.textContent = '⏳ Submitting...';
+
+  const hoseData = hoseRows.map(id => {
+    const tr = document.getElementById('hose-' + id);
+    if (!tr) return null;
+    return {
+      hose: tr.querySelector('input[type=text]').value,
+      product: tr.querySelector('select').value,
+      beg_liter: tr.querySelector('.beg-ltr').value,
+      beg_sales: tr.querySelector('.beg-sales').value,
+      end_liter: tr.querySelector('.end-ltr').value,
+      end_sales: tr.querySelector('.end-sales').value,
+      shift_liter: document.getElementById('sl-' + id)?.textContent,
+      shift_sales: document.getElementById('ss-' + id)?.textContent,
+    };
+  }).filter(Boolean);
+
+  let payablesData = [];
+  document.querySelectorAll('.payable-row').forEach(row => {
+    const name = row.querySelector('.payable-name input')?.value;
+    const amt = row.querySelector('.payable-amt input')?.value;
+    if (name || amt) payablesData.push({ name, amount: amt });
+  });
+
+  const denoms = {};
+  document.querySelectorAll('.denom-count').forEach(inp => {
+    denoms['p' + inp.dataset.val] = inp.value || 0;
+  });
+
+  const payload = {
+    station: currentStation,
+    date: document.getElementById('shift-date').value,
+    shift: document.getElementById('shift-type').value,
+    attendant: document.getElementById('attendant').value,
+    supervisor: document.getElementById('supervisor').value,
+    price_diesel: document.getElementById('price-diesel').value,
+    price_gas: document.getElementById('price-gas').value,
+    price_kerosene: document.getElementById('price-kerosene').value,
+    hoses: JSON.stringify(hoseData),
+    total_liters: document.getElementById('tot-shift-ltr').textContent,
+    total_sales: document.getElementById('tot-shift-sales').textContent,
+    dip_diesel: document.getElementById('dip-diesel').value,
+    dip_gas: document.getElementById('dip-gas').value,
+    dip_kerosene: document.getElementById('dip-kerosene').value,
+    fuel_in_diesel: document.getElementById('fuel-in-diesel').value,
+    fuel_in_gas: document.getElementById('fuel-in-gas').value,
+    fuel_in_kerosene: document.getElementById('fuel-in-kerosene').value,
+    ar_sales: document.getElementById('ar-sales').value,
+    other_income: document.getElementById('other-income').value,
+    ...denoms,
+    cash_total: document.getElementById('summ-cash').textContent,
+    over_short: document.getElementById('summ-os').textContent,
+    payables: JSON.stringify(payablesData),
+    total_payables: document.getElementById('total-payables').textContent,
+    net_collectible: document.getElementById('net-collectible').textContent,
+    timestamp: new Date().toISOString()
   };
-  // Received
-  const recv={U:0,P:0,D:0};
-  S.deliveries.forEach(d=>{if(recv[d.fuel]!==undefined)recv[d.fuel]+=parseFloat(d.liters)||0;});
-  // Out
-  const out={U:0,P:0,D:0};
-  S.fuelouts.forEach(d=>{if(out[d.fuel]!==undefined)out[d.fuel]+=parseFloat(d.liters)||0;});
 
-  const html=`<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:11px;">
-    <thead><tr>
-      <th style="text-align:left;padding:5px 8px;font-size:9px;color:var(--muted);border-bottom:2px solid var(--border);">FUEL</th>
-      <th style="text-align:right;padding:5px 8px;font-size:9px;color:var(--muted);border-bottom:2px solid var(--border);">BEG STOCK<br><span style="font-weight:400">(dipstick bef.)</span></th>
-      <th style="text-align:right;padding:5px 8px;font-size:9px;color:var(--blue);border-bottom:2px solid var(--border);">+ RECEIVED<br><span style="font-weight:400">(delivery/transfer)</span></th>
-      <th style="text-align:right;padding:5px 8px;font-size:9px;color:var(--red);border-bottom:2px solid var(--border);">− SOLD<br><span style="font-weight:400">(meter liters)</span></th>
-      <th style="text-align:right;padding:5px 8px;font-size:9px;color:var(--warn);border-bottom:2px solid var(--border);">− OUT<br><span style="font-weight:400">(transfer out)</span></th>
-      <th style="text-align:right;padding:5px 8px;font-size:9px;color:var(--accent);border-bottom:2px solid var(--border);">EXPECTED<br><span style="font-weight:400">closing</span></th>
-      <th style="text-align:right;padding:5px 8px;font-size:9px;color:var(--green);border-bottom:2px solid var(--border);">ACTUAL<br><span style="font-weight:400">(dipstick aft.)</span></th>
-      <th style="text-align:right;padding:5px 8px;font-size:9px;color:var(--muted);border-bottom:2px solid var(--border);">VARIANCE</th>
-    </tr></thead>
-    <tbody>${FUELS.map(f=>{
-      const beg=dip[f].b;
-      const soldL=fuels[f].L;
-      const rcv=recv[f];
-      const ot=out[f];
-      const expected=beg+rcv-soldL-ot;
-      const actual=dip[f].a;
-      const variance=actual>0?actual-expected:null;
-      const varColor=variance===null?'var(--muted)':Math.abs(variance)<2?'var(--green)':variance<0?'var(--red)':'var(--warn)';
-      return `<tr>
-        <td style="padding:6px 8px;"><span class="badge ${f}" style="width:20px;height:20px;line-height:20px;font-size:9px;">${f}</span></td>
-        <td style="text-align:right;padding:6px 8px;">${beg?beg.toFixed(1)+' cm':'—'}</td>
-        <td style="text-align:right;padding:6px 8px;color:var(--blue);">+${p(rcv)} L</td>
-        <td style="text-align:right;padding:6px 8px;color:var(--red);">−${p(soldL)} L</td>
-        <td style="text-align:right;padding:6px 8px;color:var(--warn);">−${p(ot)} L</td>
-        <td style="text-align:right;padding:6px 8px;font-weight:700;color:var(--accent);">${beg?p(expected)+' L':'—'}</td>
-        <td style="text-align:right;padding:6px 8px;color:var(--green);">${actual?actual.toFixed(1)+' cm':'—'}</td>
-        <td style="text-align:right;padding:6px 8px;font-weight:700;color:${varColor};">${variance!==null?(variance>=0?'+':'')+p(variance)+' L':'—'}</td>
-      </tr>`;
-    }).join('')}</tbody>
-  </table></div>`;
-  const el=document.getElementById('inv-summary');
-  if(el)el.innerHTML=html;
-}
-
-// ══════════════════════════════════════════
-// FLAGS
-// ══════════════════════════════════════════
-function renderFlags(){
-  const box=document.getElementById('flags-box');
-  const list=document.getElementById('flags-list');
-  if(!S.flags||!S.flags.length){box.style.display='none';return;}
-  box.style.display='block';
-  list.innerHTML=S.flags.map(f=>{
-    const cls=f.sev==='error'?'err':f.sev==='warn'?'warn':'info';
-    const ic=f.sev==='error'?'🔴':f.sev==='warn'?'🟡':'🟢';
-    return `<div class="flag ${cls}">${ic} <strong>${f.field||''}</strong>${f.field?' — ':''}${f.msg||f.message||''}</div>`;
-  }).join('');
-}
-
-// ══════════════════════════════════════════
-// DENOMINATIONS
-// ══════════════════════════════════════════
-function buildDenoms(){
-  document.getElementById('denom-rows').innerHTML=DENOMS.map(d=>`
-    <div class="drow">
-      <label>₱${d.toLocaleString()} ×</label>
-      <input type="number" id="dc-${d}" placeholder="0" min="0" step="1" oninput="calcCOH()">
-      <div class="dv" id="dv-${d}">₱0</div>
-    </div>`).join('');
-}
-function getDenomTotal(){
-  let t=0;
-  DENOMS.forEach(d=>{t+=(parseInt(document.getElementById('dc-'+d)?.value)||0)*d;});
-  return t;
-}
-function calcCOH(){
-  let t=0;
-  DENOMS.forEach(d=>{
-    const cnt=parseInt(document.getElementById('dc-'+d)?.value)||0;
-    const val=cnt*d; t+=val;
-    const el=document.getElementById('dv-'+d);
-    if(el)el.textContent=val>0?'₱'+val.toLocaleString():'₱0';
-  });
-  const el=document.getElementById('coh');
-  if(el)el.textContent=p(t);
-  recon();
-  return t;
-}
-
-// ══════════════════════════════════════════
-// TAKEAWAYS
-// ══════════════════════════════════════════
-function addTakeaway(){S.takeaways.push({label:'',amount:0});renderTakeaways();}
-function removeTakeaway(i){S.takeaways.splice(i,1);renderTakeaways();recon();}
-function renderTakeaways(){
-  document.getElementById('takeaway-list').innerHTML=S.takeaways.map((t,i)=>`
-    <div style="display:flex;gap:6px;margin-bottom:6px;">
-      <input type="text" value="${t.label}" placeholder="Description (e.g. VIOS-GARY)" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-size:11px;font-family:inherit;" oninput="S.takeaways[${i}].label=this.value">
-      <input type="number" value="${t.amount||''}" placeholder="₱0" style="width:90px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-size:11px;font-family:inherit;text-align:right;" oninput="S.takeaways[${i}].amount=parseFloat(this.value)||0;recon()">
-      <button class="btn btn-r btn-sm" onclick="removeTakeaway(${i})">✕</button>
-    </div>`).join('');
-}
-
-// ══════════════════════════════════════════
-// PAYABLES
-// ══════════════════════════════════════════
-function addPayable(type){
-  S.payables.push({type,description:'',amount:0,due_date:'',status:'UNPAID',check_no:'',liters:0});
-  renderPayables(); calcPayables();
-}
-function removePayable(i){S.payables.splice(i,1);renderPayables();calcPayables();}
-function renderPayables(){
-  const el=document.getElementById('payables-list');
-  if(!S.payables.length){
-    el.innerHTML='<p style="font-size:11px;color:var(--muted);padding:8px 0;">No payables recorded.</p>';
-    return;
-  }
-  el.innerHTML=S.payables.map((pay,i)=>`
-    <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <span style="font-size:11px;font-weight:700;color:${pay.type==='CHECK'?'var(--warn)':pay.type==='FUEL LOAN'?'var(--blue)':'var(--red)'};">${pay.type}</span>
-        <button class="btn btn-r btn-sm" onclick="removePayable(${i})">✕</button>
-      </div>
-      <div class="g2">
-        <div class="row"><label>Description</label><input type="text" value="${pay.description}" placeholder="Details" oninput="S.payables[${i}].description=this.value;"></div>
-        <div class="row"><label>${pay.type==='FUEL LOAN'?'Liters':'Amount ₱'}</label>
-          <input type="number" value="${pay.type==='FUEL LOAN'?pay.liters:pay.amount||''}" placeholder="0.00" oninput="S.payables[${i}].${pay.type==='FUEL LOAN'?'liters':'amount'}=parseFloat(this.value)||0;calcPayables();">
-        </div>
-        <div class="row"><label>Due Date</label><input type="date" value="${pay.due_date}" oninput="S.payables[${i}].due_date=this.value;"></div>
-        ${pay.type==='CHECK'?`<div class="row"><label>Check #</label><input type="text" value="${pay.check_no}" placeholder="Check number" oninput="S.payables[${i}].check_no=this.value;"></div>`:'<div></div>'}
-      </div>
-      <div class="row" style="margin-top:4px;"><label>Status</label>
-        <select oninput="S.payables[${i}].status=this.value;" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text);font-family:inherit;font-size:11px;width:100%;">
-          <option ${pay.status==='UNPAID'?'selected':''}>UNPAID</option>
-          <option ${pay.status==='PARTIAL'?'selected':''}>PARTIAL</option>
-          <option ${pay.status==='PAID'?'selected':''}>PAID</option>
-        </select>
-      </div>
-    </div>`).join('');
-}
-function calcPayables(){
-  const total=S.payables.reduce((s,p)=>s+(parseFloat(p.amount)||0),0);
-  const supplier=S.payables.filter(p=>p.type==='SUPPLIER').reduce((s,p)=>s+(parseFloat(p.amount)||0),0);
-  const check=S.payables.filter(p=>p.type==='CHECK').reduce((s,p)=>s+(parseFloat(p.amount)||0),0);
-  const fuelL=S.payables.filter(p=>p.type==='FUEL LOAN').reduce((s,p)=>s+(parseFloat(p.liters)||0),0);
-  set('pay-total','₱'+p(total));
-  set('pay-supplier','₱'+p(supplier));
-  set('pay-check','₱'+p(check));
-  set('pay-fuel',p(fuelL)+' L');
-}
-
-// ══════════════════════════════════════════
-// RECONCILIATION
-// ══════════════════════════════════════════
-function recon(){
-  const sales=pumpTotal(1)+pumpTotal(2);
-  const coh=getDenomTotal();
-  const gcash=parseFloat(document.getElementById('gcash-amt')?.value)||0;
-  const take=S.takeaways.reduce((s,t)=>s+(parseFloat(t.amount)||0),0);
-  const remit=coh+gcash;
-  const os=remit+take-sales;
-  set('rc-sales','₱'+p(sales));
-  set('rc-coh','₱'+p(coh));
-  set('rc-gcash','₱'+p(gcash));
-  set('rc-take','₱'+p(take));
-  set('rc-remit','₱'+p(remit));
-  const osEl=document.getElementById('rc-os');
-  if(osEl){
-    osEl.textContent=(os>=0?'+':'-')+'₱'+p(Math.abs(os));
-    osEl.className='val '+(Math.abs(os)<0.05?'ok':os<0?'bad':'');
+  try {
+    await fetch(url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    showStatus('✅ Shift report submitted successfully! Check your Google Sheet.', 'success');
+    btn.textContent = '✅ Submitted!';
+    setTimeout(() => { btn.disabled = false; btn.textContent = '📤 Submit Shift Report'; }, 4000);
+  } catch (err) {
+    showStatus('❌ Error: ' + err.message, 'error');
+    btn.disabled = false; btn.textContent = '📤 Submit Shift Report';
   }
 }
 
-// ══════════════════════════════════════════
-// FINAL SUMMARY
-// ══════════════════════════════════════════
-function buildFinal(){
-  const fuels=fuelSales();
-  const totalL=pumpLiters(1)+pumpLiters(2);
-  const totalS=pumpTotal(1)+pumpTotal(2);
-  const coh=getDenomTotal();
-  const gcash=parseFloat(document.getElementById('gcash-amt')?.value)||0;
-  const take=S.takeaways.reduce((s,t)=>s+(parseFloat(t.amount)||0),0);
-  const os=coh+gcash+take-totalS;
-  const totalRecv=S.deliveries.reduce((s,d)=>s+(parseFloat(d.liters)||0),0);
-
-  document.getElementById('final-summary').innerHTML=`
-    <div class="sc-grid" style="margin-bottom:12px;">
-      <div class="sc-item"><label>Date</label><div class="val" style="font-size:13px;">${v('sdate')}</div></div>
-      <div class="sc-item"><label>Shift</label><div class="val" style="font-size:13px;">${v('shift')}</div></div>
-      <div class="sc-item"><label>Station</label><div class="val" style="font-size:13px;">${v('station')}</div></div>
-      <div class="sc-item"><label>Cashier</label><div class="val" style="font-size:13px;">${v('cashier')||'—'}</div></div>
-    </div>
-    <div style="font-size:10px;color:var(--accent);font-weight:700;letter-spacing:1px;margin-bottom:8px;">📦 LITERS SOLD</div>
-    <div class="sc-grid" style="margin-bottom:12px;">
-      <div class="sc-item"><label><span class="badge U" style="width:16px;height:16px;line-height:16px;font-size:8px;">U</span> Unleaded</label><div class="val blue">${p(fuels.U.L)} L</div></div>
-      <div class="sc-item"><label><span class="badge P" style="width:16px;height:16px;line-height:16px;font-size:8px;">P</span> Premium</label><div class="val blue">${p(fuels.P.L)} L</div></div>
-      <div class="sc-item"><label><span class="badge D" style="width:16px;height:16px;line-height:16px;font-size:8px;">D</span> Diesel</label><div class="val blue">${p(fuels.D.L)} L</div></div>
-      <div class="sc-item"><label>TOTAL LITERS SOLD</label><div class="val blue">${p(totalL)} L</div></div>
-    </div>
-    <div style="font-size:10px;color:var(--accent);font-weight:700;letter-spacing:1px;margin-bottom:8px;">💹 PESO SALES</div>
-    <div class="sc-grid" style="margin-bottom:12px;">
-      <div class="sc-item"><label>U Sales</label><div class="val">₱${p(fuels.U.S)}</div></div>
-      <div class="sc-item"><label>P Sales</label><div class="val">₱${p(fuels.P.S)}</div></div>
-      <div class="sc-item"><label>D Sales</label><div class="val">₱${p(fuels.D.S)}</div></div>
-      <div class="sc-item"><label>TOTAL SALES</label><div class="val ok">₱${p(totalS)}</div></div>
-    </div>
-    <div style="font-size:10px;color:var(--accent);font-weight:700;letter-spacing:1px;margin-bottom:8px;">💰 CASH</div>
-    <div class="sc-grid" style="margin-bottom:12px;">
-      <div class="sc-item"><label>Cash on Hand</label><div class="val">₱${p(coh)}</div></div>
-      <div class="sc-item"><label>GCash</label><div class="val">₱${p(gcash)}</div></div>
-      <div class="sc-item"><label>Takeaways</label><div class="val">₱${p(take)}</div></div>
-      <div class="sc-item"><label>Over / Short</label><div class="val ${Math.abs(os)<0.05?'ok':os<0?'bad':''}">${os>=0?'+':'-'}₱${p(Math.abs(os))}</div></div>
-    </div>
-    <div style="font-size:10px;color:var(--accent);font-weight:700;letter-spacing:1px;margin-bottom:8px;">📦 INVENTORY</div>
-    <div class="sc-grid">
-      <div class="sc-item"><label>Fuel Received</label><div class="val blue">${p(totalRecv)} L</div></div>
-      <div class="sc-item"><label>Payables</label><div class="val bad">₱${p(S.payables.reduce((s,p)=>s+(parseFloat(p.amount)||0),0))}</div></div>
-    </div>`;
+function showStatus(msg, type) {
+  const el = document.getElementById('status-msg');
+  el.textContent = msg;
+  el.className = 'status-msg ' + type;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 6000);
 }
 
-// ══════════════════════════════════════════
-// SUBMIT
-// ══════════════════════════════════════════
-async function submitSheet(){
-  const url=document.getElementById('sheet-url').value.trim()||localStorage.getItem('pf_sheet');
-  if(!url){ban('submit-result','err','❌ Please enter your Google Sheet Apps Script URL.');return;}
-  ban('submit-result','info','⏳ Submitting to Google Sheet...');
-  try{
-    await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(buildPayload())});
-    ban('submit-result','ok','✅ Submitted successfully! Open your Google Sheet to view the data.');
-  }catch(e){ban('submit-result','err','❌ '+e.message);}
-}
-
-function buildPayload(){
-  const p1=[],p2=[];
-  const c1=Math.max((S.pump1||[]).length,4),c2=Math.max((S.pump2||[]).length,4);
-  for(let i=0;i<c1;i++){const fuel=(S.pump1[i]?.fuel||'U').toUpperCase();p1.push({fuel,beg_liter:n('p1bm'+i),beg_sales:n('p1bs'+i),end_liter:n('p1em'+i),end_sales:n('p1es'+i),shift_liters:Math.max(0,n('p1em'+i)-n('p1bm'+i)),shift_sales:Math.max(0,n('p1es'+i)-n('p1bs'+i))});}
-  for(let i=0;i<c2;i++){const fuel=(S.pump2[i]?.fuel||'U').toUpperCase();p2.push({fuel,beg_liter:n('p2bm'+i),beg_sales:n('p2bs'+i),end_liter:n('p2em'+i),end_sales:n('p2es'+i),shift_liters:Math.max(0,n('p2em'+i)-n('p2bm'+i)),shift_sales:Math.max(0,n('p2es'+i)-n('p2bs'+i))});}
-  const denoms={};DENOMS.forEach(d=>{denoms[d]=parseInt(document.getElementById('dc-'+d)?.value)||0;});
-  const fuels=fuelSales();
-  return {
-    date:v('sdate'),shift:v('shift'),station:v('station'),cashier:v('cashier'),att1:v('att1'),att2:v('att2'),
-    price_U:n('pU'),price_P:n('pP'),price_D:n('pD'),
-    dipstick:{U_before:n('du1'),U_after:n('du2'),P_before:n('dp1'),P_after:n('dp2'),D_before:n('dd1'),D_after:n('dd2')},
-    pump1:p1,pump2:p2,
-    pump1_total:pumpTotal(1),pump2_total:pumpTotal(2),
-    total_sales:pumpTotal(1)+pumpTotal(2),
-    total_liters_U:fuels.U.L,total_liters_P:fuels.P.L,total_liters_D:fuels.D.L,
-    total_liters:pumpLiters(1)+pumpLiters(2),
-    denominations:denoms,cash_on_hand:getDenomTotal(),
-    gcash_amount:n('gcash-amt'),gcash_ref:v('gcash-ref'),
-    takeaways:S.takeaways,
-    deliveries:S.deliveries,fuelouts:S.fuelouts,payables:S.payables,
-    timestamp:new Date().toISOString()
-  };
-}
-
-// ══════════════════════════════════════════
-// SETTINGS
-// ══════════════════════════════════════════
-function openModal(){document.getElementById('modal').classList.add('open');renderSettings();}
-function closeModal(){document.getElementById('modal').classList.remove('open');}
-function renderSettings(){
-  [['vehicles','v-list'],['staff','s-list'],['suppliers','sup-list']].forEach(([key,id])=>{
-    const el=document.getElementById(id);if(!el)return;
-    el.innerHTML=(S[key]||[]).map((item,i)=>`
-      <div style="display:flex;gap:6px;margin-bottom:6px;align-items:center;">
-        <span style="flex:1;font-size:12px;padding:6px 10px;background:var(--bg);border-radius:6px;">${item}</span>
-        <button class="btn btn-r btn-sm" onclick="removeItem('${key}',${i})">✕</button>
-      </div>`).join('');
-  });
-}
-function addItem(key,inputId){
-  const val=document.getElementById(inputId).value.trim();if(!val)return;
-  S[key].push(val);
-  const lsKey=key==='vehicles'?'pf_v':key==='staff'?'pf_s':'pf_sup';
-  localStorage.setItem(lsKey,JSON.stringify(S[key]));
-  document.getElementById(inputId).value='';renderSettings();
-}
-function removeItem(key,i){
-  S[key].splice(i,1);
-  const lsKey=key==='vehicles'?'pf_v':key==='staff'?'pf_s':'pf_sup';
-  localStorage.setItem(lsKey,JSON.stringify(S[key]));renderSettings();
-}
-
-// ══════════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════════
-function v(id){return document.getElementById(id)?.value||'';}
-function n(id){return parseFloat(document.getElementById(id)?.value)||0;}
-function set(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
-function p(num){return parseFloat(num||0).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});}
-function ban(id,type,msg){
-  const el=document.getElementById(id);if(!el)return;
-  el.innerHTML=msg?`<div class="ban b-${type}">${msg}</div>`:'';
-}
+// ===================== UTILS =====================
+function fmt(n) { return Number(n).toLocaleString('en-PH', { maximumFractionDigits: 2 }); }
 </script>
 </body>
 </html>
