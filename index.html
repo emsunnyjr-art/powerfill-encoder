@@ -193,19 +193,22 @@
   <div class="card">
     <div class="card-title">📷 UPLOAD SHIFT REPORT PHOTO</div>
 
-    <!-- File input overlaid on label - most reliable cross-browser method -->
-    <label for="photo-input" style="display:block;cursor:pointer;">
+    <!-- File input - visible and full size, styled to match -->
+    <div style="position:relative;">
       <div class="photo-drop" id="photo-drop"
            ondragover="event.preventDefault();document.getElementById('photo-drop').classList.add('drag')"
            ondragleave="document.getElementById('photo-drop').classList.remove('drag')"
            ondrop="handlePhotoDrop(event)">
         <div class="photo-drop-icon">📸</div>
         <p style="font-size:13px;font-weight:700;margin-bottom:4px;color:var(--accent);">Click here to select photo</p>
-        <p style="font-size:10px;color:var(--muted);">Windows: click to browse file · iPhone: camera or library</p>
+        <p style="font-size:10px;color:var(--muted);">Windows: click to browse · iPhone: camera or library</p>
         <p style="font-size:10px;color:var(--muted);">JPG · PNG · HEIC accepted</p>
       </div>
-    </label>
-    <input type="file" accept="image/*" id="photo-input" style="position:absolute;width:1px;height:1px;opacity:0;" onchange="handlePhotoSelect(event)">
+      <input type="file" accept="image/*" id="photo-input"
+        style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0;"
+        onchange="handlePhotoSelect(event)"
+        oninput="handlePhotoSelect(event)">
+    </div>
 
     <!-- Preview -->
     <div id="photo-status" style="display:none;margin-top:10px;padding:8px 12px;background:rgba(61,214,140,0.1);border:1px solid var(--accent2);border-radius:8px;font-size:11px;color:var(--accent2);"></div>
@@ -505,6 +508,13 @@ const DENOMS = [1000,500,200,100,50,20,10,5,1];
 // INIT
 // ============================================================
 window.onload = () => {
+  // Fallback: poll the file input every 500ms in case onchange doesn't fire
+  setInterval(() => {
+    const input = document.getElementById('photo-input');
+    if (input && input.files && input.files.length > 0 && !state.photoB64) {
+      loadPhotoFile(input.files[0]);
+    }
+  }, 500);
   const savedKey = localStorage.getItem('pf_api_key');
   if (savedKey) document.getElementById('api-key').value = savedKey;
   const savedUrl = localStorage.getItem('pf_sheet_url');
