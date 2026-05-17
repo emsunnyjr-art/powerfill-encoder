@@ -605,7 +605,19 @@ SHEET TALLY: Lower-left of sheet has handwritten liter subtotals per fuel (U, P,
 
 TAKEAWAYS: Look for entries like VIOS-GARY-700 meaning vehicle name, staff name, and amount. These are cash deductions.
 
-Respond ONLY with this exact JSON structure, no markdown, no backticks, no text outside JSON:
+DENOMINATION RULES - CRITICAL:
+The sheet denomination table has TWO columns: COUNT (how many bills/coins) and TOTAL VALUE.
+You MUST read the COUNT column only, NOT the total value column.
+Example: sheet shows "1000 x 4 | 4,000" means 4 bills of 1000 peso. Return COUNT=4.
+Example: sheet shows "500 x 9 | 4,500" means 9 bills of 500 peso. Return COUNT=9.
+SELF-CHECK: sum of (count x denomination) for all rows MUST equal cash_on_hand. If not, you read the wrong column.
+
+SELF-CHECK BEFORE OUTPUTTING - verify all three:
+1. Every shift_sales = end_sales - beg_sales, result between 0 and 20000. Re-read if negative or >20000.
+2. Every shift_liters = end_meter - beg_meter, result between 0 and 300. Re-read if negative or >300.
+3. Sum of (denom_count x denom_value) = cash_on_hand shown on sheet. Re-read counts if mismatch.
+
+Output ONLY this JSON, nothing else:
 {
   "date": "MM/DD/YYYY",
   "shift": "AM or PM or GY",
@@ -614,10 +626,8 @@ Respond ONLY with this exact JSON structure, no markdown, no backticks, no text 
   "price_P": 0,
   "price_D": 0,
   "dipstick": {"U_before": 0, "U_after": 0, "P_before": 0, "P_after": 0, "D_before": 0, "D_after": 0},
-  "pump1": [
-    {"fuel_type": "U or P or D", "beg_meter": 0, "beg_sales": 0, "end_meter": 0, "end_sales": 0, "shift_liters": 0, "shift_sales": 0, "auto_corrected": false, "correction_note": ""}
-  ],
-  "pump2": [same structure as pump1],
+  "pump1": [{"fuel_type": "U or P or D", "beg_meter": 0, "beg_sales": 0, "end_meter": 0, "end_sales": 0, "shift_liters": 0, "shift_sales": 0, "auto_corrected": false, "correction_note": ""}],
+  "pump2": [{"fuel_type": "U or P or D", "beg_meter": 0, "beg_sales": 0, "end_meter": 0, "end_sales": 0, "shift_liters": 0, "shift_sales": 0, "auto_corrected": false, "correction_note": ""}],
   "pump1_total_sales": 0,
   "pump2_total_sales": 0,
   "cash_sales": 0,
@@ -740,11 +750,46 @@ function applyAIData(d) {
     // Will be reflected via denominations
   }
   if (d.denominations) {
+    // AGENT CHECK: The sheet shows both COUNT and TOTAL columns for denominations.
+    // AI sometimes reads the TOTAL column instead of the COUNT column.
+    // e.g. for 1000-peso bill: count=4, total=4000. We need COUNT not TOTAL.
+    // Detection: if denom[1000] > 100, it was read as total not count. Divide back.
+    const denomsRaw = d.denominations;
+    const denomsCorrected = {};
+    DENOMS.forEach(d2 => {
+      let val = parseFloat(denomsRaw[d2]) || 0;
+      // If the value is divisible by denomination and larger than reasonable count
+      // Max reasonable count per denomination per shift: 50 bills
+      if (val > 50 && d2 > 0) {
+        // Likely a total value, convert back to count
+        const asCount = Math.round(val / d2);
+        if (asCount <= 50) {
+          denomsCorrected[d2] = asCount;
+          state.flags.push({severity:'warn', field:'denominations', message: 'Denomination ' + d2 + ': AI read total value ' + val + ' instead of count. Auto-corrected to count of ' + asCount + '.'});
+        } else {
+          denomsCorrected[d2] = val; // Keep as-is, flag for encoder
+          state.flags.push({severity:'error', field:'denomination_'+d2, message: 'Denomination ' + d2 + ' value ' + val + ' seems wrong. Please verify the COUNT (not total) of ' + d2 + '-peso bills/coins.'});
+        }
+      } else {
+        denomsCorrected[d2] = val;
+      }
+    });
+    
+    // AGENT DOUBLE-CHECK: Sum all (count x denomination) and compare to cash_on_hand from sheet
+    const computedCOH = DENOMS.reduce((sum, d2) => sum + (denomsCorrected[d2] * d2), 0);
+    const sheetCOH = parseFloat(d.cash_on_hand) || 0;
+    if (sheetCOH > 0 && Math.abs(computedCOH - sheetCOH) > 10) {
+      state.flags.push({severity:'error', field:'cash_on_hand', message: 'COH mismatch: denomination counts sum to ' + computedCOH.toFixed(2) + ' but sheet shows ' + sheetCOH.toFixed(2) + '. Please verify denomination counts.'});
+    } else if (sheetCOH > 0) {
+      state.flags.push({severity:'info', field:'cash_on_hand', message: 'COH verified: denomination counts sum to ' + computedCOH.toFixed(2) + ' matches sheet COH of ' + sheetCOH.toFixed(2) + '.'});
+    }
+
     DENOMS.forEach(d2 => {
       const inp = document.getElementById('denom-' + d2);
-      if (inp && d.denominations[d2] != null) inp.value = d.denominations[d2];
+      if (inp) inp.value = denomsCorrected[d2] || '';
     });
     calcDenomTotal();
+    recalcCash();
   }
   if (d.gcash_amount) document.getElementById('gcash-amount').value = d.gcash_amount;
   if (d.gcash_ref) document.getElementById('gcash-ref').value = d.gcash_ref;
