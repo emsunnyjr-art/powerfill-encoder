@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Powerfill Shift Encoder</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@400;500;600;700;900&family=Barlow+Condensed:wght@400;600;700&display=swap');
+  :root {
+    --bg:#0f1117; --surface:#181c26; --surface2:#1e2330; --border:#2a3045;
+    --accent:#e8b84b; --accent2:#3eb489; --danger:#e05555;
+    --text:#e8eaf0; --muted:#7a8099;
+    --mono:'Share Tech Mono',monospace; --sans:'Barlow',sans-serif; --cond:'Barlow Condensed',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh}
+  .app-header{background:var(--surface);border-bottom:2px solid var(--accent);padding:12px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+  .app-logo{font-size:24px}.app-title{font-family:var(--cond);font-size:18px;font-weight:700;letter-spacing:1px;color:var(--accent)}
+  .app-sub{font-size:11px;color:var(--muted)}
+  .admin-gear{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px 8px;border-radius:4px;transition:color .2s}
+  .admin-gear:hover{color:var(--accent)}
+  .steps-bar{display:flex;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto}
+  .step-tab{flex:1;min-width:60px;padding:10px 4px;text-align:center;font-family:var(--cond);font-size:10px;font-weight:600;letter-spacing:.5px;color:var(--muted);border-bottom:3px solid transparent;cursor:pointer;transition:all .2s;white-space:nowrap}
+  .step-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+  .step-tab.done{color:var(--accent2)}
+  .step-num{display:block;font-size:14px;margin-bottom:2px}
+  .page{display:none;padding:16px;max-width:600px;margin:0 auto}
+  .page.active{display:block}
+  .section{background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:14px;overflow:hidden}
+  .section-head{background:var(--surface2);padding:9px 14px;font-family:var(--cond);font-size:13px;font-weight:700;letter-spacing:1px;color:var(--accent);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+  .section-body{padding:12px 14px}
+  label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:600;letter-spacing:.5px}
+  input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:8px 10px;font-family:var(--mono);font-size:13px;transition:border-color .2s}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+  select option{background:var(--surface)}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+  .field-row.three{grid-template-columns:1fr 1fr 1fr}
+  .field{margin-bottom:10px}
+  .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .dip-grid{display:grid;grid-template-columns:56px 1fr 1fr;gap:8px;align-items:center;margin-bottom:8px}
+  .dip-label{font-family:var(--cond);font-weight:700;font-size:15px}
+  .meter-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px}
+  .meter-table th{background:var(--surface2);padding:5px 4px;text-align:center;font-size:9px;color:var(--muted);letter-spacing:.5px;border:1px solid var(--border);font-family:var(--cond);font-weight:600}
+  .meter-table td{border:1px solid var(--border);padding:2px}
+  .meter-table td input{border:none;background:transparent;padding:4px 4px;text-align:right;font-size:11px;width:100%}
+  .meter-table td input:focus{background:rgba(232,184,75,.08);border-radius:3px}
+  .hose-label{text-align:center!important;font-weight:700;font-family:var(--cond)!important;font-size:13px!important;padding:4px!important}
+  .diff-cell{background:rgba(62,180,137,.08);color:var(--accent2);text-align:right;padding:4px 5px;font-weight:700;font-size:11px}
+  .pump-subtotal{text-align:right;padding:6px 10px;font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent);background:rgba(232,184,75,.05);border-top:1px solid var(--border)}
+  .liter-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .liter-fuel{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px}
+  .liter-fuel-name{font-family:var(--cond);font-size:18px;font-weight:700;color:var(--accent);margin-bottom:6px}
+  .liter-fuel-total{font-family:var(--mono);font-size:14px;color:var(--accent2);font-weight:700;margin-top:6px;border-top:1px solid var(--border);padding-top:6px}
+  .liter-line{font-family:var(--mono);font-size:11px;color:var(--muted);padding:1px 0}
+  .summary-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-family:var(--mono)}
+  .summary-row:last-child{border-bottom:none}
+  .summary-label{color:var(--muted);font-size:12px}
+  .summary-value{font-size:14px;font-weight:700;color:var(--text)}
+  .summary-row.total .summary-label{color:var(--accent);font-weight:700}
+  .summary-row.total .summary-value{color:var(--accent);font-size:16px}
+  .denom-grid{display:grid;grid-template-columns:60px 1fr 80px;gap:6px;align-items:center;margin-bottom:6px}
+  .denom-bill{font-family:var(--cond);font-weight:700;font-size:14px;color:var(--accent)}
+  .denom-total-label{font-family:var(--mono);font-size:13px;color:var(--accent2);text-align:right}
+  .expense-row{display:grid;grid-template-columns:130px 1fr 88px 32px;gap:5px;align-items:center;margin-bottom:8px}
+  .expense-row select,.expense-row input{font-size:12px}
+  .del-btn{background:rgba(224,85,85,.15);border:1px solid rgba(224,85,85,.3);color:var(--danger);border-radius:5px;cursor:pointer;font-size:15px;padding:6px;text-align:center;transition:background .2s}
+  .del-btn:hover{background:rgba(224,85,85,.3)}
+  .add-btn{background:rgba(62,180,137,.1);border:1px dashed var(--accent2);color:var(--accent2);border-radius:5px;padding:8px;cursor:pointer;font-family:var(--cond);font-weight:600;font-size:13px;width:100%;text-align:center;margin-top:4px;transition:background .2s}
+  .add-btn:hover{background:rgba(62,180,137,.2)}
+  .gcash-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .btn{padding:12px 20px;border-radius:6px;border:none;font-family:var(--cond);font-weight:700;font-size:15px;letter-spacing:1px;cursor:pointer;transition:all .2s}
+  .btn-primary{background:var(--accent);color:#0f1117}
+  .btn-primary:hover{background:#f0cb6a}
+  .btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+  .btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+  .btn-success{background:var(--accent2);color:#0f1117}
+  .btn-row{display:flex;gap:10px;margin-top:8px}
+  .btn-row .btn{flex:1}
+  .upload-zone{border:2px dashed var(--border);border-radius:10px;padding:28px 16px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+  .upload-zone:hover{border-color:var(--accent);background:rgba(232,184,75,.04)}
+  .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+  .upload-icon{font-size:36px;margin-bottom:10px}
+  .upload-text{font-family:var(--cond);font-size:16px;font-weight:600;color:var(--text)}
+  .upload-sub{font-size:12px;color:var(--muted);margin-top:4px}
+  .preview-img{max-width:100%;border-radius:8px;margin-top:12px;border:1px solid var(--border)}
+  .api-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:12px}
+  .api-row .btn{padding:8px 14px;font-size:13px}
+  .ai-status{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:12px;text-align:center;font-family:var(--cond);font-size:14px;color:var(--muted);display:none}
+  .ai-status.visible{display:block}
+  .ai-status.loading{color:var(--accent);border-color:var(--accent);animation:pulse 1.5s infinite}
+  .ai-status.done{color:var(--accent2);border-color:var(--accent2)}
+  .ai-status.error{color:var(--danger);border-color:var(--danger)}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+  .admin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center}
+  .admin-overlay.open{display:flex}
+  .admin-box{background:var(--surface);border:1px solid var(--accent);border-radius:10px;padding:20px;width:min(95vw,460px);max-height:85vh;overflow-y:auto}
+  .admin-title{font-family:var(--cond);font-size:18px;font-weight:700;color:var(--accent);margin-bottom:14px}
+  .option-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+  .option-item{display:grid;grid-template-columns:1fr 32px;gap:6px}
+  .admin-section{margin-bottom:18px}
+  .admin-section h4{font-family:var(--cond);font-size:12px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:8px}
+  .submit-box{background:rgba(62,180,137,.1);border:1px solid var(--accent2);border-radius:8px;padding:16px;margin-top:12px;display:none}
+  .submit-box.visible{display:block}
+  .submit-box.error{background:rgba(224,85,85,.1);border-color:var(--danger)}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;display:none;align-items:center;justify-content:center}
+  .modal-overlay.open{display:flex}
+  .modal-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;width:min(95vw,540px);max-height:90vh;overflow-y:auto}
+  .modal-box pre{background:var(--bg);border-radius:6px;padding:12px;font-family:var(--mono);font-size:10px;overflow-x:auto;white-space:pre-wrap;color:var(--accent2)}
+  .modal-close{float:right;background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px}
+  .delivery-toggle{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .toggle-switch{position:relative;width:42px;height:22px}
+  .toggle-switch input{opacity:0;width:0;height:0}
+  .toggle-slider{position:absolute;inset:0;background:var(--border);border-radius:22px;cursor:pointer;transition:.3s}
+  .toggle-slider:before{content:'';position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:var(--muted);border-radius:50%;transition:.3s}
+  input:checked+.toggle-slider{background:var(--accent)}
+  input:checked+.toggle-slider:before{transform:translateX(20px);background:#0f1117}
+  .delivery-fields{display:none}
+  .delivery-fields.show{display:block}
+  .pill{display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;font-family:var(--cond);font-weight:700}
+  .pill-U{background:rgba(62,180,137,.2);color:var(--accent2)}
+  .pill-P{background:rgba(232,184,75,.2);color:var(--accent)}
+  .pill-D{background:rgba(100,120,200,.2);color:#8899dd}
+  .script-url-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:6px}
+  .text-muted{color:var(--muted);font-size:12px}
+  .mt-8{margin-top:8px}
+  .separator{height:1px;background:var(--border);margin:12px 0}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="app-logo">⛽</div>
+  <div>
+    <div class="app-title">POWERFILL SHIFT ENCODER</div>
+    <div class="app-sub">Photo → Verify → Submit to Google Sheet</div>
+  </div>
+  <button class="admin-gear" onclick="openAdmin()" title="Admin Options">⚙️</button>
+</div>
+
+<div class="steps-bar">
+  <div class="step-tab active" id="tab0" onclick="goTab(0)"><span class="step-num">📷</span>PHOTO</div>
+  <div class="step-tab" id="tab1" onclick="goTab(1)"><span class="step-num">📋</span>SHIFT</div>
+  <div class="step-tab" id="tab2" onclick="goTab(2)"><span class="step-num">⛽</span>METERS</div>
+  <div class="step-tab" id="tab3" onclick="goTab(3)"><span class="step-num">💵</span>CASH</div>
+  <div class="step-tab" id="tab4" onclick="goTab(4)"><span class="step-num">✅</span>SUBMIT</div>
+</div>
+
+<!-- PAGE 0: PHOTO -->
+<div class="page active" id="page0">
+  <div class="section">
+    <div class="section-head">📷 UPLOAD SHIFT REPORT PHOTO</div>
+    <div class="section-body">
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" accept="image/*" id="photoInput" onchange="handlePhoto(this)">
+        <div class="upload-icon">📸</div>
+        <div class="upload-text">Tap to take photo or upload</div>
+        <div class="upload-sub">Works on iPhone · JPG, PNG accepted</div>
+      </div>
+      <img id="previewImg" class="preview-img" style="display:none">
+      <div class="field mt-8">
+        <label>CLAUDE API KEY</label>
+        <div class="api-row">
+          <input type="password" id="apiKey" placeholder="sk-ant-...">
+          <button class="btn btn-secondary" onclick="saveKey()">SAVE</button>
+        </div>
+        <div class="text-muted" style="margin-top:4px">Saved in your browser only · Get from console.anthropic.com</div>
+      </div>
+      <div class="ai-status" id="aiStatus"></div>
+      <div class="btn-row mt-8">
+        <button class="btn btn-primary" onclick="readPhoto()">🤖 READ WITH AI</button>
+        <button class="btn btn-secondary" onclick="goTab(1)">MANUAL →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 1: SHIFT INFO -->
+<div class="page" id="page1">
+  <div class="section">
+    <div class="section-head">🏪 STATION & SHIFT</div>
+    <div class="section-body">
+      <div class="field-row">
+        <div class="field">
+          <label>STATION</label>
+          <select id="station" onchange="loadStationConfig()">
+            <option value="GS1">GS1 — Powerfill Punta 2</option>
+            <option value="GS2">GS2 — Carissa Punta 1</option>
+            <option value="GS3">GS3 — GenTri Paskaw 2</option>
+            <option value="GS4">GS4 — Ternate Sapang</option>
+            <option value="GS5">GS5 — Bagtas</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>SHIFT</label>
+          <select id="shift">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+            <option value="GY">GY (Graveyard)</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>DATE</label><input type="date" id="shiftDate"></div>
+        <div class="field"><label>P/A (CASHIER)</label><input type="text" id="cashier" placeholder="Name"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>PUMP 1 ATTENDANT</label><input type="text" id="att1" placeholder="Name"></div>
+        <div class="field"><label>PUMP 2 ATTENDANT</label><input type="text" id="att2" placeholder="Name"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">💲 SELLING PRICE / LITER</div>
+    <div class="section-body">
+      <div class="price-grid">
+        <div class="field"><label>UNLEADED (U)</label><input type="number" id="priceU" step="0.01" placeholder="0.00"></div>
+        <div class="field"><label>PREMIUM (P)</label><input type="number" id="priceP" step="0.01" placeholder="0.00"></div>
+        <div class="field"><label>DIESEL (D)</label><input type="number" id="priceD" step="0.01" placeholder="0.00"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">📊 DIPSTICK READING</div>
+    <div class="section-body">
+      <div style="display:grid;grid-template-columns:56px 1fr 1fr;gap:8px;align-items:center;margin-bottom:4px">
+        <div></div>
+        <label style="text-align:center;margin:0">BEFORE</label>
+        <label style="text-align:center;margin:0">AFTER</label>
+      </div>
+      <div id="dipstickRows"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">🚛 DELIVERY THIS SHIFT?</div>
+    <div class="section-body">
+      <div class="delivery-toggle">
+        <label class="toggle-switch">
+          <input type="checkbox" id="hasDelivery" onchange="toggleDelivery()">
+          <span class="toggle-slider"></span>
+        </label>
+        <span>Fuel delivery received this shift</span>
+      </div>
+      <div class="delivery-fields" id="deliveryFields">
+        <div class="field-row">
+          <div class="field"><label>FUEL TYPE</label>
+            <select id="delFuel"><option value="U">Unleaded</option><option value="P">Premium</option><option value="D">Diesel</option></select>
+          </div>
+          <div class="field"><label>LITERS</label><input type="number" id="delLiters" placeholder="0" step="0.01"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>BUY PRICE / L</label><input type="number" id="delPrice" placeholder="0.00" step="0.01"></div>
+          <div class="field"><label>SUPPLIER</label><input type="text" id="delSupplier" placeholder="e.g. Petron"></div>
+        </div>
+        <div class="field"><label>DR / SI NUMBER</label><input type="text" id="delDR" placeholder="DR#"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTab(0)">← BACK</button>
+    <button class="btn btn-primary" onclick="goTab(2)">NEXT: METERS →</button>
+  </div>
+</div>
+
+<!-- PAGE 2: METERS -->
+<div class="page" id="page2">
+  <div id="pumpTablesContainer"></div>
+
+  <div class="section">
+    <div class="section-head">📦 LITER SUMMARY PER FUEL</div>
+    <div class="section-body">
+      <div class="liter-summary" id="literSummary"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">💹 PESO SALES PER FUEL</div>
+    <div class="section-body" id="pesoSales"></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTab(1)">← BACK</button>
+    <button class="btn btn-primary" onclick="goTab(3)">NEXT: CASH →</button>
+  </div>
+</div>
+
+<!-- PAGE 3: CASH -->
+<div class="page" id="page3">
+  <div class="section">
+    <div class="section-head">💵 DENOMINATION COUNT</div>
+    <div class="section-body" id="denomSection"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">📱 GCASH</div>
+    <div class="section-body">
+      <div class="gcash-row">
+        <div class="field"><label>GCASH AMOUNT</label><input type="number" id="gcashAmt" placeholder="0.00" step="0.01" oninput="recalc()"></div>
+        <div class="field"><label>REFERENCE #</label><input type="text" id="gcashRef" placeholder="Ref#"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">🧾 TAKEAWAYS / EXPENSES</div>
+    <div class="section-body">
+      <div id="expenseRows"></div>
+      <button class="add-btn" onclick="addExpense()">+ ADD EXPENSE / TAKEAWAY</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">💰 CASH RECONCILIATION</div>
+    <div class="section-body" id="reconciliation"></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTab(2)">← BACK</button>
+    <button class="btn btn-primary" onclick="goTab(4)">REVIEW & SUBMIT →</button>
+  </div>
+</div>
+
+<!-- PAGE 4: SUBMIT -->
+<div class="page" id="page4">
+  <div class="section">
+    <div class="section-head">📋 FINAL SUMMARY</div>
+    <div class="section-body" id="finalSummary"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">🔗 GOOGLE SHEET INTEGRATION</div>
+    <div class="section-body">
+      <div class="text-muted">Paste your Google Apps Script Web App URL:</div>
+      <div class="script-url-row">
+        <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
+        <button class="btn btn-secondary" onclick="saveScriptUrl()" style="padding:8px 12px;font-size:12px;white-space:nowrap">SAVE</button>
+      </div>
+      <button class="btn btn-secondary mt-8" style="font-size:12px;padding:8px 14px" onclick="showScript()">📄 VIEW APPS SCRIPT CODE</button>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="goTab(3)">← BACK</button>
+    <button class="btn btn-success" onclick="submitData()">📤 SUBMIT TO GOOGLE SHEET</button>
+  </div>
+  <div class="submit-box" id="submitResult"></div>
+</div>
+
+<!-- ADMIN OVERLAY -->
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-box">
+    <button class="modal-close" onclick="closeAdmin()">✕</button>
+    <div class="admin-title">⚙️ ADMIN OPTIONS</div>
+    <p class="text-muted" style="margin-bottom:16px">Edit these lists to update expense dropdowns across the app.</p>
+
+    <div class="admin-section">
+      <h4>🚗 VEHICLES (fuel takeaways)</h4>
+      <div class="option-list" id="vehicleList"></div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:6px;margin-top:4px">
+        <input type="text" id="newVehicle" placeholder="e.g. Hilux — Mario">
+        <button class="btn btn-secondary" style="padding:7px 12px;font-size:12px" onclick="addOption('vehicle')">ADD</button>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h4>👤 STAFF (cash advances)</h4>
+      <div class="option-list" id="staffList"></div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:6px;margin-top:4px">
+        <input type="text" id="newStaff" placeholder="e.g. Kim">
+        <button class="btn btn-secondary" style="padding:7px 12px;font-size:12px" onclick="addOption('staff')">ADD</button>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h4>📦 SUPPLIES (hardware, office, etc.)</h4>
+      <div class="option-list" id="supplyList"></div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:6px;margin-top:4px">
+        <input type="text" id="newSupply" placeholder="e.g. Hardware supplies">
+        <button class="btn btn-secondary" style="padding:7px 12px;font-size:12px" onclick="addOption('supply')">ADD</button>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h4>📊 OTHER CATEGORIES</h4>
+      <div class="option-list" id="categoryList"></div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:6px;margin-top:4px">
+        <input type="text" id="newCategory" placeholder="e.g. Operations">
+        <button class="btn btn-secondary" style="padding:7px 12px;font-size:12px" onclick="addOption('category')">ADD</button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="closeAdmin()" style="width:100%;margin-top:4px">DONE</button>
+  </div>
+</div>
+
+<!-- SCRIPT MODAL -->
+<div class="modal-overlay" id="scriptModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="document.getElementById('scriptModal').classList.remove('open')">✕</button>
+    <div class="admin-title">Apps Script Code</div>
+    <p class="text-muted" style="margin-bottom:10px">Google Sheet → Extensions → Apps Script → paste → Deploy as Web App (Anyone)</p>
+    <pre id="scriptCode"></pre>
+    <button class="btn btn-primary mt-8" onclick="copyScript()" style="width:100%">📋 COPY CODE</button>
+  </div>
+</div>
+
+<script>
+// ─── STATION CONFIG ────────────────────────────────────────────────────────
+const STATION_CONFIG = {
+  GS1: { name:'Powerfill Punta 2', fuels:['U','P','D'],
+    pumps:[{ name:'PUMP 1', hoses:['D','U','U','D'] },{ name:'PUMP 2', hoses:['U','P','P','U'] }],
+    prices:{ U:79.60, P:80.10, D:90.50 } },
+  GS2: { name:'Carissa Punta 1', fuels:['U','P'],
+    pumps:[{ name:'PUMP 1', hoses:['P','P','U','U'] }],
+    prices:{ U:79.60, P:79.10, D:0 } },
+  GS3: { name:'GenTri Paskaw 2', fuels:['U','P','D'],
+    pumps:[{ name:'PUMP 1', hoses:['U','U','D','D'] }],
+    prices:{ U:79.60, P:80.10, D:90.50 } },
+  GS4: { name:'Ternate Sapang', fuels:['U','P','D'],
+    pumps:[{ name:'PUMP 1', hoses:['U','U','D','D'] }],
+    prices:{ U:79.60, P:80.10, D:90.50 } },
+  GS5: { name:'Bagtas', fuels:['U','P'],
+    pumps:[{ name:'PUMP 1', hoses:['P','P','U','U'] }],
+    prices:{ U:79.60, P:79.10, D:0 } }
+};
+
+// ─── ADMIN OPTIONS (editable, persisted in localStorage) ──────────────────
+let adminOptions = JSON.parse(localStorage.getItem('pf_admin') || 'null') || {
+  vehicle: ['Vios — Gary','Everest','Hi-Lux','Pick-up','Motorcycle'],
+  staff: ['Kim','Gary','Jess','Kenny','Jun'],
+  supply: ['Hardware','Office supplies','Cleaning materials'],
+  category: ['Operations','Others']
+};
+function saveAdminOptions(){ localStorage.setItem('pf_admin', JSON.stringify(adminOptions)); }
+
+// ─── STATE ────────────────────────────────────────────────────────────────
+const DENOMS = [1000,500,200,100,50,20,10,5,1];
+let photoBase64 = null;
+let pendingPumps = null;
+let pendingExpenses = null;
+
+// ─── INIT ─────────────────────────────────────────────────────────────────
+window.onload = function(){
+  document.getElementById('shiftDate').value = new Date().toISOString().split('T')[0];
+  const k = localStorage.getItem('pf_apikey') || '';
+  if(k) document.getElementById('apiKey').value = k;
+  const u = localStorage.getItem('pf_scriptUrl') || '';
+  if(u) document.getElementById('scriptUrl').value = u;
+  loadStationConfig();
+  buildDenomSection();
+  renderAdminLists();
+  addExpense();
+};
+
+// ─── NAV ──────────────────────────────────────────────────────────────────
+function goTab(n){
+  document.querySelectorAll('.page').forEach((p,i)=>p.classList.toggle('active',i===n));
+  document.querySelectorAll('.step-tab').forEach((t,i)=>{
+    t.classList.toggle('active',i===n);
+    i<n ? t.classList.add('done') : t.classList.remove('done');
+  });
+  if(n===2) buildMeterTables();
+  if(n===3) recalc();
+  if(n===4) buildFinalSummary();
+  window.scrollTo(0,0);
+}
+
+// ─── STATION ──────────────────────────────────────────────────────────────
+function loadStationConfig(){
+  const gs = document.getElementById('station').value;
+  const cfg = STATION_CONFIG[gs];
+  document.getElementById('priceU').value = cfg.prices.U||'';
+  document.getElementById('priceP').value = cfg.prices.P||'';
+  document.getElementById('priceD').value = cfg.prices.D||'';
+  buildDipstick(cfg);
+}
+
+function buildDipstick(cfg){
+  const cont = document.getElementById('dipstickRows');
+  cont.innerHTML = '';
+  cfg.fuels.forEach(f=>{
+    const row = document.createElement('div');
+    row.className = 'dip-grid';
+    row.innerHTML = `<div class="dip-label"><span class="pill pill-${f}">${f}</span></div>
+      <input type="number" id="dip_${f}_before" placeholder="Before" step="0.01">
+      <input type="number" id="dip_${f}_after" placeholder="After" step="0.01">`;
+    cont.appendChild(row);
+  });
+}
+
+// ─── METER TABLES ─────────────────────────────────────────────────────────
+function buildMeterTables(){
+  const gs = document.getElementById('station').value;
+  const cfg = STATION_CONFIG[gs];
+  const cont = document.getElementById('pumpTablesContainer');
+  cont.innerHTML = '';
+
+  cfg.pumps.forEach((pump,pi)=>{
+    const sec = document.createElement('div');
+    sec.className = 'section';
+    sec.innerHTML = `
+      <div class="section-head">⛽ ${pump.name}</div>
+      <div class="section-body" style="padding:8px 6px">
+        <div style="overflow-x:auto">
+          <table class="meter-table">
+            <thead><tr>
+              <th style="width:34px">HOSE</th>
+              <th>BEG. METER<br><small style="font-weight:400;font-size:8px">liters (cumul.)</small></th>
+              <th>BEG. SALES ₱<br><small style="font-weight:400;font-size:8px">cumul. peso</small></th>
+              <th>END METER<br><small style="font-weight:400;font-size:8px">liters (cumul.)</small></th>
+              <th>END SALES ₱<br><small style="font-weight:400;font-size:8px">cumul. peso</small></th>
+              <th style="width:68px">SHIFT<br>SALES ₱</th>
+            </tr></thead>
+            <tbody id="pump${pi}_tbody"></tbody>
+          </table>
+        </div>
+        <div class="pump-subtotal" id="pump${pi}_total">${pump.name} SALES: ₱0.00</div>
+      </div>`;
+    cont.appendChild(sec);
+
+    const tbody = document.getElementById(`pump${pi}_tbody`);
+    pump.hoses.forEach((fuel,hi)=>{
+      const key = `${gs}_P${pi}_H${hi}`;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="hose-label"><span class="pill pill-${fuel}">${fuel}</span></td>
+        <td><input type="number" id="${key}_bL" step="0.01" placeholder="0.00" oninput="computeRow('${key}',${pi})"></td>
+        <td><input type="number" id="${key}_bS" step="0.01" placeholder="0.00" oninput="computeRow('${key}',${pi})"></td>
+        <td><input type="number" id="${key}_eL" step="0.01" placeholder="0.00" oninput="computeRow('${key}',${pi})"></td>
+        <td><input type="number" id="${key}_eS" step="0.01" placeholder="0.00" oninput="computeRow('${key}',${pi})"></td>
+        <td class="diff-cell" id="${key}_diff">—</td>`;
+      tbody.appendChild(tr);
+    });
+  });
+
+  buildLiterSummary(cfg);
+  buildPesoSales(cfg);
+
+  // Apply AI-read data if pending
+  if(pendingPumps){ setTimeout(()=>applyPendingData(cfg), 80); }
+}
+
+function computeRow(key,pi){
+  const bS = parseFloat(document.getElementById(key+'_bS')?.value)||0;
+  const eS = parseFloat(document.getElementById(key+'_eS')?.value)||0;
+  const diff = eS - bS;
+  const el = document.getElementById(key+'_diff');
+  if(el) el.textContent = diff>0 ? '₱'+fmt(diff) : diff===0 ? '₱0.00' : '—';
+  computePumpTotal(pi);
+  updateLiterSummary();
+  updatePesoSales();
+  recalc();
+}
+
+function computePumpTotal(pi){
+  const gs = document.getElementById('station').value;
+  const cfg = STATION_CONFIG[gs];
+  if(!cfg.pumps[pi]) return;
+  let t=0;
+  cfg.pumps[pi].hoses.forEach((_,hi)=>{
+    const key=`${gs}_P${pi}_H${hi}`;
+    t+=Math.max(0,(parseFloat(document.getElementById(key+'_eS')?.value)||0)-(parseFloat(document.getElementById(key+'_bS')?.value)||0));
+  });
+  const el=document.getElementById(`pump${pi}_total`);
+  if(el) el.textContent=`${STATION_CONFIG[gs].pumps[pi].name} SALES: ₱${fmt(t)}`;
+}
+
+function buildLiterSummary(cfg){
+  const cont=document.getElementById('literSummary');
+  cont.innerHTML='';
+  cfg.fuels.forEach(f=>{
+    const d=document.createElement('div');
+    d.className='liter-fuel';
+    d.innerHTML=`<div class="liter-fuel-name"><span class="pill pill-${f}">${f}</span></div>
+      <div id="liter_lines_${f}"></div>
+      <div class="liter-fuel-total" id="liter_total_${f}">0.00 L</div>`;
+    cont.appendChild(d);
+  });
+}
+
+function buildPesoSales(cfg){
+  const cont=document.getElementById('pesoSales');
+  cont.innerHTML='';
+  cfg.fuels.forEach(f=>{
+    const r=document.createElement('div');
+    r.className='summary-row';
+    r.innerHTML=`<span class="summary-label"><span class="pill pill-${f}">${f}</span> ${f==='U'?'Unleaded':f==='P'?'Premium':'Diesel'}</span>
+      <span class="summary-value" id="peso_${f}">₱0.00</span>`;
+    cont.appendChild(r);
+  });
+  const tot=document.createElement('div');
+  tot.className='summary-row total';
+  tot.innerHTML=`<span class="summary-label">TOTAL CASH SALES</span><span class="summary-value" id="peso_TOTAL">₱0.00</span>`;
+  cont.appendChild(tot);
+}
+
+function updateLiterSummary(){
+  const gs=document.getElementById('station').value;
+  const cfg=STATION_CONFIG[gs];
+  const fl={};
+  cfg.fuels.forEach(f=>fl[f]=[]);
+  cfg.pumps.forEach((pump,pi)=>pump.hoses.forEach((fuel,hi)=>{
+    const key=`${gs}_P${pi}_H${hi}`;
+    const diff=Math.max(0,(parseFloat(document.getElementById(key+'_eL')?.value)||0)-(parseFloat(document.getElementById(key+'_bL')?.value)||0));
+    if(fl[fuel]!==undefined) fl[fuel].push(diff);
+  }));
+  cfg.fuels.forEach(f=>{
+    const lines=document.getElementById(`liter_lines_${f}`);
+    const tot=document.getElementById(`liter_total_${f}`);
+    if(!lines||!tot) return;
+    const arr=fl[f];
+    lines.innerHTML=arr.map(v=>`<div class="liter-line">${fmt(v)} L</div>`).join('');
+    tot.textContent=`= ${fmt(arr.reduce((a,b)=>a+b,0))} L`;
+  });
+}
+
+function updatePesoSales(){
+  const gs=document.getElementById('station').value;
+  const cfg=STATION_CONFIG[gs];
+  const fs={};
+  cfg.fuels.forEach(f=>fs[f]=0);
+  cfg.pumps.forEach((pump,pi)=>pump.hoses.forEach((fuel,hi)=>{
+    const key=`${gs}_P${pi}_H${hi}`;
+    const diff=Math.max(0,(parseFloat(document.getElementById(key+'_eS')?.value)||0)-(parseFloat(document.getElementById(key+'_bS')?.value)||0));
+    if(fs[fuel]!==undefined) fs[fuel]+=diff;
+  }));
+  let grand=0;
+  cfg.fuels.forEach(f=>{
+    const el=document.getElementById(`peso_${f}`);
+    if(el) el.textContent='₱'+fmt(fs[f]);
+    grand+=fs[f];
+  });
+  const tot=document.getElementById('peso_TOTAL');
+  if(tot) tot.textContent='₱'+fmt(grand);
+}
+
+function getTotalSales(){
+  const gs=document.getElementById('station').value;
+  const cfg=STATION_CONFIG[gs];
+  let t=0;
+  cfg.pumps.forEach((pump,pi)=>pump.hoses.forEach((_,hi)=>{
+    const key=`${gs}_P${pi}_H${hi}`;
+    t+=Math.max(0,(parseFloat(document.getElementById(key+'_eS')?.value)||0)-(parseFloat(document.getElementById(key+'_bS')?.value)||0));
+  }));
+  return t;
+}
+
+// ─── DENOMINATION ─────────────────────────────────────────────────────────
+function buildDenomSection(){
+  const cont=document.getElementById('denomSection');
+  cont.innerHTML='';
+  DENOMS.forEach(d=>{
+    const row=document.createElement('div');
+    row.className='denom-grid';
+    row.innerHTML=`<div class="denom-bill">₱${d>=1000?d.toLocaleString():d}</div>
+      <input type="number" id="denom_${d}" min="0" step="1" placeholder="count" oninput="recalc()">
+      <div class="denom-total-label" id="denomT_${d}">₱0</div>`;
+    cont.appendChild(row);
+  });
+  const tot=document.createElement('div');
+  tot.style.cssText='display:flex;justify-content:space-between;padding:10px 0;border-top:2px solid var(--accent);margin-top:6px;font-family:var(--mono);font-weight:700';
+  tot.innerHTML='<span style="color:var(--accent)">TOTAL CASH ON HAND</span><span id="denomGrand" style="color:var(--accent);font-size:16px">₱0.00</span>';
+  cont.appendChild(tot);
+}
+
+function getDenomTotal(){
+  let tot=0;
+  DENOMS.forEach(d=>{
+    const cnt=parseInt(document.getElementById(`denom_${d}`)?.value)||0;
+    const sub=cnt*d;
+    const el=document.getElementById(`denomT_${d}`);
+    if(el) el.textContent=sub>0?'₱'+sub.toLocaleString():'₱0';
+    tot+=sub;
+  });
+  const el=document.getElementById('denomGrand');
+  if(el) el.textContent='₱'+fmt(tot);
+  return tot;
+}
+
+// ─── EXPENSES ─────────────────────────────────────────────────────────────
+const EXPENSE_TYPES=[
+  {value:'vehicle_fuel', label:'⛽ Vehicle Fuel'},
+  {value:'cash_advance', label:'💸 Cash Advance'},
+  {value:'supplies', label:'📦 Supplies'},
+  {value:'operations', label:'🔧 Operations'},
+  {value:'other', label:'📋 Other'}
+];
+
+function addExpense(prefill={}){
+  const id = 'e'+Date.now()+Math.floor(Math.random()*1000);
+  const cont=document.getElementById('expenseRows');
+  const row=document.createElement('div');
+  row.className='expense-row';
+  row.id=`exp_${id}`;
+  const typeOpts=EXPENSE_TYPES.map(t=>`<option value="${t.value}"${prefill.type===t.value?' selected':''}>${t.label}</option>`).join('');
+  row.innerHTML=`
+    <select id="expType_${id}" onchange="refreshExpDesc('${id}')">
+      ${typeOpts}
+    </select>
+    <input type="text" id="expDesc_${id}" placeholder="Description" value="${prefill.desc||''}">
+    <input type="number" id="expAmt_${id}" placeholder="₱0.00" step="0.01" value="${prefill.amt||''}" oninput="recalc()">
+    <button class="del-btn" onclick="removeExpense('${id}')">✕</button>`;
+  cont.appendChild(row);
+  refreshExpDesc(id, prefill.desc);
+  recalc();
+}
+
+function refreshExpDesc(id, preset){
+  const sel=document.getElementById(`expType_${id}`);
+  const descEl=document.getElementById(`expDesc_${id}`);
+  if(!sel||!descEl) return;
+  const type=sel.value;
+  // Remove old datalist
+  const old=document.getElementById(`dl_${id}`);
+  if(old) old.remove();
+  const dl=document.createElement('datalist');
+  dl.id=`dl_${id}`;
+  let opts=[];
+  if(type==='vehicle_fuel') opts=adminOptions.vehicle;
+  else if(type==='cash_advance') opts=adminOptions.staff;
+  else if(type==='supplies') opts=adminOptions.supply;
+  else opts=adminOptions.category;
+  opts.forEach(o=>{ const op=document.createElement('option'); op.value=o; dl.appendChild(op); });
+  descEl.after(dl);
+  descEl.setAttribute('list',`dl_${id}`);
+  if(!preset) descEl.placeholder = type==='vehicle_fuel'?'e.g. Vios — Gary':type==='cash_advance'?'e.g. Kim':'Description';
+}
+
+function removeExpense(id){
+  const el=document.getElementById(`exp_${id}`);
+  if(el) el.remove();
+  recalc();
+}
+
+function getExpenses(){
+  const rows=document.querySelectorAll('.expense-row');
+  const result=[];
+  rows.forEach(row=>{
+    const id=row.id.replace('exp_','');
+    const type=document.getElementById(`expType_${id}`)?.value||'';
+    const desc=document.getElementById(`expDesc_${id}`)?.value||'';
+    const amt=parseFloat(document.getElementById(`expAmt_${id}`)?.value)||0;
+    if(amt>0||desc) result.push({type,desc,amt});
+  });
+  return result;
+}
+
+function getTotalExpenses(){ return getExpenses().reduce((s,e)=>s+e.amt,0); }
+
+// ─── RECONCILIATION ───────────────────────────────────────────────────────
+function recalc(){
+  const denomTotal=getDenomTotal();
+  const gcash=parseFloat(document.getElementById('gcashAmt')?.value)||0;
+  const cashOnHand=denomTotal+gcash;
+  const totalSales=getTotalSales();
+  const totalExp=getTotalExpenses();
+  const netExpected=totalSales-totalExp;
+  const variance=cashOnHand-netExpected;
+  const cont=document.getElementById('reconciliation');
+  if(!cont) return;
+  const vColor=variance<-0.005?'var(--danger)':variance>0.005?'var(--accent2)':'var(--accent2)';
+  const vLabel=variance<-0.005?`⚠️ SHORT ₱${fmt(Math.abs(variance))}`:variance>0.005?`✅ OVER ₱${fmt(Math.abs(variance))}`:'✅ BALANCED';
+  cont.innerHTML=`
+    <div class="summary-row"><span class="summary-label">TOTAL CASH SALES</span><span class="summary-value">₱${fmt(totalSales)}</span></div>
+    <div class="summary-row"><span class="summary-label">TOTAL DEDUCTIONS</span><span class="summary-value" style="color:var(--danger)">− ₱${fmt(totalExp)}</span></div>
+    <div class="summary-row"><span class="summary-label">NET EXPECTED CASH</span><span class="summary-value">₱${fmt(netExpected)}</span></div>
+    <div class="separator"></div>
+    <div class="summary-row"><span class="summary-label">DENOMINATION TOTAL</span><span class="summary-value">₱${fmt(denomTotal)}</span></div>
+    <div class="summary-row"><span class="summary-label">+ GCASH</span><span class="summary-value">₱${fmt(gcash)}</span></div>
+    <div class="summary-row total"><span class="summary-label">CASH ON HAND</span><span class="summary-value">₱${fmt(cashOnHand)}</span></div>
+    <div class="separator"></div>
+    <div style="background:rgba(0,0,0,.2);border-radius:6px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-family:var(--cond);font-size:14px;font-weight:700">${vLabel}</span>
+      <span style="color:${vColor};font-family:var(--mono);font-size:17px;font-weight:700"></span>
+    </div>`;
+}
+
+// ─── FINAL SUMMARY ────────────────────────────────────────────────────────
+function buildFinalSummary(){
+  const gs=document.getElementById('station').value;
+  const cfg=STATION_CONFIG[gs];
+  const date=document.getElementById('shiftDate').value;
+  const shift=document.getElementById('shift').value;
+  const cashier=document.getElementById('cashier').value;
+  const att1=document.getElementById('att1').value;
+  const att2=document.getElementById('att2').value;
+  const totalSales=getTotalSales();
+  const totalExp=getTotalExpenses();
+  const denomTotal=getDenomTotal();
+  const gcash=parseFloat(document.getElementById('gcashAmt')?.value)||0;
+  const cashOnHand=denomTotal+gcash;
+  const variance=cashOnHand-(totalSales-totalExp);
+  const exps=getExpenses();
+  const vText=variance<-0.005?`SHORT ₱${fmt(Math.abs(variance))}`:variance>0.005?`OVER ₱${fmt(Math.abs(variance))}`:'BALANCED';
+  const vColor=variance<-0.005?'var(--danger)':'var(--accent2)';
+  document.getElementById('finalSummary').innerHTML=`
+    <div class="summary-row"><span class="summary-label">STATION</span><span class="summary-value">${gs} — ${cfg.name}</span></div>
+    <div class="summary-row"><span class="summary-label">DATE / SHIFT</span><span class="summary-value">${date} | ${shift}</span></div>
+    <div class="summary-row"><span class="summary-label">CASHIER</span><span class="summary-value">${cashier||'—'}</span></div>
+    <div class="summary-row"><span class="summary-label">ATTENDANTS</span><span class="summary-value">${att1||'—'} / ${att2||'—'}</span></div>
+    <div class="separator"></div>
+    <div class="summary-row"><span class="summary-label">TOTAL CASH SALES</span><span class="summary-value">₱${fmt(totalSales)}</span></div>
+    <div class="summary-row"><span class="summary-label">TOTAL DEDUCTIONS</span><span class="summary-value" style="color:var(--danger)">₱${fmt(totalExp)}</span></div>
+    <div class="summary-row total"><span class="summary-label">CASH ON HAND</span><span class="summary-value">₱${fmt(cashOnHand)}</span></div>
+    <div class="summary-row"><span class="summary-label">VARIANCE</span><span class="summary-value" style="color:${vColor}">${vText}</span></div>
+    ${exps.length?`<div class="separator"></div><div style="font-size:11px;color:var(--muted);font-family:var(--cond);letter-spacing:.5px;margin-bottom:6px">TAKEAWAYS / EXPENSES</div>
+    ${exps.map(e=>`<div class="summary-row"><span class="summary-label">${e.desc||e.type}</span><span class="summary-value" style="color:var(--danger)">₱${fmt(e.amt)}</span></div>`).join('')}`:''}`;
+}
+
+// ─── PHOTO & AI ───────────────────────────────────────────────────────────
+function handlePhoto(input){
+  const file=input.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    photoBase64=e.target.result.split(',')[1];
+    const img=document.getElementById('previewImg');
+    img.src=e.target.result; img.style.display='block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveKey(){
+  const k=document.getElementById('apiKey').value.trim();
+  localStorage.setItem('pf_apikey',k);
+  showStatus('API key saved ✓','done');
+}
+
+function showStatus(msg,type='loading'){
+  const el=document.getElementById('aiStatus');
+  el.textContent=msg;
+  el.className='ai-status visible '+type;
+}
+
+async function readPhoto(){
+  if(!photoBase64){ alert('Please upload a photo first.'); return; }
+  const key=localStorage.getItem('pf_apikey')||document.getElementById('apiKey').value.trim();
+  if(!key){ alert('Please enter your Claude API key.'); return; }
+  showStatus('🤖 Reading handwritten report...','loading');
+  const gs=document.getElementById('station').value;
+  const cfg=STATION_CONFIG[gs];
+  const prompt=`You are reading a handwritten gas station shift report for ${cfg.name} (${gs}).
+Station fuels: ${cfg.fuels.join(', ')}. Pumps: ${cfg.pumps.map((p,i)=>`Pump ${i+1} hoses (in order): ${p.hoses.join(',')}`).join('; ')}.
+
+Meter columns are: Beginning Meter (liters cumulative) | Beginning Sales (cumulative peso) | Ending Meter (liters cumulative) | Ending Sales (cumulative peso) | Shift Sales (difference).
+Shift Sales = Ending Sales - Beginning Sales.
+For dipstick: if a number is crossed out (delivery arrived), use the final uncrossed number as before value.
+For expenses: vehicles (Vios, Everest, Hi-Lux, trucks) → type "vehicle_fuel". Staff cash advance → type "cash_advance". Hardware/supplies → type "supplies".
+
+Return ONLY valid JSON (no markdown, no text):
+{
+  "date":"YYYY-MM-DD","shift":"AM|PM|GY","cashier":"","att1":"","att2":"",
+  "priceU":0,"priceP":0,"priceD":0,
+  "dipstick":{"U":{"before":0,"after":0},"P":{"before":0,"after":0},"D":{"before":0,"after":0}},
+  "pumps":[{"hoses":[{"fuel":"U|P|D","begLiter":0,"begSales":0,"endLiter":0,"endSales":0}]}],
+  "denoms":{"1000":0,"500":0,"200":0,"100":0,"50":0,"20":0,"10":0,"5":0,"1":0},
+  "gcashAmt":0,"gcashRef":"",
+  "delivery":{"hasDel":false,"fuel":"U","liters":0,"price":0,"supplier":"","dr":""},
+  "expenses":[{"type":"vehicle_fuel|cash_advance|supplies|operations|other","desc":"","amt":0}]
+}`;
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,
+        messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:'image/jpeg',data:photoBase64}},
+          {type:'text',text:prompt}
+        ]}]})
+    });
+    const data=await resp.json();
+    if(data.error) throw new Error(data.error.message);
+    const txt=data.content[0].text.trim().replace(/```json|```/g,'').trim();
+    const json=JSON.parse(txt);
+    fillFromAI(json);
+    showStatus('✅ Report read! Please verify all fields.','done');
+    setTimeout(()=>goTab(1),1200);
+  }catch(e){ showStatus('❌ Error: '+e.message,'error'); }
+}
+
+function fillFromAI(d){
+  const sv=(id,v)=>{ const el=document.getElementById(id); if(el&&v!=null&&v!=='') el.value=v; };
+  sv('shiftDate',d.date); sv('shift',d.shift); sv('cashier',d.cashier);
+  sv('att1',d.att1); sv('att2',d.att2);
+  sv('priceU',d.priceU); sv('priceP',d.priceP); sv('priceD',d.priceD);
+  if(d.dipstick) Object.entries(d.dipstick).forEach(([f,v])=>{ sv(`dip_${f}_before`,v.before); sv(`dip_${f}_after`,v.after); });
+  if(d.delivery?.hasDel){
+    document.getElementById('hasDelivery').checked=true; toggleDelivery();
+    sv('delFuel',d.delivery.fuel); sv('delLiters',d.delivery.liters);
+    sv('delPrice',d.delivery.price); sv('delSupplier',d.delivery.supplier); sv('delDR',d.delivery.dr);
+  }
+  if(d.denoms) Object.entries(d.denoms).forEach(([bill,cnt])=>sv(`denom_${bill}`,cnt));
+  sv('gcashAmt',d.gcashAmt); sv('gcashRef',d.gcashRef);
+  pendingPumps=d.pumps;
+  pendingExpenses=d.expenses;
+}
+
+function applyPendingData(cfg){
+  if(!pendingPumps) return;
+  const gs=document.getElementById('station').value;
+  pendingPumps.forEach((pump,pi)=>{
+    pump.hoses.forEach((hose,hi)=>{
+      const key=`${gs}_P${pi}_H${hi}`;
+      const sv=(suf,v)=>{ const el=document.getElementById(key+suf); if(el&&v!=null) el.value=v; };
+      sv('_bL',hose.begLiter); sv('_bS',hose.begSales);
+      sv('_eL',hose.endLiter); sv('_eS',hose.endSales);
+      computeRow(key,pi);
+    });
+  });
+  pendingPumps=null;
+  if(pendingExpenses){
+    document.getElementById('expenseRows').innerHTML='';
+    pendingExpenses.forEach(e=>addExpense(e));
+    pendingExpenses=null;
+  }
+}
+
+// ─── DELIVERY TOGGLE ──────────────────────────────────────────────────────
+function toggleDelivery(){
+  const show=document.getElementById('hasDelivery').checked;
+  document.getElementById('deliveryFields').classList.toggle('show',show);
+}
+
+// ─── ADMIN ────────────────────────────────────────────────────────────────
+function openAdmin(){ document.getElementById('adminOverlay').classList.add('open'); renderAdminLists(); }
+function closeAdmin(){ document.getElementById('adminOverlay').classList.remove('open'); }
+
+function renderAdminLists(){
+  ['vehicle','staff','supply','category'].forEach(type=>{
+    const cont=document.getElementById(`${type}List`);
+    if(!cont) return;
+    cont.innerHTML='';
+    adminOptions[type].forEach((item,i)=>{
+      const row=document.createElement('div');
+      row.className='option-item';
+      row.innerHTML=`<input type="text" value="${item}" onchange="editOption('${type}',${i},this.value)">
+        <button class="del-btn" onclick="removeOption('${type}',${i})">✕</button>`;
+      cont.appendChild(row);
+    });
+  });
+}
+
+function addOption(type){
+  const inp=document.getElementById(`new${type.charAt(0).toUpperCase()+type.slice(1)}`);
+  if(!inp||!inp.value.trim()) return;
+  adminOptions[type].push(inp.value.trim()); inp.value='';
+  saveAdminOptions(); renderAdminLists();
+}
+function editOption(type,i,val){ adminOptions[type][i]=val; saveAdminOptions(); }
+function removeOption(type,i){ adminOptions[type].splice(i,1); saveAdminOptions(); renderAdminLists(); }
+
+// ─── SUBMIT ───────────────────────────────────────────────────────────────
+function saveScriptUrl(){
+  localStorage.setItem('pf_scriptUrl',document.getElementById('scriptUrl').value.trim());
+  alert('Script URL saved!');
+}
+
+async function submitData(){
+  const url=localStorage.getItem('pf_scriptUrl')||document.getElementById('scriptUrl').value.trim();
+  if(!url){ alert('Please enter your Google Apps Script URL first.'); return; }
+  const gs=document.getElementById('station').value;
+  const cfg=STATION_CONFIG[gs];
+  const date=document.getElementById('shiftDate').value;
+  const shift=document.getElementById('shift').value;
+  const totalSales=getTotalSales();
+  const totalExp=getTotalExpenses();
+  const denomTotal=getDenomTotal();
+  const gcash=parseFloat(document.getElementById('gcashAmt')?.value)||0;
+  const cashOnHand=denomTotal+gcash;
+  const variance=cashOnHand-(totalSales-totalExp);
+  const exps=getExpenses();
+  const meters=[];
+  cfg.pumps.forEach((pump,pi)=>pump.hoses.forEach((fuel,hi)=>{
+    const key=`${gs}_P${pi}_H${hi}`;
+    const bL=parseFloat(document.getElementById(key+'_bL')?.value)||0;
+    const bS=parseFloat(document.getElementById(key+'_bS')?.value)||0;
+    const eL=parseFloat(document.getElementById(key+'_eL')?.value)||0;
+    const eS=parseFloat(document.getElementById(key+'_eS')?.value)||0;
+    meters.push({pump:pi+1,hose:hi+1,fuel,begLiter:bL,begSales:bS,endLiter:eL,endSales:eS,shiftSales:Math.max(0,eS-bS)});
+  }));
+  const payload={
+    timestamp:new Date().toISOString(), station:gs, stationName:cfg.name,
+    date, shift,
+    cashier:document.getElementById('cashier').value,
+    att1:document.getElementById('att1').value,
+    att2:document.getElementById('att2').value,
+    priceU:parseFloat(document.getElementById('priceU').value)||0,
+    priceP:parseFloat(document.getElementById('priceP').value)||0,
+    priceD:parseFloat(document.getElementById('priceD').value)||0,
+    dipstick:cfg.fuels.map(f=>({fuel:f,before:parseFloat(document.getElementById(`dip_${f}_before`)?.value)||0,after:parseFloat(document.getElementById(`dip_${f}_after`)?.value)||0})),
+    meters, totalSales, totalExp, cashOnHand, denomTotal, gcash,
+    variance, varianceType:variance<-0.005?'SHORT':variance>0.005?'OVER':'BALANCED',
+    expenses:exps,
+    delivery:document.getElementById('hasDelivery').checked?{
+      fuel:document.getElementById('delFuel').value,
+      liters:parseFloat(document.getElementById('delLiters').value)||0,
+      price:parseFloat(document.getElementById('delPrice').value)||0,
+      supplier:document.getElementById('delSupplier').value,
+      dr:document.getElementById('delDR').value
+    }:null,
+    gcashRef:document.getElementById('gcashRef').value,
+    denoms:Object.fromEntries(DENOMS.map(d=>[d,parseInt(document.getElementById(`denom_${d}`)?.value)||0]))
+  };
+  const resBox=document.getElementById('submitResult');
+  resBox.className='submit-box visible'; resBox.textContent='⏳ Submitting...';
+  try{
+    await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    resBox.innerHTML=`<strong style="color:var(--accent2)">✅ Submitted successfully!</strong><br><span class="text-muted">${date} ${shift} — ${gs} — ₱${fmt(totalSales)} total sales</span>`;
+  }catch(e){
+    resBox.className='submit-box visible error';
+    resBox.innerHTML=`<strong style="color:var(--danger)">❌ Failed</strong><br><span class="text-muted">${e.message}</span>`;
+  }
+}
+
+// ─── APPS SCRIPT ──────────────────────────────────────────────────────────
+function showScript(){ document.getElementById('scriptCode').textContent=getScriptCode(); document.getElementById('scriptModal').classList.add('open'); }
+function copyScript(){ navigator.clipboard.writeText(getScriptCode()).then(()=>alert('Copied!')); }
+
+function getScriptCode(){
+return `function doPost(e) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sh = ss.getSheetByName("Shift Reports") || ss.insertSheet("Shift Reports");
+
+    if(sh.getLastRow() === 0) {
+      sh.appendRow([
+        "Timestamp","Station","Station Name","Date","Shift","Cashier","Att1","Att2",
+        "Price U","Price P","Price D",
+        "Dip U Before","Dip U After","Dip P Before","Dip P After","Dip D Before","Dip D After",
+        "Total Sales","Total Deductions","Cash On Hand","Denom Total","GCash Amt","GCash Ref",
+        "Variance","Variance Type",
+        "Delivery Fuel","Delivery Liters","Delivery Price","Delivery Supplier","Delivery DR",
+        "Meters JSON","Expenses JSON","Denoms JSON"
+      ]);
+    }
+
+    var d = JSON.parse(e.postData.contents);
+    var dips = {};
+    (d.dipstick||[]).forEach(function(r){ dips[r.fuel]=r; });
+
+    sh.appendRow([
+      d.timestamp, d.station, d.stationName, d.date, d.shift,
+      d.cashier, d.att1, d.att2,
+      d.priceU, d.priceP, d.priceD,
+      (dips.U||{}).before||0, (dips.U||{}).after||0,
+      (dips.P||{}).before||0, (dips.P||{}).after||0,
+      (dips.D||{}).before||0, (dips.D||{}).after||0,
+      d.totalSales, d.totalExp, d.cashOnHand,
+      d.denomTotal, d.gcash, d.gcashRef,
+      d.variance, d.varianceType,
+      d.delivery ? d.delivery.fuel : "",
+      d.delivery ? d.delivery.liters : 0,
+      d.delivery ? d.delivery.price : 0,
+      d.delivery ? d.delivery.supplier : "",
+      d.delivery ? d.delivery.dr : "",
+      JSON.stringify(d.meters),
+      JSON.stringify(d.expenses),
+      JSON.stringify(d.denoms)
+    ]);
+
+    return ContentService
+      .createTextOutput(JSON.stringify({status:"ok"}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({status:"error",message:err.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}`;}
+
+// ─── UTIL ─────────────────────────────────────────────────────────────────
+function fmt(n){ return parseFloat(n||0).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+</script>
+</body>
+</html>
