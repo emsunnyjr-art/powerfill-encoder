@@ -233,10 +233,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div id="shift-active-content">
       <div class="card">
         <div class="card-title"><span class="card-title-dot"></span>Upload Handwritten Report</div>
-        <div style="margin-bottom:12px">
-          <input type="file" id="photo-input" accept="image/*" onchange="onPhotoChange(event)" style="width:100%;padding:30px 0;font-size:14px;color:#f0f4ff;background:rgba(249,168,37,0.04);border:2px dashed rgba(249,168,37,0.4);border-radius:12px;cursor:pointer">
-          <img id="photo-preview" style="display:none;width:100%;border-radius:8px;margin-top:10px;max-height:220px;object-fit:contain;background:#000">
+        <div class="photo-area" id="photo-drop-zone">
+          <input type="file" id="photo-input" accept="image/*" onchange="onPhotoChange(event)" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer">
+          <div style="font-size:36px">📷</div>
+          <div style="color:#8899bb;font-size:13px;margin-top:6px">Tap to <strong style="color:#f0f4ff">capture or upload</strong></div>
         </div>
+        <img id="photo-preview" style="display:none;width:100%;border-radius:8px;margin-top:10px;max-height:220px;object-fit:contain;background:#000">
         <img class="photo-preview" id="photo-preview">
       </div>
       <button class="btn-primary" id="ai-btn" onclick="readWithAI()" disabled>
