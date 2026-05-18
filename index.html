@@ -7,11 +7,11 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#1a1a2e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;min-height:100vh}
-.topbar{background:linear-gradient(135deg,#e65c00,#f9a825);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar{background:linear-gradient(135deg,#e65c00,#f9a825);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.4)}
 .logo{font-size:20px;font-weight:800;color:#fff}.logo span{font-weight:300;opacity:.8}
 .logo-sub{font-size:10px;color:rgba(255,255,255,.75)}
-.badges{display:flex;gap:6px}
-.badge{background:rgba(0,0,0,.3);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;color:#fff;border:1px solid rgba(255,255,255,.2)}
+.bdgs{display:flex;gap:6px}
+.bdg{background:rgba(0,0,0,.3);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;color:#fff;border:1px solid rgba(255,255,255,.2)}
 .mainnav{display:flex;background:#16213e;border-bottom:2px solid rgba(255,255,255,.08);overflow-x:auto;scrollbar-width:none}
 .mainnav::-webkit-scrollbar{display:none}
 .mnav{flex:0 0 auto;padding:11px 16px;font-size:11px;font-weight:700;color:#8899bb;cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;text-transform:uppercase}
@@ -29,17 +29,21 @@ body{background:#1a1a2e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;min-heig
 .stntab{flex:1;padding:9px 4px;background:#243352;border:1.5px solid rgba(255,255,255,.08);border-radius:8px;text-align:center;font-size:12px;font-weight:700;color:#8899bb;cursor:pointer;transition:all .2s}
 .stntab.active{background:rgba(230,92,0,.2);border-color:#e65c00;color:#fff}
 .stntab.off{opacity:.3;cursor:default}
-.flabel{font-size:10px;font-weight:600;color:#8899bb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.fl{font-size:10px;font-weight:600;color:#8899bb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
 input,select,textarea{width:100%;background:#16213e;border:1px solid rgba(255,255,255,.08);border-radius:8px;color:#f0f4ff;font-size:14px;padding:8px 11px;font-family:inherit;-webkit-appearance:none}
-input:focus,select:focus{outline:none;border-color:#f9a825}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#f9a825}
+input[readonly]{color:#f9a825;opacity:.8}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238899bb'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+.fg{margin-bottom:10px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.fg{margin-bottom:10px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px}
 .btnmain{width:100%;padding:13px;background:linear-gradient(135deg,#e65c00,#f9a825);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px}
 .btnmain:disabled{opacity:.4;cursor:not-allowed}
 .btnsec{width:100%;padding:10px;background:transparent;border:1.5px solid rgba(255,255,255,.1);border-radius:8px;color:#8899bb;font-size:13px;cursor:pointer;margin-bottom:8px}
 .btnsm{padding:5px 10px;background:#0f3460;border:1px solid rgba(255,255,255,.1);border-radius:6px;color:#f0f4ff;font-size:12px;cursor:pointer}
 .sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.sg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
 .sc{background:#243352;border-radius:10px;padding:11px;border:1px solid rgba(255,255,255,.08)}
 .slabel{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#8899bb;margin-bottom:3px}
 .sval{font-size:18px;font-weight:800}
@@ -49,34 +53,31 @@ input:focus,select:focus{outline:none;border-color:#f9a825}
 .status.ok{background:rgba(0,230,118,.1);color:#00e676;border:1px solid rgba(0,230,118,.3)}
 .status.err{background:rgba(255,82,82,.1);color:#ff5252;border:1px solid rgba(255,82,82,.3)}
 .status.warn{background:rgba(249,168,37,.1);color:#f9a825;border:1px solid rgba(249,168,37,.3)}
-/* PHOTO UPLOAD */
-.upload-box{position:relative;border:2px dashed rgba(249,168,37,.4);border-radius:12px;padding:30px 20px;text-align:center;background:rgba(249,168,37,.04);margin-bottom:12px;cursor:pointer}
-.upload-box input[type=file]{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0}
-.upload-box .icon{font-size:40px;margin-bottom:8px}
-.upload-box .txt{color:#8899bb;font-size:13px}
-.upload-box .txt strong{color:#f0f4ff}
+/* PHOTO */
+.upbox{position:relative;border:2px dashed rgba(249,168,37,.4);border-radius:12px;padding:28px 20px;text-align:center;background:rgba(249,168,37,.04);margin-bottom:12px;min-height:100px}
+.upbox input[type=file]{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0}
 #photo-preview{width:100%;border-radius:8px;max-height:220px;object-fit:contain;background:#000;display:none;margin-bottom:10px}
-/* HOSE TABLE */
-.twrap{overflow-x:auto;margin-bottom:8px}
-.htbl{width:100%;border-collapse:collapse;font-size:12px;min-width:520px}
-.htbl th{background:#0f3460;color:#f9a825;font-size:10px;font-weight:700;text-transform:uppercase;padding:7px 5px;text-align:center;border-bottom:1px solid rgba(255,255,255,.08);white-space:nowrap}
-.htbl th:first-child{text-align:left}
-.htbl td{padding:5px 4px;border-bottom:1px solid rgba(255,255,255,.06);text-align:center;vertical-align:middle}
-.htbl td:first-child{text-align:left}
-.htbl input{padding:5px 6px;font-size:12px;text-align:right;background:#16213e}
-.shiftcell{background:rgba(249,168,37,.1);color:#f9a825;font-weight:700}
-.flagcell{background:rgba(255,82,82,.1);color:#ff5252;font-weight:700}
-.tfoot td{background:rgba(249,168,37,.08);color:#f9a825;font-weight:700;font-size:13px;padding:8px 5px;border-top:2px solid #f9a825}
+/* PUMP TABLE */
+.ptbl{width:100%;border-collapse:collapse;font-size:12px}
+.ptbl th{background:#0f3460;color:#f9a825;font-size:10px;font-weight:700;text-transform:uppercase;padding:7px 6px;text-align:center;border-bottom:1px solid rgba(255,255,255,.08)}
+.ptbl th:first-child{text-align:left;width:60px}
+.ptbl td{padding:6px 5px;border-bottom:1px solid rgba(255,255,255,.06);text-align:center;vertical-align:middle}
+.ptbl td:first-child{text-align:left}
+.ptbl input{padding:5px 6px;font-size:12px;text-align:right;background:#16213e}
+.ptbl select{font-size:11px;padding:4px 20px 4px 5px;background:#16213e}
+.sc-cell{background:rgba(249,168,37,.1);color:#f9a825;font-weight:700;font-size:13px}
+.flag-cell{background:rgba(255,82,82,.1);color:#ff5252;font-weight:700;font-size:13px}
+.tfoot-row td{background:rgba(249,168,37,.08);color:#f9a825;font-weight:700;font-size:13px;padding:8px 5px;border-top:2px solid #f9a825}
 /* DENOM */
 .dtbl{width:100%;border-collapse:collapse}
-.dtbl td{padding:5px 4px;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px}
-.dtbl td:last-child{width:120px}
-.dtfoot td{padding:8px 4px;color:#f9a825;font-weight:700;border-top:2px solid #f9a825}
-/* EMPLOYEE */
-.empcard{background:#243352;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
-.avatar{width:48px;height:48px;border-radius:50%;background:#0f3460;border:2px solid #f9a825;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#f9a825}
-.avatar img{width:100%;height:100%;object-fit:cover}
-/* CHECK */
+.dtbl td{padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px}
+.dtbl td:nth-child(2){width:80px;text-align:center;color:#8899bb}
+.dtbl td:last-child{width:110px}
+.dtbl input{text-align:right;padding:5px 8px}
+.dtfoot td{padding:8px 4px;color:#f9a825;font-weight:700;font-size:15px;border-top:2px solid #f9a825}
+/* PAYROW */
+.payrow{display:flex;gap:8px;align-items:center;background:#243352;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px;margin-bottom:8px}
+/* CHECK ROW */
 .chkrow{background:#243352;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;margin-bottom:8px}
 .csbadge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700}
 .pending{background:rgba(249,168,37,.15);color:#f9a825}
@@ -86,66 +87,62 @@ input:focus,select:focus{outline:none;border-color:#f9a825}
 .pinoverlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:999;display:none;align-items:center;justify-content:center}
 .pinoverlay.show{display:flex}
 .pinbox{background:#1e2a45;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px;width:280px;text-align:center}
-/* AI RESULT */
-.aisum{font-size:13px;line-height:1.9;color:#f0f4ff}
-.airaw{font-size:11px;white-space:pre-wrap;max-height:150px;overflow-y:auto;color:#8899bb;margin-top:8px;display:none}
-.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+/* EMP */
+.empcard{background:#243352;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.avatar{width:48px;height:48px;border-radius:50%;background:#0f3460;border:2px solid #f9a825;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#f9a825}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
-.payrow{background:#243352;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px;margin-bottom:8px;display:flex;gap:8px;align-items:center}
-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238899bb'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
 </style>
 </head>
 <body>
 
-<!-- PIN OVERLAY -->
+<!-- PIN -->
 <div class="pinoverlay" id="pin-overlay">
   <div class="pinbox">
     <div style="font-size:18px;font-weight:800;color:#f9a825;margin-bottom:6px">🔒 Manager Access</div>
     <div style="font-size:12px;color:#8899bb;margin-bottom:20px">Enter your PIN</div>
     <input type="password" id="pin-input" maxlength="6" placeholder="••••••" style="font-size:24px;letter-spacing:8px;text-align:center;padding:12px" oninput="checkPin()">
-    <div id="pin-err" style="color:#ff5252;font-size:12px;margin-top:8px;display:none">Wrong PIN</div>
+    <div id="pin-err" style="color:#ff5252;font-size:12px;margin-top:8px;display:none">Wrong PIN. Try again.</div>
     <button class="btnsec" style="margin-top:14px" onclick="document.getElementById('pin-overlay').classList.remove('show')">Cancel</button>
   </div>
 </div>
 
 <!-- TOPBAR -->
 <div class="topbar">
-  <div>
-    <div class="logo">A's Fuel <span>Encoder</span> ⛽</div>
-    <div class="logo-sub">Business Management System v4</div>
-  </div>
-  <div class="badges">
-    <div class="badge" id="bdg-date">—</div>
-    <div class="badge" id="bdg-stn">GS1</div>
-  </div>
+  <div><div class="logo">A's Fuel <span>Encoder</span> ⛽</div><div class="logo-sub">Business Management System v4</div></div>
+  <div class="bdgs"><div class="bdg" id="bdg-date">—</div><div class="bdg" id="bdg-stn">GS1</div></div>
 </div>
 
 <!-- MAIN NAV -->
 <div class="mainnav">
-  <div class="mnav active" onclick="goModule('shift')">⛽ Shift</div>
-  <div class="mnav" onclick="goModule('delivery')">🚚 Delivery</div>
+  <div class="mnav active" onclick="goMod('shift')">⛽ Shift</div>
+  <div class="mnav" onclick="goMod('delivery')">🚚 Delivery</div>
   <div class="mnav" onclick="needPin('manager')">📊 Manager</div>
-  <div class="mnav" onclick="goModule('hr')">👥 HR</div>
-  <div class="mnav" onclick="goModule('settings')">⚙️ Settings</div>
+  <div class="mnav" onclick="goMod('hr')">👥 HR</div>
+  <div class="mnav" onclick="goMod('settings')">⚙️ Settings</div>
 </div>
 
-<!-- ══════════ SHIFT MODULE ══════════ -->
+<!-- ══════════════════════════════════ -->
+<!-- SHIFT MODULE -->
+<!-- ══════════════════════════════════ -->
 <div class="module active" id="mod-shift">
   <div class="subtabs">
     <div class="stab active" onclick="goTab('shift','photo')">📷 Photo</div>
-    <div class="stab" onclick="goTab('shift','info')">📋 Info</div>
-    <div class="stab" onclick="goTab('shift','meters')">⛽ Meters</div>
+    <div class="stab" onclick="goTab('shift','header')">📋 Header</div>
+    <div class="stab" onclick="goTab('shift','pump1')">⛽ Pump 1</div>
+    <div class="stab" onclick="goTab('shift','pump2')">⛽ Pump 2</div>
     <div class="stab" onclick="goTab('shift','cash')">💵 Cash</div>
-    <div class="stab" onclick="goTab('shift','payables')">📄 Payables</div>
+    <div class="stab" onclick="goTab('shift','collectibles')">📄 Collectibles</div>
     <div class="stab" onclick="goTab('shift','submit')">✅ Submit</div>
   </div>
 
-  <!-- PHOTO -->
+  <!-- PHOTO TAB -->
   <div class="panel active" id="shift-photo">
     <div class="card">
-      <div class="ctitle"><span class="dot"></span>Station & Shift</div>
+      <div class="ctitle"><span class="dot"></span>Select Station</div>
       <div class="stntabs">
         <div class="stntab active" onclick="setStn('GS1')">GS1</div>
         <div class="stntab" onclick="setStn('GS2')">GS2</div>
@@ -154,189 +151,229 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <div class="stntab" onclick="setStn('GS5')">GS5</div>
       </div>
       <div class="g2">
-        <div class="fg"><div class="flabel">Shift</div>
-          <select id="s-shiftnum"><option value="1">Shift 1 AM</option><option value="2">Shift 2 PM</option><option value="3">Shift 3 Night</option></select></div>
-        <div class="fg"><div class="flabel">Status</div>
+        <div class="fg"><div class="fl">Shift</div>
+          <select id="s-shift"><option value="AM">AM</option><option value="PM">PM</option><option value="GY">GY (Night)</option></select></div>
+        <div class="fg"><div class="fl">Status</div>
           <select id="s-status" onchange="toggleOp()"><option value="active">Operating</option><option value="noproduct">No Product</option><option value="closed">Closed</option></select></div>
       </div>
     </div>
 
-    <div id="active-section">
+    <div id="active-sec">
       <div class="card">
-        <div class="ctitle"><span class="dot"></span>Upload Shift Report Photo</div>
-        <div class="upload-box" id="upload-box">
+        <div class="ctitle"><span class="dot"></span>Upload Handwritten Report</div>
+        <div class="upbox" id="upbox">
           <input type="file" id="photo-file" accept="image/*" onchange="photoSelected(this)">
-          <div class="icon">📷</div>
-          <div class="txt">Tap to <strong>capture or upload</strong><br>handwritten shift report</div>
+          <div style="font-size:40px;pointer-events:none">📷</div>
+          <div style="color:#8899bb;font-size:13px;margin-top:8px;pointer-events:none">Tap to <strong style="color:#f0f4ff">capture or upload</strong></div>
         </div>
-        <img id="photo-preview" alt="preview">
+        <img id="photo-preview" alt="report preview">
       </div>
       <button class="btnmain" id="ai-btn" disabled onclick="runAI()">
         <span id="ai-txt">🤖 Read with AI</span>
       </button>
-      <div class="card" id="ai-card" style="display:none">
-        <div class="ctitle"><span class="dot"></span>AI Reading Result</div>
-        <div class="aisum" id="ai-sum"></div>
-        <div class="airaw" id="ai-raw"></div>
-        <button class="btnsec" onclick="toggleRaw()" style="margin-top:6px;font-size:11px">Show/Hide Raw</button>
-        <button class="btnmain" id="apply-btn" onclick="applyData()" style="display:none;background:linear-gradient(135deg,#00c853,#00e676);margin-top:8px">✅ Apply to Form</button>
+      <div id="ai-card" style="display:none">
+        <div class="card">
+          <div class="ctitle"><span class="dot"></span>AI Reading Result</div>
+          <div id="ai-sum" style="font-size:13px;line-height:1.9"></div>
+          <div id="ai-raw" style="font-size:11px;white-space:pre-wrap;max-height:150px;overflow-y:auto;color:#8899bb;margin-top:8px;display:none"></div>
+          <button class="btnsec" onclick="toggleRaw()" style="margin-top:6px;font-size:11px">👁 Show/Hide Raw</button>
+        </div>
+        <button class="btnmain" id="apply-btn" onclick="applyData()" style="display:none;background:linear-gradient(135deg,#00c853,#00e676)">✅ Apply All Data to Form</button>
       </div>
     </div>
-
-    <div id="inactive-section" style="display:none">
+    <div id="inactive-sec" style="display:none">
       <div class="card" style="text-align:center;padding:28px">
         <div style="font-size:40px;margin-bottom:10px">⛽</div>
-        <div style="color:#f9a825;font-weight:700;font-size:16px" id="inactive-label">No Product — No Operation</div>
-        <div style="color:#8899bb;font-size:12px;margin-top:6px">This shift will be recorded as zero</div>
+        <div style="color:#f9a825;font-weight:700;font-size:16px" id="inactive-lbl">No Product</div>
+        <div style="color:#8899bb;font-size:12px;margin-top:6px">Shift will be recorded as zero</div>
         <button class="btnmain" style="margin-top:16px" onclick="submitZero()">📤 Record Zero Shift</button>
       </div>
     </div>
   </div>
 
-  <!-- INFO -->
-  <div class="panel" id="shift-info">
+  <!-- HEADER TAB -->
+  <div class="panel" id="shift-header">
     <div class="card">
-      <div class="ctitle"><span class="dot"></span>Shift Details</div>
+      <div class="ctitle"><span class="dot"></span>Shift Header</div>
       <div class="g2">
-        <div class="fg"><div class="flabel">Date</div><input type="date" id="s-date"></div>
-        <div class="fg"><div class="flabel">Shift</div>
-          <select id="s-shiftnum2"><option value="1">Shift 1 AM</option><option value="2">Shift 2 PM</option><option value="3">Shift 3 Night</option></select></div>
+        <div class="fg"><div class="fl">Date</div><input type="date" id="s-date"></div>
+        <div class="fg"><div class="fl">Shift</div>
+          <select id="s-shift2"><option value="AM">AM</option><option value="PM">PM</option><option value="GY">GY (Night)</option></select></div>
       </div>
-      <div class="fg"><div class="flabel">Attendant</div>
+      <div class="fg"><div class="fl">P/A — Attendant</div>
         <select id="s-attendant"><option value="">-- Select TM --</option></select></div>
-      <div class="fg"><div class="flabel">Supervisor</div>
+      <div class="fg"><div class="fl">Supervisor</div>
         <select id="s-supervisor"><option value="">-- Select TM --</option></select></div>
+    </div>
+    <div class="card">
+      <div class="ctitle"><span class="dot"></span>Prices per Liter (₱)</div>
       <div class="g3">
-        <div class="fg"><div class="flabel">Diesel ₱/L</div><input type="number" id="p-diesel" step="0.01" placeholder="0.00" oninput="recalc()"></div>
-        <div class="fg"><div class="flabel">Unleaded ₱/L</div><input type="number" id="p-unleaded" step="0.01" placeholder="0.00" oninput="recalc()"></div>
-        <div class="fg"><div class="flabel">Premium ₱/L</div><input type="number" id="p-premium" step="0.01" placeholder="0.00" oninput="recalc()"></div>
+        <div class="fg"><div class="fl" style="color:#4fc3f7">Unleaded</div><input type="number" id="price-u" step="0.01" placeholder="0.00"></div>
+        <div class="fg"><div class="fl" style="color:#f9a825">Premium</div><input type="number" id="price-p" step="0.01" placeholder="0.00"></div>
+        <div class="fg"><div class="fl" style="color:#00e676">Diesel</div><input type="number" id="price-d" step="0.01" placeholder="0.00"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctitle"><span class="dot"></span>Dipstick Reading</div>
+      <div class="g3">
+        <div class="fg"><div class="fl" style="color:#4fc3f7">U — Beg / End</div>
+          <div class="g2"><input type="number" id="dip-u-beg" placeholder="Beg"><input type="number" id="dip-u-end" placeholder="End"></div></div>
+        <div class="fg"><div class="fl" style="color:#f9a825">P — Beg / End</div>
+          <div class="g2"><input type="number" id="dip-p-beg" placeholder="Beg"><input type="number" id="dip-p-end" placeholder="End"></div></div>
+        <div class="fg"><div class="fl" style="color:#00e676">D — Beg / End</div>
+          <div class="g2"><input type="number" id="dip-d-beg" placeholder="Beg"><input type="number" id="dip-d-end" placeholder="End"></div></div>
       </div>
     </div>
   </div>
 
-  <!-- METERS -->
-  <div class="panel" id="shift-meters">
+  <!-- PUMP 1 TAB -->
+  <div class="panel" id="shift-pump1">
     <div class="card">
-      <div class="ctitle"><span class="dot"></span>Pump Meter Readings</div>
-      <div class="twrap">
-        <table class="htbl">
+      <div class="ctitle"><span class="dot"></span>Pump 1 — Meter Readings</div>
+      <div style="overflow-x:auto">
+        <table class="ptbl" style="min-width:480px">
           <thead><tr>
-            <th>Hose</th><th>Product</th>
-            <th>Beg Ltr</th><th>Beg ₱</th>
-            <th>End Ltr</th><th>End ₱</th>
-            <th style="background:rgba(249,168,37,.15)">Shift L</th>
-            <th style="background:rgba(249,168,37,.15)">Shift ₱</th>
-            <th></th>
+            <th>Hose</th><th>Beg Liter</th><th>Beg Sales</th>
+            <th>End Liter</th><th>End Sales</th>
+            <th style="background:rgba(249,168,37,.2)">Shift Ltr</th>
+            <th style="background:rgba(249,168,37,.2)">Shift Sales</th>
           </tr></thead>
-          <tbody id="hose-tbody"></tbody>
-          <tfoot><tr class="tfoot">
-            <td colspan="2">TOTAL</td>
-            <td id="t-bl">0</td><td id="t-bs">0</td>
-            <td id="t-el">0</td><td id="t-es">0</td>
-            <td id="t-sl">0</td><td id="t-ss">0</td>
-            <td></td>
+          <tbody id="p1-tbody"></tbody>
+          <tfoot><tr class="tfoot-row">
+            <td>TOTAL</td><td id="p1-tbl">0</td><td id="p1-tbs">0</td>
+            <td id="p1-tel">0</td><td id="p1-tes">0</td>
+            <td id="p1-tsl">0</td><td id="p1-tss">0</td>
           </tr></tfoot>
         </table>
       </div>
-      <button class="btnsec" onclick="addHose()">+ Add Hose</button>
+      <button class="btnsec" style="margin-top:8px" onclick="addHose(1)">+ Add Hose</button>
     </div>
-    <div id="flag-section"></div>
     <div class="sg">
-      <div class="sc"><div class="slabel">Liters Sold</div><div class="sval gold" id="sum-l">0 L</div></div>
-      <div class="sc"><div class="slabel">Peso Sales</div><div class="sval gold" id="sum-s">₱0</div></div>
-      <div class="sc"><div class="slabel">Diesel</div><div class="sval" id="sum-d">0 L</div></div>
-      <div class="sc"><div class="slabel">Unleaded</div><div class="sval" id="sum-u">0 L</div></div>
-      <div class="sc"><div class="slabel">Premium</div><div class="sval" id="sum-p">0 L</div></div>
-    </div>
-    <div class="card">
-      <div class="ctitle"><span class="dot"></span>Dipstick End of Shift</div>
-      <div class="g3">
-        <div class="fg"><div class="flabel">Diesel (L)</div><input type="number" id="dip-d" placeholder="0"></div>
-        <div class="fg"><div class="flabel">Unleaded (L)</div><input type="number" id="dip-u" placeholder="0"></div>
-        <div class="fg"><div class="flabel">Premium (L)</div><input type="number" id="dip-p" placeholder="0"></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="ctitle"><span class="dot"></span>Fuel Delivered This Shift</div>
-      <div class="g3">
-        <div class="fg"><div class="flabel">Diesel (L)</div><input type="number" id="del-d" placeholder="0"></div>
-        <div class="fg"><div class="flabel">Unleaded (L)</div><input type="number" id="del-u" placeholder="0"></div>
-        <div class="fg"><div class="flabel">Premium (L)</div><input type="number" id="del-p" placeholder="0"></div>
-      </div>
+      <div class="sc"><div class="slabel">Pump 1 Liters</div><div class="sval gold" id="p1-sum-l">0 L</div></div>
+      <div class="sc"><div class="slabel">Pump 1 Sales</div><div class="sval gold" id="p1-sum-s">₱0</div></div>
     </div>
   </div>
 
-  <!-- CASH -->
+  <!-- PUMP 2 TAB -->
+  <div class="panel" id="shift-pump2">
+    <div class="card">
+      <div class="ctitle"><span class="dot"></span>Pump 2 — Meter Readings</div>
+      <div style="overflow-x:auto">
+        <table class="ptbl" style="min-width:480px">
+          <thead><tr>
+            <th>Hose</th><th>Beg Liter</th><th>Beg Sales</th>
+            <th>End Liter</th><th>End Sales</th>
+            <th style="background:rgba(249,168,37,.2)">Shift Ltr</th>
+            <th style="background:rgba(249,168,37,.2)">Shift Sales</th>
+          </tr></thead>
+          <tbody id="p2-tbody"></tbody>
+          <tfoot><tr class="tfoot-row">
+            <td>TOTAL</td><td id="p2-tbl">0</td><td id="p2-tbs">0</td>
+            <td id="p2-tel">0</td><td id="p2-tes">0</td>
+            <td id="p2-tsl">0</td><td id="p2-tss">0</td>
+          </tr></tfoot>
+        </table>
+      </div>
+      <button class="btnsec" style="margin-top:8px" onclick="addHose(2)">+ Add Hose</button>
+    </div>
+    <div class="sg">
+      <div class="sc"><div class="slabel">Pump 2 Liters</div><div class="sval gold" id="p2-sum-l">0 L</div></div>
+      <div class="sc"><div class="slabel">Pump 2 Sales</div><div class="sval gold" id="p2-sum-s">₱0</div></div>
+    </div>
+    <!-- Combined totals -->
+    <div class="card">
+      <div class="ctitle"><span class="dot"></span>All Pumps Combined</div>
+      <div class="sg3">
+        <div class="sc"><div class="slabel">Total Liters</div><div class="sval gold" id="tot-l">0 L</div></div>
+        <div class="sc"><div class="slabel">Total Sales</div><div class="sval gold" id="tot-s">₱0</div></div>
+        <div class="sc"><div class="slabel">Unleaded L</div><div class="sval blue" id="tot-ul">0</div></div>
+        <div class="sc"><div class="slabel">Premium L</div><div class="sval gold" id="tot-pl">0</div></div>
+        <div class="sc"><div class="slabel">Diesel L</div><div class="sval green" id="tot-dl">0</div></div>
+      </div>
+    </div>
+    <div id="flag-sec"></div>
+  </div>
+
+  <!-- CASH TAB -->
   <div class="panel" id="shift-cash">
     <div class="card">
-      <div class="ctitle"><span class="dot"></span>Cash Collections</div>
-      <div class="fg"><div class="flabel">Gross Sales (auto)</div><input type="number" id="gross" readonly style="color:#f9a825"></div>
-      <div class="fg"><div class="flabel">AR / Charge Sales (₱)</div><input type="number" id="ar-sales" placeholder="0" oninput="calcCash()"></div>
-      <div class="fg"><div class="flabel">Other Income (₱)</div><input type="number" id="other-inc" placeholder="0" oninput="calcCash()"></div>
+      <div class="ctitle"><span class="dot"></span>Cash Summary</div>
+      <div class="fg"><div class="fl">Cash Sales (auto from pumps)</div><input type="number" id="cash-sales" readonly style="color:#f9a825;font-weight:700;font-size:16px"></div>
+      <div class="fg"><div class="fl">Cash Remit (AR / Charge)</div><input type="number" id="cash-remit" placeholder="0.00" oninput="calcCash()"></div>
+      <div class="fg"><div class="fl">GCash Amount</div><input type="number" id="gcash-amt" placeholder="0.00" oninput="calcCash()"></div>
+      <div class="fg"><div class="fl">GCash Ref #</div><input type="text" id="gcash-ref" placeholder="Reference number"></div>
     </div>
     <div class="card">
-      <div class="ctitle"><span class="dot"></span>Bill & Coin Count</div>
+      <div class="ctitle"><span class="dot"></span>Denomination Count</div>
       <table class="dtbl">
+        <thead><tr style="background:#0f3460">
+          <th style="padding:6px 4px;font-size:10px;color:#8899bb;text-align:left">Bill</th>
+          <th style="padding:6px 4px;font-size:10px;color:#8899bb;text-align:center">× Count</th>
+          <th style="padding:6px 4px;font-size:10px;color:#8899bb;text-align:right">= Total</th>
+        </tr></thead>
         <tbody>
-          <tr><td style="color:#f0f4ff">₱1,000</td><td><input type="number" min="0" class="denom" data-v="1000" placeholder="0" oninput="calcCash()"></td></tr>
-          <tr><td style="color:#f0f4ff">₱500</td><td><input type="number" min="0" class="denom" data-v="500" placeholder="0" oninput="calcCash()"></td></tr>
-          <tr><td style="color:#f0f4ff">₱200</td><td><input type="number" min="0" class="denom" data-v="200" placeholder="0" oninput="calcCash()"></td></tr>
-          <tr><td style="color:#f0f4ff">₱100</td><td><input type="number" min="0" class="denom" data-v="100" placeholder="0" oninput="calcCash()"></td></tr>
-          <tr><td style="color:#f0f4ff">₱50</td><td><input type="number" min="0" class="denom" data-v="50" placeholder="0" oninput="calcCash()"></td></tr>
-          <tr><td style="color:#f0f4ff">₱20</td><td><input type="number" min="0" class="denom" data-v="20" placeholder="0" oninput="calcCash()"></td></tr>
-          <tr><td style="color:#f0f4ff">₱10</td><td><input type="number" min="0" class="denom" data-v="10" placeholder="0" oninput="calcCash()"></td></tr>
-          <tr><td style="color:#f0f4ff">₱5</td><td><input type="number" min="0" class="denom" data-v="5" placeholder="0" oninput="calcCash()"></td></tr>
-          <tr><td style="color:#f0f4ff">₱1</td><td><input type="number" min="0" class="denom" data-v="1" placeholder="0" oninput="calcCash()"></td></tr>
+          <tr><td style="color:#f0f4ff">₱1,000</td><td style="text-align:center;color:#8899bb">×</td><td><input type="number" min="0" class="denom" data-v="1000" placeholder="0" oninput="calcCash()"></td></tr>
+          <tr><td style="color:#f0f4ff">₱500</td><td style="text-align:center;color:#8899bb">×</td><td><input type="number" min="0" class="denom" data-v="500" placeholder="0" oninput="calcCash()"></td></tr>
+          <tr><td style="color:#f0f4ff">₱200</td><td style="text-align:center;color:#8899bb">×</td><td><input type="number" min="0" class="denom" data-v="200" placeholder="0" oninput="calcCash()"></td></tr>
+          <tr><td style="color:#f0f4ff">₱100</td><td style="text-align:center;color:#8899bb">×</td><td><input type="number" min="0" class="denom" data-v="100" placeholder="0" oninput="calcCash()"></td></tr>
+          <tr><td style="color:#f0f4ff">₱50</td><td style="text-align:center;color:#8899bb">×</td><td><input type="number" min="0" class="denom" data-v="50" placeholder="0" oninput="calcCash()"></td></tr>
+          <tr><td style="color:#f0f4ff">₱20</td><td style="text-align:center;color:#8899bb">×</td><td><input type="number" min="0" class="denom" data-v="20" placeholder="0" oninput="calcCash()"></td></tr>
+          <tr><td style="color:#f0f4ff">₱10</td><td style="text-align:center;color:#8899bb">×</td><td><input type="number" min="0" class="denom" data-v="10" placeholder="0" oninput="calcCash()"></td></tr>
+          <tr><td style="color:#f0f4ff">₱5</td><td style="text-align:center;color:#8899bb">×</td><td><input type="number" min="0" class="denom" data-v="5" placeholder="0" oninput="calcCash()"></td></tr>
+          <tr><td style="color:#f0f4ff">₱1</td><td style="text-align:center;color:#8899bb">×</td><td><input type="number" min="0" class="denom" data-v="1" placeholder="0" oninput="calcCash()"></td></tr>
         </tbody>
-        <tfoot><tr class="dtfoot"><td>Cash Total</td><td style="font-size:15px" id="cash-total">₱0</td></tr></tfoot>
+        <tfoot><tr class="dtfoot"><td colspan="2" style="padding:8px 4px;font-weight:700">TOTAL CASH ON HAND</td><td id="cash-onhand">₱0</td></tr></tfoot>
       </table>
     </div>
     <div class="sg">
-      <div class="sc"><div class="slabel">Cash on Hand</div><div class="sval" id="s-cash">₱0</div></div>
+      <div class="sc"><div class="slabel">Cash Sales</div><div class="sval gold" id="s-cashsales">₱0</div></div>
+      <div class="sc"><div class="slabel">Cash on Hand</div><div class="sval gold" id="s-cashhand">₱0</div></div>
+      <div class="sc"><div class="slabel">Cash Remit</div><div class="sval blue" id="s-remit">₱0</div></div>
       <div class="sc"><div class="slabel">Over / Short</div><div class="sval" id="s-os">₱0</div></div>
     </div>
-    <div id="os-flag" style="display:none" class="card" style="border-color:rgba(255,82,82,.3)">
-      <div style="color:#ff5252;font-size:12px;font-weight:700;margin-bottom:8px">⚠️ Over/Short exceeds ₱500 — explanation required</div>
-      <div class="fg"><div class="flabel">Reason</div><textarea id="os-reason" rows="2" placeholder="Explain..."></textarea></div>
+    <div id="os-flag" style="display:none" class="card">
+      <div style="color:#ff5252;font-size:12px;font-weight:700;margin-bottom:8px">⚠️ Over/Short exceeds ₱500 — explanation required before submit</div>
+      <div class="fg"><div class="fl">Reason</div><textarea id="os-reason" rows="2" placeholder="Explain the discrepancy..."></textarea></div>
     </div>
   </div>
 
-  <!-- PAYABLES -->
-  <div class="panel" id="shift-payables">
-    <div class="sechdr">⛽ Supplier Dues</div>
-    <div id="sup-rows"></div>
-    <button class="btnsec" onclick="addPay('sup')">+ Add Supplier</button>
-    <div class="sechdr">🏦 Checks Issued</div>
-    <div id="chk-rows"></div>
-    <button class="btnsec" onclick="addPay('chk')">+ Add Check</button>
-    <div class="sechdr">📦 Fuel Loans</div>
-    <div id="loan-rows"></div>
-    <button class="btnsec" onclick="addPay('loan')">+ Add Loan</button>
+  <!-- COLLECTIBLES TAB -->
+  <div class="panel" id="shift-collectibles">
+    <div class="sechdr">💳 Collectibles / AR</div>
+    <div id="collect-rows"></div>
+    <button class="btnsec" onclick="addCollect()">+ Add Collectible</button>
+    <div class="sechdr">📦 Payables / Withdrawals</div>
+    <div id="payable-rows"></div>
+    <button class="btnsec" onclick="addPayable()">+ Add Payable</button>
     <div class="sg" style="margin-top:12px">
+      <div class="sc"><div class="slabel">Total Collectibles</div><div class="sval blue" id="tot-collect">₱0</div></div>
       <div class="sc"><div class="slabel">Total Payables</div><div class="sval red" id="tot-pay">₱0</div></div>
-      <div class="sc"><div class="slabel">Net Collectible</div><div class="sval green" id="net-col">₱0</div></div>
+      <div class="sc" style="grid-column:span 2"><div class="slabel">Net Remittance</div><div class="sval green" id="net-remit">₱0</div></div>
     </div>
   </div>
 
-  <!-- SUBMIT -->
+  <!-- SUBMIT TAB -->
   <div class="panel" id="shift-submit">
     <div class="card">
       <div class="ctitle"><span class="dot"></span>Shift Summary</div>
       <div class="sg">
         <div class="sc"><div class="slabel">Station</div><div class="sval blue" id="sub-stn">—</div></div>
         <div class="sc"><div class="slabel">Shift</div><div class="sval" id="sub-shift">—</div></div>
-        <div class="sc"><div class="slabel">Liters Sold</div><div class="sval gold" id="sub-l">0</div></div>
-        <div class="sc"><div class="slabel">Peso Sales</div><div class="sval gold" id="sub-s">₱0</div></div>
-        <div class="sc"><div class="slabel">Cash</div><div class="sval" id="sub-c">₱0</div></div>
-        <div class="sc"><div class="slabel">Over/Short</div><div class="sval" id="sub-os">₱0</div></div>
+        <div class="sc"><div class="slabel">P1 Sales</div><div class="sval gold" id="sub-p1">₱0</div></div>
+        <div class="sc"><div class="slabel">P2 Sales</div><div class="sval gold" id="sub-p2">₱0</div></div>
+        <div class="sc"><div class="slabel">Total Sales</div><div class="sval gold" id="sub-tot">₱0</div></div>
+        <div class="sc"><div class="slabel">Cash on Hand</div><div class="sval" id="sub-cash">₱0</div></div>
+        <div class="sc"><div class="slabel">Over / Short</div><div class="sval" id="sub-os">₱0</div></div>
       </div>
     </div>
-    <button class="btnmain" onclick="submitShift()">📤 Submit Shift Report</button>
+    <button class="btnmain" onclick="submitShift()">📤 Submit to Google Sheets</button>
     <div class="status" id="sub-status"></div>
   </div>
 </div>
 
-<!-- ══════════ DELIVERY MODULE ══════════ -->
+<!-- ══════════════════════════════════ -->
+<!-- DELIVERY MODULE -->
+<!-- ══════════════════════════════════ -->
 <div class="module" id="mod-delivery">
   <div class="subtabs">
     <div class="stab active" onclick="goTab('delivery','new')">➕ New</div>
@@ -347,50 +384,47 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="card">
       <div class="ctitle"><span class="dot"></span>Record Fuel Delivery</div>
       <div class="g2">
-        <div class="fg"><div class="flabel">Station</div><select id="del-stn"><option>GS1</option><option>GS2</option><option>GS5</option></select></div>
-        <div class="fg"><div class="flabel">Date</div><input type="date" id="del-date"></div>
+        <div class="fg"><div class="fl">Station</div><select id="del-stn"><option>GS1</option><option>GS2</option><option>GS5</option></select></div>
+        <div class="fg"><div class="fl">Date</div><input type="date" id="del-date"></div>
       </div>
-      <div class="fg"><div class="flabel">Supplier</div><input type="text" id="del-sup" placeholder="Petron / Shell / Phoenix"></div>
+      <div class="fg"><div class="fl">Supplier</div><input type="text" id="del-sup" placeholder="Petron / Shell / Phoenix"></div>
       <div class="g3">
-        <div class="fg"><div class="flabel">Diesel (L)</div><input type="number" id="del-dl" placeholder="0" oninput="calcDel()"></div>
-        <div class="fg"><div class="flabel">Unleaded (L)</div><input type="number" id="del-ul" placeholder="0" oninput="calcDel()"></div>
-        <div class="fg"><div class="flabel">Premium (L)</div><input type="number" id="del-pl" placeholder="0" oninput="calcDel()"></div>
+        <div class="fg"><div class="fl" style="color:#4fc3f7">Unleaded (L)</div><input type="number" id="del-ul" placeholder="0" oninput="calcDel()"></div>
+        <div class="fg"><div class="fl" style="color:#f9a825">Premium (L)</div><input type="number" id="del-pl" placeholder="0" oninput="calcDel()"></div>
+        <div class="fg"><div class="fl" style="color:#00e676">Diesel (L)</div><input type="number" id="del-dl" placeholder="0" oninput="calcDel()"></div>
       </div>
       <div class="g3">
-        <div class="fg"><div class="flabel">Diesel ₱/L</div><input type="number" id="del-dp" step="0.01" placeholder="0" oninput="calcDel()"></div>
-        <div class="fg"><div class="flabel">Unleaded ₱/L</div><input type="number" id="del-up" step="0.01" placeholder="0" oninput="calcDel()"></div>
-        <div class="fg"><div class="flabel">Premium ₱/L</div><input type="number" id="del-pp" step="0.01" placeholder="0" oninput="calcDel()"></div>
+        <div class="fg"><div class="fl">U Price/L</div><input type="number" id="del-up" step="0.01" placeholder="0" oninput="calcDel()"></div>
+        <div class="fg"><div class="fl">P Price/L</div><input type="number" id="del-pp" step="0.01" placeholder="0" oninput="calcDel()"></div>
+        <div class="fg"><div class="fl">D Price/L</div><input type="number" id="del-dp" step="0.01" placeholder="0" oninput="calcDel()"></div>
       </div>
-      <div class="sc"><div class="slabel">Total Amount</div><div class="sval gold" id="del-tot">₱0</div></div>
+      <div class="sc"><div class="slabel">Total Delivery Amount</div><div class="sval gold" id="del-tot">₱0</div></div>
     </div>
     <div class="card">
       <div class="ctitle"><span class="dot"></span>Check Issued</div>
       <div class="g2">
-        <div class="fg"><div class="flabel">Check #</div><input type="text" id="chk-num" placeholder="001234"></div>
-        <div class="fg"><div class="flabel">Bank</div><input type="text" id="chk-bank" placeholder="BDO / BPI"></div>
+        <div class="fg"><div class="fl">Check #</div><input type="text" id="chk-num" placeholder="001234"></div>
+        <div class="fg"><div class="fl">Bank</div><input type="text" id="chk-bank" placeholder="BDO / BPI / Metrobank"></div>
       </div>
       <div class="g2">
-        <div class="fg"><div class="flabel">Check Date</div><input type="date" id="chk-date"></div>
-        <div class="fg"><div class="flabel">Due Date</div><input type="date" id="chk-due"></div>
+        <div class="fg"><div class="fl">Check Date</div><input type="date" id="chk-date"></div>
+        <div class="fg"><div class="fl">Due Date</div><input type="date" id="chk-due"></div>
       </div>
-      <div class="fg"><div class="flabel">Amount (₱)</div><input type="number" id="chk-amt" placeholder="0.00"></div>
+      <div class="fg"><div class="fl">Amount (₱)</div><input type="number" id="chk-amt" placeholder="0.00"></div>
     </div>
     <button class="btnmain" onclick="saveDel()">💾 Save Delivery & Check</button>
     <div class="status" id="del-status"></div>
   </div>
   <div class="panel" id="delivery-checks">
-    <div class="sg">
-      <div class="sc"><div class="slabel">Outstanding</div><div class="sval red" id="chk-out">₱0</div></div>
-      <div class="sc"><div class="slabel">Overdue</div><div class="sval red" id="chk-ov">0</div></div>
-    </div>
+    <div class="sg"><div class="sc"><div class="slabel">Outstanding</div><div class="sval red" id="chk-out">₱0</div></div><div class="sc"><div class="slabel">Overdue</div><div class="sval red" id="chk-ov">0</div></div></div>
     <div id="checks-list"></div>
   </div>
-  <div class="panel" id="delivery-history">
-    <div id="del-hist"></div>
-  </div>
+  <div class="panel" id="delivery-history"><div id="del-hist"></div></div>
 </div>
 
-<!-- ══════════ MANAGER MODULE ══════════ -->
+<!-- ══════════════════════════════════ -->
+<!-- MANAGER MODULE -->
+<!-- ══════════════════════════════════ -->
 <div class="module" id="mod-manager">
   <div class="subtabs">
     <div class="stab active" onclick="goTab('manager','overview')">📊 Overview</div>
@@ -398,21 +432,16 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="stab" onclick="goTab('manager','flags')">🚩 Flags</div>
   </div>
   <div class="panel active" id="manager-overview">
-    <div class="sg">
-      <div class="sc"><div class="slabel">Checks Due</div><div class="sval red" id="mgr-due">₱0</div></div>
-      <div class="sc"><div class="slabel">Overdue</div><div class="sval red" id="mgr-ov">0</div></div>
-    </div>
+    <div class="sg"><div class="sc"><div class="slabel">Checks Due</div><div class="sval red" id="mgr-due">₱0</div></div><div class="sc"><div class="slabel">Overdue</div><div class="sval red" id="mgr-ov">0</div></div></div>
     <div class="card"><div class="ctitle"><span class="dot"></span>Outstanding Checks</div><div id="mgr-checks"></div></div>
   </div>
-  <div class="panel" id="manager-debt">
-    <div class="card"><div class="ctitle"><span class="dot"></span>All Deliveries & Checks</div><div id="mgr-debt-list"></div></div>
-  </div>
-  <div class="panel" id="manager-flags">
-    <div class="card"><div class="ctitle"><span class="dot"></span>Anomaly Flags</div><div id="flags-log" style="color:#8899bb;font-size:12px;padding:20px;text-align:center">No flags yet</div></div>
-  </div>
+  <div class="panel" id="manager-debt"><div class="card"><div class="ctitle"><span class="dot"></span>All Deliveries</div><div id="mgr-debt-list"></div></div></div>
+  <div class="panel" id="manager-flags"><div class="card"><div class="ctitle"><span class="dot"></span>Flags Log</div><div id="flags-log" style="color:#8899bb;font-size:12px;padding:20px;text-align:center">No flags yet</div></div></div>
 </div>
 
-<!-- ══════════ HR MODULE ══════════ -->
+<!-- ══════════════════════════════════ -->
+<!-- HR MODULE -->
+<!-- ══════════════════════════════════ -->
 <div class="module" id="mod-hr">
   <div class="subtabs">
     <div class="stab active" onclick="goTab('hr','team')">👥 Team</div>
@@ -425,40 +454,36 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="card">
       <div class="ctitle"><span class="dot"></span>Record Attendance</div>
       <div class="g2">
-        <div class="fg"><div class="flabel">Date</div><input type="date" id="att-date"></div>
-        <div class="fg"><div class="flabel">Station</div><select id="att-stn"><option>GS1</option><option>GS2</option><option>GS5</option></select></div>
+        <div class="fg"><div class="fl">Date</div><input type="date" id="att-date"></div>
+        <div class="fg"><div class="fl">Station</div><select id="att-stn"><option>GS1</option><option>GS2</option><option>GS5</option></select></div>
       </div>
-      <div class="fg"><div class="flabel">Employee</div><select id="att-emp"><option value="">-- Select --</option></select></div>
+      <div class="fg"><div class="fl">Employee</div><select id="att-emp"><option value="">-- Select --</option></select></div>
       <div class="g2">
-        <div class="fg"><div class="flabel">Shift</div><select id="att-shift"><option value="1">Shift 1</option><option value="2">Shift 2</option><option value="3">Shift 3</option></select></div>
-        <div class="fg"><div class="flabel">Status</div>
-          <select id="att-stat">
-            <option value="present">Present</option><option value="absent">Absent</option>
-            <option value="late">Late</option><option value="halfday">Half Day</option>
-            <option value="restday">Rest Day</option><option value="holiday">Holiday</option>
-          </select></div>
+        <div class="fg"><div class="fl">Shift</div><select id="att-shift"><option value="AM">AM</option><option value="PM">PM</option><option value="GY">GY</option></select></div>
+        <div class="fg"><div class="fl">Status</div>
+          <select id="att-stat"><option value="present">Present</option><option value="absent">Absent</option><option value="late">Late</option><option value="halfday">Half Day</option><option value="restday">Rest Day</option><option value="holiday">Holiday</option></select></div>
       </div>
-      <div class="fg"><div class="flabel">Notes / Violation</div><input type="text" id="att-notes" placeholder="Optional"></div>
+      <div class="fg"><div class="fl">Notes / Violation</div><input type="text" id="att-notes" placeholder="Optional"></div>
       <button class="btnmain" onclick="saveAtt()">💾 Save</button>
     </div>
     <div id="att-list"></div>
   </div>
   <div class="panel" id="hr-payroll">
     <div class="card">
-      <div class="ctitle"><span class="dot"></span>Weekly Payroll</div>
+      <div class="ctitle"><span class="dot"></span>Weekly Payroll Calculator</div>
       <div class="g2">
-        <div class="fg"><div class="flabel">Employee</div><select id="pay-emp"><option value="">-- Select --</option></select></div>
-        <div class="fg"><div class="flabel">Week Ending</div><input type="date" id="pay-week"></div>
+        <div class="fg"><div class="fl">Employee</div><select id="pay-emp"><option value="">-- Select --</option></select></div>
+        <div class="fg"><div class="fl">Week Ending</div><input type="date" id="pay-week"></div>
       </div>
-      <button class="btnmain" onclick="calcPay()">🔢 Calculate</button>
+      <button class="btnmain" onclick="calcPayroll()">🔢 Calculate Weekly Pay</button>
     </div>
     <div id="pay-result"></div>
     <div class="card">
-      <div class="ctitle"><span class="dot"></span>🇵🇭 Holiday Pay Rules</div>
-      <div style="font-size:11px;color:#8899bb;line-height:2">
-        <b style="color:#f9a825">Regular Holiday (worked):</b> 200%<br>
-        <b style="color:#f9a825">Regular Holiday (not worked):</b> 100%<br>
-        <b style="color:#f9a825">Special Non-Working (worked):</b> 130%<br>
+      <div class="ctitle"><span class="dot"></span>🇵🇭 PH Holiday Pay Rules</div>
+      <div style="font-size:11px;color:#8899bb;line-height:2.2">
+        <b style="color:#f9a825">Regular Holiday (worked):</b> 200% of daily rate<br>
+        <b style="color:#f9a825">Regular Holiday (not worked):</b> 100% paid<br>
+        <b style="color:#f9a825">Special Non-Working (worked):</b> 130% of daily rate<br>
         <b style="color:#f9a825">Special Non-Working (not worked):</b> No pay<br>
         <b style="color:#f9a825">Rest Day + Regular Holiday:</b> 260%
       </div>
@@ -467,32 +492,32 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <div class="panel" id="hr-addtm">
     <div class="card">
       <div class="ctitle"><span class="dot"></span>Add Team Member</div>
-      <div class="fg"><div class="flabel">Photo</div>
-        <div class="upload-box" id="emp-upload-box">
-          <input type="file" id="emp-photo-file" accept="image/*" onchange="empPhotoSelected(this)">
-          <div class="icon">🤳</div>
-          <div class="txt">Tap to add photo</div>
+      <div class="fg"><div class="fl">Photo</div>
+        <div class="upbox" id="emp-upbox" style="padding:16px">
+          <input type="file" id="emp-photo-file" accept="image/*" onchange="empPhoto(this)">
+          <div style="font-size:28px;pointer-events:none">🤳</div>
+          <div style="color:#8899bb;font-size:12px;margin-top:4px;pointer-events:none">Tap to add photo</div>
         </div>
-        <img id="emp-photo-prev" style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid #f9a825;margin-top:8px">
+        <img id="emp-prev" style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid #f9a825;margin-top:8px">
       </div>
       <div class="g2">
-        <div class="fg"><div class="flabel">First Name</div><input type="text" id="emp-fn" placeholder="Juan"></div>
-        <div class="fg"><div class="flabel">Last Name</div><input type="text" id="emp-ln" placeholder="Dela Cruz"></div>
+        <div class="fg"><div class="fl">First Name</div><input type="text" id="emp-fn" placeholder="Juan"></div>
+        <div class="fg"><div class="fl">Last Name</div><input type="text" id="emp-ln" placeholder="Dela Cruz"></div>
       </div>
       <div class="g2">
-        <div class="fg"><div class="flabel">Position</div>
+        <div class="fg"><div class="fl">Position</div>
           <select id="emp-pos"><option>Attendant</option><option>Senior Attendant</option><option>Supervisor</option><option>Cashier</option><option>Guard</option><option>Reliever</option></select></div>
-        <div class="fg"><div class="flabel">Station</div>
+        <div class="fg"><div class="fl">Station</div>
           <select id="emp-stn"><option>GS1</option><option>GS2</option><option>GS5</option><option>All</option></select></div>
       </div>
       <div class="g2">
-        <div class="fg"><div class="flabel">Daily Rate (₱)</div><input type="number" id="emp-rate" placeholder="600"></div>
-        <div class="fg"><div class="flabel">Type</div>
+        <div class="fg"><div class="fl">Daily Rate (₱)</div><input type="number" id="emp-rate" placeholder="600"></div>
+        <div class="fg"><div class="fl">Employment Type</div>
           <select id="emp-type"><option value="regular">Regular</option><option value="probationary">Probationary</option><option value="casual">Casual</option></select></div>
       </div>
       <div class="g2">
-        <div class="fg"><div class="flabel">Date Hired</div><input type="date" id="emp-hired"></div>
-        <div class="fg"><div class="flabel">Phone</div><input type="text" id="emp-phone" placeholder="09xx-xxx-xxxx"></div>
+        <div class="fg"><div class="fl">Date Hired</div><input type="date" id="emp-hired"></div>
+        <div class="fg"><div class="fl">Phone</div><input type="text" id="emp-phone" placeholder="09xx-xxx-xxxx"></div>
       </div>
       <button class="btnmain" onclick="saveEmp()">💾 Save Team Member</button>
       <div class="status" id="emp-status"></div>
@@ -500,7 +525,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 </div>
 
-<!-- ══════════ SETTINGS MODULE ══════════ -->
+<!-- ══════════════════════════════════ -->
+<!-- SETTINGS MODULE -->
+<!-- ══════════════════════════════════ -->
 <div class="module" id="mod-settings">
   <div style="padding:14px">
     <div class="card">
@@ -508,17 +535,13 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div class="fg"><input type="text" id="set-url" placeholder="https://script.google.com/macros/s/.../exec"></div>
       <div class="ctitle" style="margin-top:12px"><span class="dot"></span>Anthropic API Key</div>
       <div class="fg"><input type="password" id="set-key" placeholder="sk-ant-api03-..."></div>
-      <div style="font-size:11px;color:#8899bb;margin-bottom:10px;line-height:1.6">Get from <b style="color:#f9a825">console.anthropic.com</b> → API Keys → Create Key. Saved on this device only.</div>
+      <div style="font-size:11px;color:#8899bb;margin-bottom:10px;line-height:1.6">Get from <b style="color:#f9a825">console.anthropic.com</b> → API Keys → Create Key</div>
       <button class="btnmain" onclick="saveSettings()">💾 Save Settings</button>
       <div class="status" id="set-status"></div>
     </div>
     <div class="card">
-      <div class="ctitle"><span class="dot"></span>Active Stations</div>
-      <div style="font-size:13px;color:#8899bb;line-height:2.2">✅ GS1 Active &nbsp; ✅ GS2 Active &nbsp; 🔒 GS3 Future &nbsp; 🔒 GS4 Future &nbsp; ✅ GS5 Active</div>
-    </div>
-    <div class="card">
       <div class="ctitle"><span class="dot"></span>🇵🇭 2025 Philippine Holidays</div>
-      <div id="hol-list" style="font-size:12px;line-height:2"></div>
+      <div id="hol-list" style="font-size:12px;line-height:2.2"></div>
     </div>
   </div>
 </div>
@@ -541,8 +564,7 @@ const HOLIDAYS = [
 let station = 'GS1';
 let photoB64 = null;
 let aiData = null;
-let hoseId = 0;
-let hoses = [];
+let p1Hoses = [], p2Hoses = [], hoseId = 0;
 let employees = JSON.parse(localStorage.getItem('af_emp')||'[]');
 let deliveries = JSON.parse(localStorage.getItem('af_del')||'[]');
 let attendance = JSON.parse(localStorage.getItem('af_att')||'[]');
@@ -561,93 +583,98 @@ window.onload = function() {
   document.getElementById('chk-date').value = today;
   if(sheetsUrl) document.getElementById('set-url').value = sheetsUrl;
   if(apiKey) document.getElementById('set-key').value = apiKey;
-  initHoses();
-  addPay('sup');
-  renderHolidays();
-  renderTeam();
-  fillEmpDrops();
-  renderChecks();
+  // Init Pump 1 — D, U, U, P (from your form)
+  addHoseData(1,{hose:'D',product:'Diesel'});
+  addHoseData(1,{hose:'U',product:'Unleaded'});
+  addHoseData(1,{hose:'U',product:'Unleaded'});
+  addHoseData(1,{hose:'P',product:'Premium'});
+  // Init Pump 2 — U, P, P, U (from your form)
+  addHoseData(2,{hose:'U',product:'Unleaded'});
+  addHoseData(2,{hose:'P',product:'Premium'});
+  addHoseData(2,{hose:'P',product:'Premium'});
+  addHoseData(2,{hose:'U',product:'Unleaded'});
+  addCollect(); addPayable();
+  renderHolidays(); renderTeam(); fillDrops(); renderChecks();
 };
 
 // ═══ NAVIGATION ═══
-function goModule(m) {
+function goMod(m) {
   document.querySelectorAll('.module').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.mnav').forEach(x=>x.classList.remove('active'));
   document.getElementById('mod-'+m).classList.add('active');
-  const mi = {shift:0,delivery:1,manager:2,hr:3,settings:4}[m];
+  const mi={shift:0,delivery:1,manager:2,hr:3,settings:4}[m];
   document.querySelectorAll('.mnav')[mi].classList.add('active');
   if(m==='manager') renderChecks();
   if(m==='hr') renderTeam();
 }
-
-function goTab(mod, tab) {
-  const modEl = document.getElementById('mod-'+mod);
-  modEl.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
-  modEl.querySelectorAll('.stab').forEach(x=>x.classList.remove('active'));
-  const panel = document.getElementById(mod+'-'+tab);
+function goTab(mod,tab) {
+  const mel=document.getElementById('mod-'+mod);
+  mel.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  mel.querySelectorAll('.stab').forEach(x=>x.classList.remove('active'));
+  const panel=document.getElementById(mod+'-'+tab);
   if(panel) panel.classList.add('active');
-  const panels = Array.from(modEl.querySelectorAll('.panel'));
-  const pi = panels.indexOf(panel);
-  const tabs = modEl.querySelectorAll('.stab');
+  const panels=Array.from(mel.querySelectorAll('.panel'));
+  const pi=panels.indexOf(panel);
+  const tabs=mel.querySelectorAll('.stab');
   if(tabs[pi]) tabs[pi].classList.add('active');
   if(tab==='team') renderTeam();
   if(tab==='attendance') renderAtt();
-  if(tab==='checks') renderChecks();
-  if(tab==='history') renderDelHist();
+  if(tab==='checks'||tab==='history') { renderChecks(); renderDelHist(); }
   if(tab==='submit') fillSummary();
 }
 
 // ═══ PIN ═══
 function needPin(m) {
-  pendingMod = m;
+  pendingMod=m;
   document.getElementById('pin-overlay').classList.add('show');
   document.getElementById('pin-input').value='';
   document.getElementById('pin-err').style.display='none';
 }
 function checkPin() {
-  const v = document.getElementById('pin-input').value;
+  const v=document.getElementById('pin-input').value;
   if(v.length===6) {
-    if(v===PIN) { document.getElementById('pin-overlay').classList.remove('show'); goModule(pendingMod); }
-    else { document.getElementById('pin-err').style.display='block'; document.getElementById('pin-input').value=''; }
+    if(v===PIN){document.getElementById('pin-overlay').classList.remove('show');goMod(pendingMod);}
+    else{document.getElementById('pin-err').style.display='block';document.getElementById('pin-input').value='';}
   }
 }
 
 // ═══ STATION ═══
 function setStn(s) {
-  station = s;
-  document.getElementById('bdg-stn').textContent = s;
-  document.querySelectorAll('.stntab').forEach(t=>{
-    if(!t.classList.contains('off')) t.classList.toggle('active', t.textContent===s);
-  });
+  station=s; document.getElementById('bdg-stn').textContent=s;
+  document.querySelectorAll('.stntab').forEach(t=>{ if(!t.classList.contains('off')) t.classList.toggle('active',t.textContent===s); });
 }
 
-// ═══ PHOTO UPLOAD ═══
+// ═══ SHIFT TOGGLE ═══
+function toggleOp() {
+  const v=document.getElementById('s-status').value;
+  document.getElementById('active-sec').style.display=v==='active'?'block':'none';
+  document.getElementById('inactive-sec').style.display=v!=='active'?'block':'none';
+  document.getElementById('inactive-lbl').textContent=v==='noproduct'?'No Product — No Operation':'Station Closed';
+}
+
+// ═══ PHOTO ═══
 function photoSelected(inp) {
-  const file = inp.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    photoB64 = e.target.result.split(',')[1];
-    const prev = document.getElementById('photo-preview');
-    prev.src = e.target.result;
-    prev.style.display = 'block';
-    const btn = document.getElementById('ai-btn');
-    btn.disabled = false;
-    btn.style.background = 'linear-gradient(135deg,#00c853,#00e676)';
-    document.getElementById('ai-txt').textContent = '🤖 Photo Ready — Read with AI';
-    document.getElementById('upload-box').style.display = 'none';
+  const file=inp.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(e) {
+    photoB64=e.target.result.split(',')[1];
+    document.getElementById('photo-preview').src=e.target.result;
+    document.getElementById('photo-preview').style.display='block';
+    document.getElementById('upbox').style.display='none';
+    const btn=document.getElementById('ai-btn');
+    btn.disabled=false;
+    btn.style.background='linear-gradient(135deg,#00c853,#00e676)';
+    document.getElementById('ai-txt').textContent='🤖 Photo Ready — Read with AI';
   };
   reader.readAsDataURL(file);
 }
-
-function empPhotoSelected(inp) {
-  const file = inp.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    document.getElementById('emp-photo-prev').src = e.target.result;
-    document.getElementById('emp-photo-prev').style.display = 'block';
-    document.getElementById('emp-upload-box').style.display = 'none';
+function empPhoto(inp) {
+  const file=inp.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(e) {
+    document.getElementById('emp-prev').src=e.target.result;
+    document.getElementById('emp-prev').style.display='block';
+    document.getElementById('emp-upbox').style.display='none';
   };
   reader.readAsDataURL(file);
 }
@@ -655,128 +682,146 @@ function empPhotoSelected(inp) {
 // ═══ AI READING ═══
 async function runAI() {
   if(!photoB64) return;
-  const key = apiKey || localStorage.getItem('af_key') || '';
+  const key=apiKey||localStorage.getItem('af_key')||'';
   if(!key) {
-    showCard();
-    document.getElementById('ai-sum').innerHTML = '<span style="color:#ff5252">⚠️ No API key. Go to ⚙️ Settings → enter Anthropic API key → Save.</span>';
+    document.getElementById('ai-card').style.display='block';
+    document.getElementById('ai-sum').innerHTML='<span style="color:#ff5252">⚠️ No API key. Go to ⚙️ Settings → enter Anthropic API key → Save.</span>';
     return;
   }
-  const btn = document.getElementById('ai-btn');
-  btn.disabled = true;
-  document.getElementById('ai-txt').innerHTML = '<div class="spinner"></div> Reading...';
+  const btn=document.getElementById('ai-btn');
+  btn.disabled=true;
+  document.getElementById('ai-txt').innerHTML='<div class="spinner"></div>&nbsp;Reading report...';
 
-  const prompt = `Read this handwritten gas station shift report completely. Return ONLY a JSON object — no markdown, no backticks, no explanation. Use only plain numbers (no commas, no peso signs). If unclear use 0.
+  const prompt=`You are reading a handwritten gas station daily shift report. Study every field carefully and extract ALL data.
 
+Return ONLY a valid JSON object. No markdown, no backticks, no explanation. Plain numbers only (no commas, no peso signs).
+
+The report has this structure:
+- Header: date, shift (AM/PM/GY), attendant name (P/A field)
+- Dipstick: U=Unleaded, P=Premium, D=Diesel with beginning and ending readings
+- Prices: U, P, D price per liter
+- Pump 1: multiple hose rows, each with hose label, beg_liter, beg_sales, end_liter, end_sales
+- Pump 2: same structure as Pump 1
+- Liters sold summary per product
+- Cash Sales total, Cash Remit, Cash on Hand
+- Denomination table: count of each bill/coin
+- Pump 1 Sales total, Pump 2 Sales total
+- GCash amount and ref number
+- Collectibles/payables (like VIOS-GARY-700)
+
+Return this JSON:
 {
   "date": "YYYY-MM-DD",
-  "shift": "1",
+  "shift": "AM",
   "attendant": "",
-  "supervisor": "",
-  "prices": { "diesel": 0, "unleaded": 0, "premium": 0 },
-  "hoses": [
-    { "hose": "P1-D", "product": "Diesel", "beg_liter": 0, "beg_sales": 0, "end_liter": 0, "end_sales": 0 }
+  "dipstick": { "u_beg": 0, "u_end": 0, "p_beg": 0, "p_end": 0, "d_beg": 0, "d_end": 0 },
+  "prices": { "unleaded": 0, "premium": 0, "diesel": 0 },
+  "pump1": [
+    { "hose": "D", "product": "Diesel", "beg_liter": 0, "beg_sales": 0, "end_liter": 0, "end_sales": 0 }
   ],
-  "dipstick": { "diesel": 0, "unleaded": 0, "premium": 0 },
-  "fuel_delivered": { "diesel": 0, "unleaded": 0, "premium": 0 },
+  "pump2": [
+    { "hose": "U", "product": "Unleaded", "beg_liter": 0, "beg_sales": 0, "end_liter": 0, "end_sales": 0 }
+  ],
+  "cash_sales": 0,
+  "cash_remit": 0,
+  "cash_onhand": 0,
+  "gcash_amount": 0,
+  "gcash_ref": "",
   "denominations": { "p1000": 0, "p500": 0, "p200": 0, "p100": 0, "p50": 0, "p20": 0, "p10": 0, "p5": 0, "p1": 0 },
-  "ar_sales": 0,
-  "other_income": 0,
-  "payables": [{ "type": "supplier", "name": "", "amount": 0 }]
-}
-
-product must be one of: Diesel, Unleaded, Premium, Gasoline
-shift values = end minus beginning, always positive`;
+  "collectibles": [{ "name": "", "amount": 0 }],
+  "payables": [{ "name": "", "amount": 0 }]
+}`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json', 'x-api-key':key, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
-        max_tokens: 2000,
-        messages: [{ role:'user', content:[
-          { type:'image', source:{ type:'base64', media_type:'image/jpeg', data:photoB64 }},
-          { type:'text', text:prompt }
-        ]}]
-      })
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:2500,messages:[{role:'user',content:[
+        {type:'image',source:{type:'base64',media_type:'image/jpeg',data:photoB64}},
+        {type:'text',text:prompt}
+      ]}]})
     });
-    const data = await res.json();
-    console.log('API response:', JSON.stringify(data).substring(0,300));
-    if(data.error) { showCard(); document.getElementById('ai-sum').innerHTML='<span style="color:#ff5252">API Error: '+data.error.message+'</span>'; btn.disabled=false; document.getElementById('ai-txt').textContent='🤖 Read Again'; return; }
-    if(!data.content || !Array.isArray(data.content)) { showCard(); document.getElementById('ai-sum').innerHTML='<span style="color:#ff5252">Unexpected response. Check console. Raw: '+JSON.stringify(data).substring(0,200)+'</span>'; btn.disabled=false; document.getElementById('ai-txt').textContent='🤖 Read Again'; return; }
-    const txt = data.content.map(b=>b.text||'').join('');
-    document.getElementById('ai-raw').textContent = txt;
-    showCard();
-
-    // Extract JSON
-    let clean = txt.replace(/`{1,3}json/gi,'').replace(/`{1,3}/g,'');
-    const f = clean.indexOf('{'), l = clean.lastIndexOf('}');
-    if(f!==-1 && l!==-1) clean = clean.substring(f,l+1);
-    clean = clean.replace(/,(\s*[\]}])/g,'$1').trim();
-
+    const data=await res.json();
+    if(data.error){
+      document.getElementById('ai-card').style.display='block';
+      document.getElementById('ai-sum').innerHTML='<span style="color:#ff5252">API Error: '+data.error.message+'</span>';
+      btn.disabled=false; document.getElementById('ai-txt').textContent='🤖 Read Again'; return;
+    }
+    if(!data.content||!Array.isArray(data.content)){
+      document.getElementById('ai-card').style.display='block';
+      document.getElementById('ai-sum').innerHTML='<span style="color:#ff5252">Unexpected response: '+JSON.stringify(data).substring(0,150)+'</span>';
+      btn.disabled=false; document.getElementById('ai-txt').textContent='🤖 Read Again'; return;
+    }
+    const txt=data.content.map(b=>b.text||'').join('');
+    document.getElementById('ai-raw').textContent=txt;
+    document.getElementById('ai-card').style.display='block';
+    // Clean and parse JSON
+    let clean=txt.replace(/`{1,3}json/gi,'').replace(/`{1,3}/g,'');
+    const f=clean.indexOf('{'), l=clean.lastIndexOf('}');
+    if(f!==-1&&l!==-1) clean=clean.substring(f,l+1);
+    clean=clean.replace(/,(\s*[\]}])/g,'$1').trim();
     try {
-      aiData = JSON.parse(clean);
-      const d = aiData;
-      let s = '<div style="line-height:2">';
-      s += `📅 <b>${d.date||'—'}</b> &nbsp; 🔄 Shift ${d.shift||'—'}<br>`;
-      s += `👤 <b>${d.attendant||'—'}</b> &nbsp; Supervisor: ${d.supervisor||'—'}<br>`;
-      if(d.prices) s += `💰 Diesel ₱${d.prices.diesel||0} | Unleaded ₱${d.prices.unleaded||0} | Premium ₱${d.prices.premium||0}<br>`;
-      if(d.hoses&&d.hoses.length) {
-        s += `<br>⛽ <b>${d.hoses.length} hose(s):</b><br>`;
-        d.hoses.forEach(h=>{
-          const sl=Math.max(0,(h.end_liter||0)-(h.beg_liter||0));
-          const ss=Math.max(0,(h.end_sales||0)-(h.beg_sales||0));
-          s += `&nbsp;• <b>${h.hose}</b> ${h.product}: <span style="color:#f9a825">${fmt(sl)}L / ₱${fmt(ss)}</span><br>`;
-        });
+      aiData=JSON.parse(clean);
+      const d=aiData;
+      let s='<div style="line-height:2">';
+      s+=`📅 <b>${d.date||'—'}</b> &nbsp; Shift: <b>${d.shift||'—'}</b> &nbsp; P/A: <b>${d.attendant||'—'}</b><br>`;
+      if(d.prices) s+=`💰 U: ₱${d.prices.unleaded||0} &nbsp; P: ₱${d.prices.premium||0} &nbsp; D: ₱${d.prices.diesel||0}<br>`;
+      if(d.dipstick) s+=`🛢 Dip U:${d.dipstick.u_beg||0}→${d.dipstick.u_end||0} P:${d.dipstick.p_beg||0}→${d.dipstick.p_end||0} D:${d.dipstick.d_beg||0}→${d.dipstick.d_end||0}<br>`;
+      if(d.pump1&&d.pump1.length) {
+        s+=`<br>⛽ <b>Pump 1 (${d.pump1.length} hoses):</b><br>`;
+        d.pump1.forEach(h=>{ const sl=Math.max(0,(h.end_liter||0)-(h.beg_liter||0)),ss=Math.max(0,(h.end_sales||0)-(h.beg_sales||0)); s+=`&nbsp;• ${h.hose} ${h.product}: <b style="color:#f9a825">${fmt(sl)}L / ₱${fmt(ss)}</b><br>`; });
       }
-      if(d.dipstick) s += `<br>🛢 Dip: D${d.dipstick.diesel||0}L U${d.dipstick.unleaded||0}L P${d.dipstick.premium||0}L<br>`;
-      s += '</div>';
-      document.getElementById('ai-sum').innerHTML = s;
-      document.getElementById('apply-btn').style.display = 'block';
+      if(d.pump2&&d.pump2.length) {
+        s+=`<br>⛽ <b>Pump 2 (${d.pump2.length} hoses):</b><br>`;
+        d.pump2.forEach(h=>{ const sl=Math.max(0,(h.end_liter||0)-(h.beg_liter||0)),ss=Math.max(0,(h.end_sales||0)-(h.beg_sales||0)); s+=`&nbsp;• ${h.hose} ${h.product}: <b style="color:#f9a825">${fmt(sl)}L / ₱${fmt(ss)}</b><br>`; });
+      }
+      s+=`<br>💵 Cash Sales: ₱${fmt(d.cash_sales||0)} &nbsp; Cash on Hand: ₱${fmt(d.cash_onhand||0)}<br>`;
+      if(d.gcash_amount) s+=`📱 GCash: ₱${fmt(d.gcash_amount)} Ref: ${d.gcash_ref||'—'}<br>`;
+      s+='</div>';
+      document.getElementById('ai-sum').innerHTML=s;
+      document.getElementById('apply-btn').style.display='block';
     } catch(pe) {
-      document.getElementById('ai-sum').innerHTML = `<span style="color:#ff5252">Parse error: ${pe.message}<br>Check raw data below.</span>`;
-      document.getElementById('ai-raw').style.display = 'block';
+      document.getElementById('ai-sum').innerHTML=`<span style="color:#ff5252">Parse error: ${pe.message} — check raw data below</span>`;
+      document.getElementById('ai-raw').style.display='block';
     }
   } catch(e) {
-    showCard();
-    document.getElementById('ai-sum').innerHTML = `<span style="color:#ff5252">Error: ${e.message}</span>`;
+    document.getElementById('ai-card').style.display='block';
+    document.getElementById('ai-sum').innerHTML=`<span style="color:#ff5252">Error: ${e.message}</span>`;
   } finally {
-    btn.disabled = false;
-    document.getElementById('ai-txt').textContent = '🤖 Read Again';
+    btn.disabled=false;
+    document.getElementById('ai-txt').textContent='🤖 Read Again';
   }
 }
-
-function showCard() { document.getElementById('ai-card').style.display='block'; }
-function toggleRaw() {
-  const el = document.getElementById('ai-raw');
-  el.style.display = el.style.display==='none'?'block':'none';
-}
+function toggleRaw() { const el=document.getElementById('ai-raw'); el.style.display=el.style.display==='none'?'block':'none'; }
 
 // ═══ APPLY AI DATA ═══
 function applyData() {
   if(!aiData) return;
-  const d = aiData;
-  if(d.date) document.getElementById('s-date').value = d.date;
-  if(d.shift) { document.getElementById('s-shiftnum').value=d.shift; document.getElementById('s-shiftnum2').value=d.shift; }
+  const d=aiData;
+  if(d.date) document.getElementById('s-date').value=d.date;
+  if(d.shift) { document.getElementById('s-shift').value=d.shift; document.getElementById('s-shift2').value=d.shift; }
   if(d.prices) {
-    if(d.prices.diesel) document.getElementById('p-diesel').value=d.prices.diesel;
-    if(d.prices.unleaded) document.getElementById('p-unleaded').value=d.prices.unleaded;
-    if(d.prices.premium) document.getElementById('p-premium').value=d.prices.premium;
-  }
-  if(d.hoses&&d.hoses.length) {
-    hoses=[]; document.getElementById('hose-tbody').innerHTML='';
-    d.hoses.forEach(h=>addHoseData(h));
+    if(d.prices.unleaded) document.getElementById('price-u').value=d.prices.unleaded;
+    if(d.prices.premium) document.getElementById('price-p').value=d.prices.premium;
+    if(d.prices.diesel) document.getElementById('price-d').value=d.prices.diesel;
   }
   if(d.dipstick) {
-    if(d.dipstick.diesel!==undefined) document.getElementById('dip-d').value=d.dipstick.diesel;
-    if(d.dipstick.unleaded!==undefined) document.getElementById('dip-u').value=d.dipstick.unleaded;
-    if(d.dipstick.premium!==undefined) document.getElementById('dip-p').value=d.dipstick.premium;
+    ['u_beg','u_end','p_beg','p_end','d_beg','d_end'].forEach(k=>{
+      const el=document.getElementById('dip-'+k.replace('_','-')); if(el&&d.dipstick[k]!==undefined) el.value=d.dipstick[k];
+    });
   }
-  if(d.fuel_delivered) {
-    if(d.fuel_delivered.diesel!==undefined) document.getElementById('del-d').value=d.fuel_delivered.diesel;
-    if(d.fuel_delivered.unleaded!==undefined) document.getElementById('del-u').value=d.fuel_delivered.unleaded;
-    if(d.fuel_delivered.premium!==undefined) document.getElementById('del-p').value=d.fuel_delivered.premium;
+  if(d.pump1&&d.pump1.length) {
+    p1Hoses=[]; document.getElementById('p1-tbody').innerHTML='';
+    d.pump1.forEach(h=>addHoseData(1,h));
   }
+  if(d.pump2&&d.pump2.length) {
+    p2Hoses=[]; document.getElementById('p2-tbody').innerHTML='';
+    d.pump2.forEach(h=>addHoseData(2,h));
+  }
+  if(d.cash_sales) document.getElementById('cash-sales').value=d.cash_sales;
+  if(d.cash_remit) document.getElementById('cash-remit').value=d.cash_remit;
+  if(d.gcash_amount) document.getElementById('gcash-amt').value=d.gcash_amount;
+  if(d.gcash_ref) document.getElementById('gcash-ref').value=d.gcash_ref;
   if(d.denominations) {
     const map={p1000:'1000',p500:'500',p200:'200',p100:'100',p50:'50',p20:'20',p10:'10',p5:'5',p1:'1'};
     document.querySelectorAll('.denom').forEach(inp=>{
@@ -784,168 +829,175 @@ function applyData() {
       if(k&&d.denominations[k]!==undefined) inp.value=d.denominations[k];
     });
   }
-  if(d.ar_sales) document.getElementById('ar-sales').value=d.ar_sales;
-  if(d.other_income) document.getElementById('other-inc').value=d.other_income;
-  recalc(); calcCash();
-  goTab('shift','info');
+  if(d.collectibles&&d.collectibles.length) {
+    document.getElementById('collect-rows').innerHTML='';
+    d.collectibles.forEach(c=>{ if(c.name||c.amount) addCollectData(c.name,c.amount); });
+  }
+  if(d.payables&&d.payables.length) {
+    document.getElementById('payable-rows').innerHTML='';
+    d.payables.forEach(p=>{ if(p.name||p.amount) addPayableData(p.name,p.amount); });
+  }
+  recalcAll(); calcCash(); calcCollect();
+  goTab('shift','header');
 }
 
-// ═══ HOSE TABLE ═══
-function initHoses() {
-  [{hose:'H1',product:'Diesel'},{hose:'H2',product:'Diesel'},{hose:'H3',product:'Unleaded'},{hose:'H4',product:'Unleaded'}]
-    .forEach(h=>addHoseData(h));
-}
-function addHose() { addHoseData({}); }
-function addHoseData(data) {
-  const id = hoseId++;
-  hoses.push(id);
-  const p = data.product||'Diesel';
-  const tr = document.createElement('tr');
-  tr.id = 'h'+id;
-  tr.innerHTML = `
-    <td><input type="text" value="${data.hose||'H'+(id+1)}" style="width:46px;padding:4px 5px;font-size:11px"></td>
-    <td><select onchange="recalc()" style="font-size:11px;padding:3px 20px 3px 5px;width:88px">
-      <option${p==='Diesel'?' selected':''}>Diesel</option>
+// ═══ PUMP HOSE TABLE ═══
+function addHose(pump) { addHoseData(pump,{}); }
+function addHoseData(pump, data) {
+  const id=hoseId++;
+  if(pump===1) p1Hoses.push(id); else p2Hoses.push(id);
+  const tbody=document.getElementById('p'+pump+'-tbody');
+  const p=data.product||'Diesel';
+  const tr=document.createElement('tr'); tr.id='h'+id;
+  tr.innerHTML=`
+    <td><select class="hprod" onchange="recalcAll()" style="font-size:11px;padding:3px 18px 3px 4px;width:80px">
       <option${p==='Unleaded'?' selected':''}>Unleaded</option>
       <option${p==='Premium'?' selected':''}>Premium</option>
-      <option${p==='Gasoline'?' selected':''}>Gasoline</option>
+      <option${p==='Diesel'?' selected':''}>Diesel</option>
     </select></td>
-    <td><input type="number" class="bl" value="${data.beg_liter||0}" oninput="recalcRow(${id})"></td>
-    <td><input type="number" class="bs" value="${data.beg_sales||0}" oninput="recalcRow(${id})"></td>
-    <td><input type="number" class="el" value="${data.end_liter||0}" oninput="recalcRow(${id})"></td>
-    <td><input type="number" class="es" value="${data.end_sales||0}" oninput="recalcRow(${id})"></td>
-    <td class="shiftcell" id="rl${id}">0</td>
-    <td class="shiftcell" id="rs${id}">0</td>
-    <td><button style="background:none;border:none;color:#ff5252;cursor:pointer;font-size:16px" onclick="removeHose(${id})">×</button></td>`;
-  document.getElementById('hose-tbody').appendChild(tr);
-  recalcRow(id);
+    <td><input type="number" class="bl" value="${data.beg_liter||0}" oninput="recalcHose(${id},${pump})"></td>
+    <td><input type="number" class="bs" value="${data.beg_sales||0}" oninput="recalcHose(${id},${pump})"></td>
+    <td><input type="number" class="el" value="${data.end_liter||0}" oninput="recalcHose(${id},${pump})"></td>
+    <td><input type="number" class="es" value="${data.end_sales||0}" oninput="recalcHose(${id},${pump})"></td>
+    <td class="sc-cell" id="rl${id}">0</td>
+    <td class="sc-cell" id="rs${id}">0</td>`;
+  tbody.appendChild(tr); recalcHose(id,pump);
 }
-function removeHose(id) {
-  const tr=document.getElementById('h'+id); if(tr) tr.remove();
-  hoses=hoses.filter(x=>x!==id); recalcTotals();
-}
-function recalcRow(id) {
+function recalcHose(id,pump) {
   const tr=document.getElementById('h'+id); if(!tr) return;
   const sl=Math.max(0,(+tr.querySelector('.el').value||0)-(+tr.querySelector('.bl').value||0));
   const ss=Math.max(0,(+tr.querySelector('.es').value||0)-(+tr.querySelector('.bs').value||0));
   document.getElementById('rl'+id).textContent=fmt(sl);
-  document.getElementById('rs'+id).textContent=fmt(ss);
-  document.getElementById('rs'+id).className = ss>20000?'flagcell':'shiftcell';
-  recalcTotals();
+  const rsEl=document.getElementById('rs'+id);
+  rsEl.textContent=fmt(ss); rsEl.className=ss>20000?'flag-cell':'sc-cell';
+  recalcPump(pump);
 }
-function recalc() { hoses.forEach(id=>recalcRow(id)); }
-function recalcTotals() {
-  let tbl=0,tbs=0,tel=0,tes=0,tsl=0,tss=0,td=0,tu=0,tp=0;
-  hoses.forEach(id=>{
+function recalcPump(pump) {
+  const hoseList=pump===1?p1Hoses:p2Hoses;
+  let tbl=0,tbs=0,tel=0,tes=0,tsl=0,tss=0;
+  hoseList.forEach(id=>{
     const tr=document.getElementById('h'+id); if(!tr) return;
-    const bl=+tr.querySelector('.bl').value||0, bs=+tr.querySelector('.bs').value||0;
-    const el=+tr.querySelector('.el').value||0, es=+tr.querySelector('.es').value||0;
-    const sl=Math.max(0,el-bl), ss=Math.max(0,es-bs);
-    tbl+=bl;tbs+=bs;tel+=el;tes+=es;tsl+=sl;tss+=ss;
-    const prod=tr.querySelector('select').value;
-    if(prod==='Diesel') td+=sl; else if(prod==='Premium') tp+=sl; else tu+=sl;
+    tbl+=(+tr.querySelector('.bl').value||0); tbs+=(+tr.querySelector('.bs').value||0);
+    tel+=(+tr.querySelector('.el').value||0); tes+=(+tr.querySelector('.es').value||0);
+    tsl+=Math.max(0,(+tr.querySelector('.el').value||0)-(+tr.querySelector('.bl').value||0));
+    tss+=Math.max(0,(+tr.querySelector('.es').value||0)-(+tr.querySelector('.bs').value||0));
   });
-  ['t-bl','t-bs','t-el','t-es','t-sl','t-ss'].forEach((id,i)=>document.getElementById(id).textContent=fmt([tbl,tbs,tel,tes,tsl,tss][i]));
-  document.getElementById('sum-l').textContent=fmt(tsl)+' L';
-  document.getElementById('sum-s').textContent='₱'+fmt(tss);
-  document.getElementById('sum-d').textContent=fmt(td)+' L';
-  document.getElementById('sum-u').textContent=fmt(tu)+' L';
-  document.getElementById('sum-p').textContent=fmt(tp)+' L';
-  document.getElementById('gross').value=tss.toFixed(2);
-  calcCash(); checkFlags(tss);
+  ['tbl','tbs','tel','tes','tsl','tss'].forEach((k,i)=>{ const el=document.getElementById('p'+pump+'-'+k); if(el) el.textContent=fmt([tbl,tbs,tel,tes,tsl,tss][i]); });
+  document.getElementById('p'+pump+'-sum-l').textContent=fmt(tsl)+' L';
+  document.getElementById('p'+pump+'-sum-s').textContent='₱'+fmt(tss);
+  recalcCombined();
 }
-function checkFlags(tss) {
-  const flags=[];
-  hoses.forEach(id=>{
+function recalcAll() { recalcPump(1); recalcPump(2); }
+function recalcCombined() {
+  let tsl=0,tss=0,ul=0,pl=0,dl=0,flags=[];
+  [p1Hoses,p2Hoses].forEach(list=>list.forEach(id=>{
     const tr=document.getElementById('h'+id); if(!tr) return;
+    const sl=Math.max(0,(+tr.querySelector('.el').value||0)-(+tr.querySelector('.bl').value||0));
     const ss=Math.max(0,(+tr.querySelector('.es').value||0)-(+tr.querySelector('.bs').value||0));
-    const hn=tr.querySelector('input[type=text]').value;
-    if(ss>20000) flags.push(`🚩 ${hn}: sales ₱${fmt(ss)} — possible misread`);
-  });
-  document.getElementById('flag-section').innerHTML=flags.map(f=>`<div style="background:rgba(255,82,82,.07);border:1px solid rgba(255,82,82,.2);border-radius:8px;padding:10px;margin-bottom:8px;font-size:12px;color:#ff5252">${f}</div>`).join('');
-}
-
-// ═══ SHIFT TOGGLE ═══
-function toggleOp() {
-  const v=document.getElementById('s-status').value;
-  document.getElementById('active-section').style.display=v==='active'?'block':'none';
-  document.getElementById('inactive-section').style.display=v!=='active'?'block':'none';
-  document.getElementById('inactive-label').textContent=v==='noproduct'?'No Product — No Operation':'Station Closed';
+    tsl+=sl; tss+=ss;
+    const prod=tr.querySelector('.hprod').value;
+    if(prod==='Unleaded') ul+=sl; else if(prod==='Premium') pl+=sl; else dl+=sl;
+    if(ss>20000) flags.push(`🚩 Hose ${id+1} (${prod}): ₱${fmt(ss)} — possible misread`);
+  }));
+  document.getElementById('tot-l').textContent=fmt(tsl)+' L';
+  document.getElementById('tot-s').textContent='₱'+fmt(tss);
+  document.getElementById('tot-ul').textContent=fmt(ul)+' L';
+  document.getElementById('tot-pl').textContent=fmt(pl)+' L';
+  document.getElementById('tot-dl').textContent=fmt(dl)+' L';
+  document.getElementById('cash-sales').value=tss.toFixed(2);
+  document.getElementById('flag-sec').innerHTML=flags.map(f=>`<div style="background:rgba(255,82,82,.07);border:1px solid rgba(255,82,82,.2);border-radius:8px;padding:10px;margin-bottom:8px;font-size:12px;color:#ff5252">${f}</div>`).join('');
+  calcCash();
 }
 
 // ═══ CASH ═══
-function cashTotal() {
-  let t=0; document.querySelectorAll('.denom').forEach(i=>t+=(+i.value||0)*(+i.dataset.v)); return t;
-}
+function cashOnHand() { let t=0; document.querySelectorAll('.denom').forEach(i=>t+=(+i.value||0)*(+i.dataset.v)); return t; }
 function calcCash() {
-  const cash=cashTotal();
-  document.getElementById('cash-total').textContent='₱'+fmt(cash);
-  document.getElementById('s-cash').textContent='₱'+fmt(cash);
-  const gross=+document.getElementById('gross').value||0;
-  const ar=+document.getElementById('ar-sales').value||0;
-  const oth=+document.getElementById('other-inc').value||0;
-  const os=cash-(gross-ar+oth);
-  const el=document.getElementById('s-os');
-  el.textContent=(os>=0?'+':'')+'₱'+fmt(os);
-  el.className='sval '+(os>100?'green':os<-100?'red':'');
+  const hand=cashOnHand();
+  document.getElementById('cash-onhand').textContent='₱'+fmt(hand);
+  document.getElementById('s-cashhand').textContent='₱'+fmt(hand);
+  const sales=+document.getElementById('cash-sales').value||0;
+  const remit=+document.getElementById('cash-remit').value||0;
+  const gcash=+document.getElementById('gcash-amt').value||0;
+  document.getElementById('s-cashsales').textContent='₱'+fmt(sales);
+  document.getElementById('s-remit').textContent='₱'+fmt(remit);
+  const os=hand-(sales-remit+gcash);
+  const osEl=document.getElementById('s-os');
+  osEl.textContent=(os>=0?'+':'')+'₱'+fmt(os);
+  osEl.className='sval '+(os>100?'green':os<-100?'red':'');
   document.getElementById('os-flag').style.display=Math.abs(os)>500?'block':'none';
-  calcPays();
+  calcCollect();
 }
 
-// ═══ PAYABLES ═══
-function addPay(type) {
-  const cont=document.getElementById({sup:'sup-rows',chk:'chk-rows',loan:'loan-rows'}[type]);
+// ═══ COLLECTIBLES ═══
+function addCollect() { addCollectData('',''); }
+function addCollectData(name,amt) {
   const div=document.createElement('div'); div.className='payrow';
-  div.innerHTML=`<input type="text" placeholder="${type==='sup'?'Supplier':type==='chk'?'Check #':'Borrower'}" style="flex:1">
-    <input type="number" placeholder="₱" style="width:100px;text-align:right" oninput="calcPays()">
-    <button style="background:none;border:none;color:#ff5252;cursor:pointer;font-size:18px" onclick="this.parentElement.remove();calcPays()">×</button>`;
-  cont.appendChild(div);
+  div.innerHTML=`<input type="text" placeholder="e.g. VIOS-GARY" value="${name||''}" style="flex:1">
+    <input type="number" placeholder="₱" value="${amt||''}" style="width:100px;text-align:right" oninput="calcCollect()">
+    <button style="background:none;border:none;color:#ff5252;cursor:pointer;font-size:18px" onclick="this.parentElement.remove();calcCollect()">×</button>`;
+  document.getElementById('collect-rows').appendChild(div);
 }
-function calcPays() {
-  let t=0;
-  ['sup-rows','chk-rows','loan-rows'].forEach(id=>document.getElementById(id).querySelectorAll('input[type=number]').forEach(i=>t+=+i.value||0));
-  document.getElementById('tot-pay').textContent='₱'+fmt(t);
-  const gross=+document.getElementById('gross').value||0;
-  const ar=+document.getElementById('ar-sales').value||0;
-  const net=gross-ar-t;
-  const el=document.getElementById('net-col');
-  el.textContent='₱'+fmt(net); el.className='sval '+(net>=0?'green':'red');
+function addPayable() { addPayableData('',''); }
+function addPayableData(name,amt) {
+  const div=document.createElement('div'); div.className='payrow';
+  div.innerHTML=`<input type="text" placeholder="e.g. Supplier name" value="${name||''}" style="flex:1">
+    <input type="number" placeholder="₱" value="${amt||''}" style="width:100px;text-align:right" oninput="calcCollect()">
+    <button style="background:none;border:none;color:#ff5252;cursor:pointer;font-size:18px" onclick="this.parentElement.remove();calcCollect()">×</button>`;
+  document.getElementById('payable-rows').appendChild(div);
+}
+function calcCollect() {
+  let tc=0,tp=0;
+  document.getElementById('collect-rows').querySelectorAll('input[type=number]').forEach(i=>tc+=+i.value||0);
+  document.getElementById('payable-rows').querySelectorAll('input[type=number]').forEach(i=>tp+=+i.value||0);
+  document.getElementById('tot-collect').textContent='₱'+fmt(tc);
+  document.getElementById('tot-pay').textContent='₱'+fmt(tp);
+  const sales=+document.getElementById('cash-sales').value||0;
+  const remit=+document.getElementById('cash-remit').value||0;
+  const net=sales-remit-tp+tc;
+  const el=document.getElementById('net-remit'); el.textContent='₱'+fmt(net); el.className='sval '+(net>=0?'green':'red');
+}
+
+// ═══ FILL SUMMARY ═══
+function fillSummary() {
+  document.getElementById('sub-stn').textContent=station;
+  document.getElementById('sub-shift').textContent=(document.getElementById('s-date').value||'—')+' '+document.getElementById('s-shift').value;
+  document.getElementById('sub-p1').textContent=document.getElementById('p1-sum-s').textContent;
+  document.getElementById('sub-p2').textContent=document.getElementById('p2-sum-s').textContent;
+  document.getElementById('sub-tot').textContent=document.getElementById('tot-s').textContent;
+  document.getElementById('sub-cash').textContent=document.getElementById('s-cashhand').textContent;
+  document.getElementById('sub-os').textContent=document.getElementById('s-os').textContent;
 }
 
 // ═══ SUBMIT SHIFT ═══
-function fillSummary() {
-  document.getElementById('sub-stn').textContent=station;
-  document.getElementById('sub-shift').textContent=document.getElementById('s-date').value+' S'+document.getElementById('s-shiftnum').value;
-  document.getElementById('sub-l').textContent=document.getElementById('sum-l').textContent;
-  document.getElementById('sub-s').textContent=document.getElementById('sum-s').textContent;
-  document.getElementById('sub-c').textContent=document.getElementById('s-cash').textContent;
-  document.getElementById('sub-os').textContent=document.getElementById('s-os').textContent;
-}
 async function submitShift() {
   const url=sheetsUrl||localStorage.getItem('af_url')||'';
-  if(!url){showSt('sub-status','Enter Google Sheets URL in Settings','err');return;}
-  const os=Math.abs(cashTotal()-(+document.getElementById('gross').value||0)+(+document.getElementById('ar-sales').value||0));
-  if(os>500&&!document.getElementById('os-reason').value.trim()){showSt('sub-status','Over/Short >₱500 — go to Cash tab and enter reason','warn');return;}
+  if(!url){showSt('sub-status','Enter Google Sheets URL in ⚙️ Settings','err');return;}
+  const os=Math.abs(cashOnHand()-(+document.getElementById('cash-sales').value||0)+(+document.getElementById('cash-remit').value||0));
+  if(os>500&&!(document.getElementById('os-reason').value||'').trim()){showSt('sub-status','Over/Short >₱500 — go to Cash tab and enter reason','warn');return;}
   fillSummary();
-  const hoseData=hoses.map(id=>{
-    const tr=document.getElementById('h'+id); if(!tr) return null;
-    return {hose:tr.querySelector('input[type=text]').value,product:tr.querySelector('select').value,
-      beg_liter:tr.querySelector('.bl').value,beg_sales:tr.querySelector('.bs').value,
-      end_liter:tr.querySelector('.el').value,end_sales:tr.querySelector('.es').value,
-      shift_liter:document.getElementById('rl'+id).textContent,shift_sales:document.getElementById('rs'+id).textContent};
-  }).filter(Boolean);
+  const getHoseData=(list)=>list.map(id=>{const tr=document.getElementById('h'+id);if(!tr)return null;return{product:tr.querySelector('.hprod').value,beg_liter:tr.querySelector('.bl').value,beg_sales:tr.querySelector('.bs').value,end_liter:tr.querySelector('.el').value,end_sales:tr.querySelector('.es').value,shift_liter:document.getElementById('rl'+id).textContent,shift_sales:document.getElementById('rs'+id).textContent};}).filter(Boolean);
   const denoms={};
   document.querySelectorAll('.denom').forEach(i=>denoms['p'+i.dataset.v]=i.value||0);
-  const payload={type:'shift',station,
-    date:document.getElementById('s-date').value,shift:document.getElementById('s-shiftnum').value,
+  const collectibles=[], payables2=[];
+  document.getElementById('collect-rows').querySelectorAll('.payrow').forEach(r=>{const inputs=r.querySelectorAll('input');collectibles.push({name:inputs[0].value,amount:inputs[1].value});});
+  document.getElementById('payable-rows').querySelectorAll('.payrow').forEach(r=>{const inputs=r.querySelectorAll('input');payables2.push({name:inputs[0].value,amount:inputs[1].value});});
+  const payload={type:'shift',station,date:document.getElementById('s-date').value,shift:document.getElementById('s-shift').value,
     attendant:document.getElementById('s-attendant').value,supervisor:document.getElementById('s-supervisor').value,
-    total_liters:document.getElementById('t-sl').textContent,total_sales:document.getElementById('t-ss').textContent,
-    dip_diesel:document.getElementById('dip-d').value,dip_unleaded:document.getElementById('dip-u').value,dip_premium:document.getElementById('dip-p').value,
-    ar_sales:document.getElementById('ar-sales').value,other_income:document.getElementById('other-inc').value,
-    cash_total:document.getElementById('s-cash').textContent,over_short:document.getElementById('s-os').textContent,
-    os_reason:document.getElementById('os-reason').value,
-    net_collectible:document.getElementById('net-col').textContent,
-    hoses:JSON.stringify(hoseData),...denoms,timestamp:new Date().toISOString()};
+    price_u:document.getElementById('price-u').value,price_p:document.getElementById('price-p').value,price_d:document.getElementById('price-d').value,
+    dip_u_beg:document.getElementById('dip-u-beg').value,dip_u_end:document.getElementById('dip-u-end').value,
+    dip_p_beg:document.getElementById('dip-p-beg').value,dip_p_end:document.getElementById('dip-p-end').value,
+    dip_d_beg:document.getElementById('dip-d-beg').value,dip_d_end:document.getElementById('dip-d-end').value,
+    pump1:JSON.stringify(getHoseData(p1Hoses)),pump2:JSON.stringify(getHoseData(p2Hoses)),
+    p1_total_liters:document.getElementById('p1-tsl').textContent,p1_total_sales:document.getElementById('p1-tss').textContent,
+    p2_total_liters:document.getElementById('p2-tsl').textContent,p2_total_sales:document.getElementById('p2-tss').textContent,
+    total_liters:document.getElementById('tot-l').textContent,total_sales:document.getElementById('tot-s').textContent,
+    cash_sales:document.getElementById('cash-sales').value,cash_remit:document.getElementById('cash-remit').value,
+    cash_onhand:document.getElementById('s-cashhand').textContent,over_short:document.getElementById('s-os').textContent,
+    os_reason:(document.getElementById('os-reason')||{}).value||'',
+    gcash_amount:document.getElementById('gcash-amt').value,gcash_ref:document.getElementById('gcash-ref').value,
+    collectibles:JSON.stringify(collectibles),payables:JSON.stringify(payables2),
+    net_remit:document.getElementById('net-remit').textContent,
+    ...denoms,timestamp:new Date().toISOString()};
   try {
     await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     showSt('sub-status','✅ Submitted! Check your Google Sheet.','ok');
@@ -955,166 +1007,92 @@ async function submitZero() {
   const url=sheetsUrl||localStorage.getItem('af_url')||'';
   if(!url){alert('Set Google Sheets URL in Settings first');return;}
   try {
-    await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'shift',station,date:document.getElementById('s-date').value,shift:document.getElementById('s-shiftnum').value,status:document.getElementById('s-status').value,total_liters:0,total_sales:0,timestamp:new Date().toISOString()})});
+    await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'shift',station,date:document.getElementById('s-date').value,shift:document.getElementById('s-shift').value,status:document.getElementById('s-status').value,total_liters:0,total_sales:0,timestamp:new Date().toISOString()})});
     showSt('sub-status','✅ Zero shift recorded.','ok');
   } catch(e){alert('Error: '+e.message);}
 }
 
 // ═══ DELIVERY ═══
 function calcDel() {
-  const t=((+document.getElementById('del-dl').value||0)*(+document.getElementById('del-dp').value||0))+
-          ((+document.getElementById('del-ul').value||0)*(+document.getElementById('del-up').value||0))+
-          ((+document.getElementById('del-pl').value||0)*(+document.getElementById('del-pp').value||0));
+  const t=((+document.getElementById('del-ul').value||0)*(+document.getElementById('del-up').value||0))+((+document.getElementById('del-pl').value||0)*(+document.getElementById('del-pp').value||0))+((+document.getElementById('del-dl').value||0)*(+document.getElementById('del-dp').value||0));
   document.getElementById('del-tot').textContent='₱'+fmt(t);
   document.getElementById('chk-amt').value=t.toFixed(2);
 }
 function saveDel() {
-  const d={id:Date.now(),station:document.getElementById('del-stn').value,date:document.getElementById('del-date').value,
-    supplier:document.getElementById('del-sup').value,
-    diesel_l:document.getElementById('del-dl').value,unleaded_l:document.getElementById('del-ul').value,premium_l:document.getElementById('del-pl').value,
-    total:document.getElementById('del-tot').textContent,
-    chk_num:document.getElementById('chk-num').value,chk_bank:document.getElementById('chk-bank').value,
-    chk_date:document.getElementById('chk-date').value,chk_due:document.getElementById('chk-due').value,
-    chk_amt:document.getElementById('chk-amt').value,status:'pending'};
+  const d={id:Date.now(),station:document.getElementById('del-stn').value,date:document.getElementById('del-date').value,supplier:document.getElementById('del-sup').value,ul:document.getElementById('del-ul').value,pl:document.getElementById('del-pl').value,dl:document.getElementById('del-dl').value,total:document.getElementById('del-tot').textContent,chk_num:document.getElementById('chk-num').value,chk_bank:document.getElementById('chk-bank').value,chk_date:document.getElementById('chk-date').value,chk_due:document.getElementById('chk-due').value,chk_amt:document.getElementById('chk-amt').value,status:'pending'};
   deliveries.push(d); localStorage.setItem('af_del',JSON.stringify(deliveries));
   showSt('del-status','✅ Saved!','ok'); renderChecks(); renderDelHist();
 }
-function markPaid(id) {
-  deliveries=deliveries.map(d=>d.id===id?{...d,status:'paid'}:d);
-  localStorage.setItem('af_del',JSON.stringify(deliveries)); renderChecks();
-}
+function markPaid(id) { deliveries=deliveries.map(d=>d.id===id?{...d,status:'paid'}:d); localStorage.setItem('af_del',JSON.stringify(deliveries)); renderChecks(); }
 function renderChecks() {
   const today=new Date().toISOString().split('T')[0];
   const pending=deliveries.filter(d=>d.status!=='paid');
   let tot=0,ov=0;
-  const html=pending.length?pending.map(d=>{
-    const od=d.chk_due&&d.chk_due<today; if(od)ov++; tot+=+d.chk_amt||0;
-    return `<div class="chkrow">
-      <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-        <b>${d.supplier||'—'}</b><span class="csbadge ${od?'overdue':'pending'}">${od?'OVERDUE':'PENDING'}</span>
-      </div>
-      <div style="font-size:11px;color:#8899bb;line-height:1.9">
-        Check #${d.chk_num||'—'} | ${d.chk_bank||'—'}<br>
-        Amount: <b style="color:#f0f4ff">₱${fmt(d.chk_amt)}</b> | Due: <b style="color:${od?'#ff5252':'#f0f4ff'}">${d.chk_due||'—'}</b> | ${d.station}
-      </div>
-      <button class="btnsm" style="margin-top:8px;color:#00e676;border-color:#00e676" onclick="markPaid(${d.id})">✅ Mark Paid</button>
-    </div>`;
-  }).join(''):'<div style="color:#8899bb;font-size:12px;text-align:center;padding:20px">No outstanding checks ✅</div>';
+  const html=pending.length?pending.map(d=>{const od=d.chk_due&&d.chk_due<today;if(od)ov++;tot+=+d.chk_amt||0;return`<div class="chkrow"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><b>${d.supplier||'—'}</b><span class="csbadge ${od?'overdue':'pending'}">${od?'OVERDUE':'PENDING'}</span></div><div style="font-size:11px;color:#8899bb;line-height:1.9">Check #${d.chk_num||'—'} | ${d.chk_bank||'—'}<br>Amount: <b style="color:#f0f4ff">₱${fmt(d.chk_amt)}</b> | Due: <b style="color:${od?'#ff5252':'#f0f4ff'}">${d.chk_due||'—'}</b> | ${d.station}</div><button class="btnsm" style="margin-top:8px;color:#00e676;border-color:#00e676" onclick="markPaid(${d.id})">✅ Mark Paid</button></div>`;}).join(''):'<div style="color:#8899bb;font-size:12px;text-align:center;padding:20px">No outstanding checks ✅</div>';
   ['checks-list','mgr-checks'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=html;});
   ['chk-out','mgr-due'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='₱'+fmt(tot);});
   ['chk-ov','mgr-ov'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=ov;});
 }
 function renderDelHist() {
-  const el=document.getElementById('del-hist'); if(!el) return;
-  el.innerHTML=deliveries.length?[...deliveries].reverse().map(d=>`<div class="chkrow">
-    <div style="display:flex;justify-content:space-between"><b>${d.supplier||'—'}</b><span style="color:#f9a825">${d.total}</span></div>
-    <div style="font-size:11px;color:#8899bb;line-height:1.9">${d.date} | ${d.station}<br>D:${fmt(d.diesel_l)}L U:${fmt(d.unleaded_l)}L P:${fmt(d.premium_l)}L<br>Check #${d.chk_num||'—'} due ${d.chk_due||'—'} <span class="csbadge ${d.status==='paid'?'paid':'pending'}">${(d.status||'pending').toUpperCase()}</span></div>
-  </div>`).join(''):'<div style="color:#8899bb;font-size:12px;text-align:center;padding:20px">No deliveries yet</div>';
+  const el=document.getElementById('del-hist');if(!el)return;
+  el.innerHTML=deliveries.length?[...deliveries].reverse().map(d=>`<div class="chkrow"><div style="display:flex;justify-content:space-between"><b>${d.supplier||'—'}</b><span style="color:#f9a825">${d.total}</span></div><div style="font-size:11px;color:#8899bb;line-height:1.9">${d.date}|${d.station}<br>U:${fmt(d.ul)}L P:${fmt(d.pl)}L D:${fmt(d.dl)}L<br>Chk#${d.chk_num||'—'} due ${d.chk_due||'—'} <span class="csbadge ${d.status==='paid'?'paid':'pending'}">${(d.status||'pending').toUpperCase()}</span></div></div>`).join(''):'<div style="color:#8899bb;font-size:12px;text-align:center;padding:20px">No deliveries yet</div>';
 }
 
 // ═══ HR ═══
-let empPhotoData=null;
 function saveEmp() {
-  const fn=document.getElementById('emp-fn').value.trim(), ln=document.getElementById('emp-ln').value.trim();
+  const fn=document.getElementById('emp-fn').value.trim(),ln=document.getElementById('emp-ln').value.trim();
   if(!fn||!ln){showSt('emp-status','Enter first and last name','err');return;}
-  const e={id:Date.now(),name:fn+' '+ln,fn,ln,pos:document.getElementById('emp-pos').value,stn:document.getElementById('emp-stn').value,
-    rate:document.getElementById('emp-rate').value,type:document.getElementById('emp-type').value,
-    hired:document.getElementById('emp-hired').value,phone:document.getElementById('emp-phone').value,
-    photo:document.getElementById('emp-photo-prev').src||null};
+  const photo=document.getElementById('emp-prev');
+  const e={id:Date.now(),name:fn+' '+ln,fn,ln,pos:document.getElementById('emp-pos').value,stn:document.getElementById('emp-stn').value,rate:document.getElementById('emp-rate').value,type:document.getElementById('emp-type').value,hired:document.getElementById('emp-hired').value,phone:document.getElementById('emp-phone').value,photo:photo.style.display!=='none'?photo.src:null};
   employees.push(e); localStorage.setItem('af_emp',JSON.stringify(employees));
-  showSt('emp-status','✅ '+e.name+' added!','ok');
-  fillEmpDrops(); renderTeam();
+  showSt('emp-status','✅ '+e.name+' added!','ok'); fillDrops(); renderTeam();
   document.getElementById('emp-fn').value=''; document.getElementById('emp-ln').value='';
   document.getElementById('emp-rate').value=''; document.getElementById('emp-phone').value='';
-  document.getElementById('emp-photo-prev').style.display='none';
-  document.getElementById('emp-upload-box').style.display='block';
+  document.getElementById('emp-prev').style.display='none'; document.getElementById('emp-upbox').style.display='block';
 }
 function renderTeam() {
-  const el=document.getElementById('team-list'); if(!el) return;
-  el.innerHTML=employees.length?employees.map(e=>`<div class="empcard">
-    <div class="avatar">${e.photo&&e.photo.startsWith('data:')?`<img src="${e.photo}">`:(e.fn[0]+e.ln[0])}</div>
-    <div style="flex:1">
-      <div style="font-size:14px;font-weight:700">${e.name}</div>
-      <div style="font-size:11px;color:#8899bb">${e.pos} — ${e.stn}</div>
-      <div style="margin-top:4px;display:flex;gap:5px;flex-wrap:wrap">
-        <span style="background:rgba(249,168,37,.15);color:#f9a825;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700">₱${fmt(e.rate)}/day</span>
-        <span style="background:rgba(79,195,247,.15);color:#4fc3f7;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700">${e.type}</span>
-      </div>
-    </div>
-  </div>`).join(''):'<div style="color:#8899bb;font-size:12px;text-align:center;padding:30px">No team members yet.<br>Go to ➕ Add TM</div>';
+  const el=document.getElementById('team-list');if(!el)return;
+  el.innerHTML=employees.length?employees.map(e=>`<div class="empcard"><div class="avatar">${e.photo&&e.photo.startsWith('data:')?`<img src="${e.photo}">`:(e.fn[0]+e.ln[0])}</div><div style="flex:1"><div style="font-size:14px;font-weight:700">${e.name}</div><div style="font-size:11px;color:#8899bb">${e.pos} — ${e.stn}</div><div style="margin-top:4px;display:flex;gap:5px;flex-wrap:wrap"><span style="background:rgba(249,168,37,.15);color:#f9a825;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700">₱${fmt(e.rate)}/day</span><span style="background:rgba(79,195,247,.15);color:#4fc3f7;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700">${e.type}</span></div></div></div>`).join(''):'<div style="color:#8899bb;font-size:12px;text-align:center;padding:30px">No team members yet.<br>Go to ➕ Add TM to add employees.</div>';
 }
-function fillEmpDrops() {
+function fillDrops() {
   ['s-attendant','s-supervisor','att-emp','pay-emp'].forEach(id=>{
-    const sel=document.getElementById(id); if(!sel) return;
-    const cur=sel.value;
-    sel.innerHTML='<option value="">-- Select TM --</option>';
+    const sel=document.getElementById(id);if(!sel)return;
+    const cur=sel.value; sel.innerHTML='<option value="">-- Select TM --</option>';
     employees.forEach(e=>{const o=document.createElement('option');o.value=e.name;o.textContent=e.name+' ('+e.pos+')';sel.appendChild(o);});
     if(cur) sel.value=cur;
   });
 }
 function saveAtt() {
-  const emp=document.getElementById('att-emp').value;
-  if(!emp){alert('Select employee');return;}
-  const r={id:Date.now(),date:document.getElementById('att-date').value,stn:document.getElementById('att-stn').value,
-    emp,shift:document.getElementById('att-shift').value,status:document.getElementById('att-stat').value,notes:document.getElementById('att-notes').value};
-  attendance.push(r); localStorage.setItem('af_att',JSON.stringify(attendance));
-  renderAtt(); document.getElementById('att-notes').value='';
+  const emp=document.getElementById('att-emp').value;if(!emp){alert('Select employee');return;}
+  const r={id:Date.now(),date:document.getElementById('att-date').value,stn:document.getElementById('att-stn').value,emp,shift:document.getElementById('att-shift').value,status:document.getElementById('att-stat').value,notes:document.getElementById('att-notes').value};
+  attendance.push(r); localStorage.setItem('af_att',JSON.stringify(attendance)); renderAtt(); document.getElementById('att-notes').value='';
 }
 function renderAtt() {
-  const el=document.getElementById('att-list'); if(!el) return;
+  const el=document.getElementById('att-list');if(!el)return;
   const cols={present:'#00e676',absent:'#ff5252',late:'#f9a825',halfday:'#4fc3f7',restday:'#8899bb',holiday:'#4fc3f7'};
-  el.innerHTML=attendance.length?[...attendance].reverse().slice(0,20).map(a=>`<div class="chkrow" style="display:flex;justify-content:space-between;align-items:center">
-    <div><div style="font-weight:700;font-size:13px">${a.emp}</div>
-    <div style="font-size:11px;color:#8899bb">${a.date} | ${a.stn} | Shift ${a.shift}${a.notes?' | '+a.notes:''}</div></div>
-    <span style="background:rgba(0,0,0,.2);color:${cols[a.status]||'#8899bb'};border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700">${a.status.toUpperCase()}</span>
-  </div>`).join(''):'<div style="color:#8899bb;font-size:12px;text-align:center;padding:20px">No attendance yet</div>';
+  el.innerHTML=attendance.length?[...attendance].reverse().slice(0,20).map(a=>`<div class="chkrow" style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:700;font-size:13px">${a.emp}</div><div style="font-size:11px;color:#8899bb">${a.date}|${a.stn}|${a.shift}${a.notes?' | '+a.notes:''}</div></div><span style="background:rgba(0,0,0,.2);color:${cols[a.status]||'#8899bb'};border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700">${a.status.toUpperCase()}</span></div>`).join(''):'<div style="color:#8899bb;font-size:12px;text-align:center;padding:20px">No attendance yet</div>';
 }
-function calcPay() {
-  const nm=document.getElementById('pay-emp').value, we=document.getElementById('pay-week').value;
+function calcPayroll() {
+  const nm=document.getElementById('pay-emp').value,we=document.getElementById('pay-week').value;
   if(!nm||!we){alert('Select employee and week');return;}
-  const emp=employees.find(e=>e.name===nm); if(!emp) return;
+  const emp=employees.find(e=>e.name===nm);if(!emp)return;
   const rate=+emp.rate||0;
-  const end=new Date(we), start=new Date(we);
-  start.setDate(end.getDate()-6);
-  const dates=[];
-  for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)) dates.push(d.toISOString().split('T')[0]);
+  const end=new Date(we),start=new Date(we);start.setDate(end.getDate()-6);
+  const dates=[];for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)) dates.push(d.toISOString().split('T')[0]);
   let basic=0,holpay=0;
   const rows=dates.map(dt=>{
     const att=attendance.find(a=>a.emp===nm&&a.date===dt);
     const hol=HOLIDAYS.find(h=>h.d===dt);
     const stat=att?att.status:(hol?'holiday':'absent');
-    let pay=0, note='';
-    if(hol) {
-      if(hol.t==='R'){pay=stat==='present'?rate*2:rate;note=hol.n+(stat==='present'?' 200%':' 100%');}
-      else{pay=stat==='present'?rate*1.3:0;note=hol.n+(stat==='present'?' 130%':' no pay');}
-      holpay+=pay;
-    } else if(stat==='present'){pay=rate;basic+=rate;note='Present';}
+    let pay=0,note='';
+    if(hol){if(hol.t==='R'){pay=stat==='present'?rate*2:rate;note=hol.n+(stat==='present'?' 200%':' 100%');}else{pay=stat==='present'?rate*1.3:0;note=hol.n+(stat==='present'?' 130%':' no pay');}holpay+=pay;}
+    else if(stat==='present'){pay=rate;basic+=rate;note='Present';}
     else if(stat==='halfday'){pay=rate*.5;basic+=rate*.5;note='Half Day';}
     else if(stat==='late'){pay=rate*.9;basic+=rate*.9;note='Late';}
     else{note=stat.charAt(0).toUpperCase()+stat.slice(1);}
-    return `<tr style="border-bottom:1px solid rgba(255,255,255,.06)">
-      <td style="padding:5px 4px;font-size:11px">${dt}</td>
-      <td style="padding:5px 4px;font-size:11px;color:#8899bb">${note}</td>
-      <td style="padding:5px 4px;font-size:12px;text-align:right;color:${pay>0?'#f9a825':'#8899bb'}">${pay>0?'₱'+fmt(pay):'—'}</td>
-    </tr>`;
+    return `<tr style="border-bottom:1px solid rgba(255,255,255,.06)"><td style="padding:5px 4px;font-size:11px">${dt}</td><td style="padding:5px 4px;font-size:11px;color:#8899bb">${note}</td><td style="padding:5px 4px;font-size:12px;text-align:right;color:${pay>0?'#f9a825':'#8899bb'}">${pay>0?'₱'+fmt(pay):'—'}</td></tr>`;
   }).join('');
-  const gross=basic+holpay;
-  const el=document.getElementById('pay-result');
-  el.innerHTML=`<div class="card">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-      <div class="avatar" style="width:40px;height:40px;font-size:13px">${emp.photo&&emp.photo.startsWith('data:')?`<img src="${emp.photo}">`:(emp.fn[0]+emp.ln[0])}</div>
-      <div><div style="font-weight:700">${emp.name}</div><div style="font-size:11px;color:#8899bb">${emp.pos} | ₱${fmt(rate)}/day</div></div>
-    </div>
-    <table style="width:100%;border-collapse:collapse;margin-bottom:12px">
-      <thead><tr style="background:#0f3460"><th style="padding:6px 4px;font-size:10px;color:#8899bb;text-align:left">Date</th><th style="padding:6px 4px;font-size:10px;color:#8899bb;text-align:left">Status</th><th style="padding:6px 4px;font-size:10px;color:#8899bb;text-align:right">Pay</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-    <div class="sg">
-      <div class="sc"><div class="slabel">Basic Pay</div><div class="sval gold">₱${fmt(basic)}</div></div>
-      <div class="sc"><div class="slabel">Holiday Pay</div><div class="sval blue">₱${fmt(holpay)}</div></div>
-      <div class="sc" style="grid-column:span 2"><div class="slabel">GROSS WEEKLY PAY</div><div class="sval green" style="font-size:22px">₱${fmt(gross)}</div></div>
-    </div>
-  </div>`;
+  document.getElementById('pay-result').innerHTML=`<div class="card"><div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div class="avatar" style="width:40px;height:40px;font-size:13px">${emp.photo&&emp.photo.startsWith('data:')?`<img src="${emp.photo}">`:(emp.fn[0]+emp.ln[0])}</div><div><div style="font-weight:700">${emp.name}</div><div style="font-size:11px;color:#8899bb">${emp.pos} | ₱${fmt(rate)}/day</div></div></div><table style="width:100%;border-collapse:collapse;margin-bottom:12px"><thead><tr style="background:#0f3460"><th style="padding:6px 4px;font-size:10px;color:#8899bb;text-align:left">Date</th><th style="padding:6px 4px;font-size:10px;color:#8899bb;text-align:left">Status</th><th style="padding:6px 4px;font-size:10px;color:#8899bb;text-align:right">Pay</th></tr></thead><tbody>${rows}</tbody></table><div class="sg"><div class="sc"><div class="slabel">Basic Pay</div><div class="sval gold">₱${fmt(basic)}</div></div><div class="sc"><div class="slabel">Holiday Pay</div><div class="sval blue">₱${fmt(holpay)}</div></div><div class="sc" style="grid-column:span 2"><div class="slabel">GROSS WEEKLY PAY</div><div class="sval green" style="font-size:22px">₱${fmt(basic+holpay)}</div></div></div></div>`;
 }
 
 // ═══ SETTINGS ═══
@@ -1123,15 +1101,12 @@ function saveSettings() {
   apiKey=document.getElementById('set-key').value.trim();
   localStorage.setItem('af_url',sheetsUrl);
   if(apiKey) localStorage.setItem('af_key',apiKey);
-  showSt('set-status','✅ Saved!','ok');
+  showSt('set-status','✅ Settings saved!','ok');
 }
 
 // ═══ HOLIDAYS ═══
 function renderHolidays() {
-  document.getElementById('hol-list').innerHTML=HOLIDAYS.map(h=>`<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.06)">
-    <span>${h.d} — ${h.n}</span>
-    <span style="background:${h.t==='R'?'rgba(255,82,82,.15)':'rgba(249,168,37,.15)'};color:${h.t==='R'?'#ff5252':'#f9a825'};border-radius:4px;padding:1px 6px;font-size:10px;font-weight:700">${h.t==='R'?'Regular':'Special'}</span>
-  </div>`).join('');
+  document.getElementById('hol-list').innerHTML=HOLIDAYS.map(h=>`<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span>${h.d} — ${h.n}</span><span style="background:${h.t==='R'?'rgba(255,82,82,.15)':'rgba(249,168,37,.15)'};color:${h.t==='R'?'#ff5252':'#f9a825'};border-radius:4px;padding:1px 6px;font-size:10px;font-weight:700">${h.t==='R'?'Regular':'Special'}</span></div>`).join('');
 }
 
 // ═══ UTILS ═══
