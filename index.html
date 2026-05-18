@@ -179,8 +179,14 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <div class="fg"><div class="fl">Shift</div>
           <select id="s-shift2"><option value="AM">AM</option><option value="PM">PM</option><option value="GY">GY Night</option></select></div>
       </div>
-      <div class="fg"><div class="fl">P/A - Attendant</div><select id="s-attendant"><option value="">-- Select TM --</option></select></div>
-      <div class="fg"><div class="fl">Supervisor</div><select id="s-supervisor"><option value="">-- Select TM --</option></select></div>
+      <div class="fg"><div class="fl">P/A - Attendant</div>
+        <select id="s-attendant" onchange="syncAttText('s-attendant','s-attendant-txt')"><option value="">-- Select TM --</option></select>
+        <input type="text" id="s-attendant-txt" placeholder="Or type name here" style="margin-top:6px" oninput="syncAttSel('s-attendant-txt','s-attendant')">
+      </div>
+      <div class="fg"><div class="fl">Supervisor</div>
+        <select id="s-supervisor" onchange="syncAttText('s-supervisor','s-supervisor-txt')"><option value="">-- Select TM --</option></select>
+        <input type="text" id="s-supervisor-txt" placeholder="Or type name here" style="margin-top:6px" oninput="syncAttSel('s-supervisor-txt','s-supervisor')">
+      </div>
     </div>
     <div class="card">
       <div class="ctitle"><span class="dot"></span>Price per Liter</div>
@@ -606,7 +612,31 @@ function runAI(){
   btn.disabled=true;
   document.getElementById('ai-txt').innerHTML='<div class="spinner"></div> Reading report...';
 
-    var prompt = 'Read this handwritten gas station shift report. Return ONLY valid JSON, no markdown, no backticks. Plain numbers only (no commas no peso). Blank values = 0. shift_sales = end_sales minus beg_sales, always positive. Use shift_sales column value from right side of report if written there. Products must be: Diesel, Unleaded, or Premium. Return: {"date":"YYYY-MM-DD","shift":"AM","attendant":"","dipstick":{"u_beg":0,"u_end":0,"p_beg":0,"p_end":0,"d_beg":0,"d_end":0},"prices":{"unleaded":0,"premium":0,"diesel":0},"pump1":[{"product":"Diesel","beg_liter":0,"beg_sales":0,"end_liter":0,"end_sales":0,"shift_sales":0}],"pump2":[{"product":"Unleaded","beg_liter":0,"beg_sales":0,"end_liter":0,"end_sales":0,"shift_sales":0}],"cash_sales":0,"cash_remit":0,"cash_onhand":0,"gcash_amount":0,"gcash_ref":"","denominations":{"p1000":0,"p500":0,"p200":0,"p100":0,"p50":0,"p20":0,"p10":0,"p5":0,"p1":0},"collectibles":[{"name":"","amount":0}],"payables":[{"name":"","amount":0}]}';
+    var prompt = [
+    'You are an expert at reading handwritten Philippine gas station shift reports.',
+    'Study this image carefully and extract every single value you can see.',
+    '',
+    'CRITICAL READING RULES:',
+    '1. Meter readings are VERY LARGE numbers like 8967362.78 or 48011205.30 - read every digit exactly',
+    '2. Shift is marked with a checkbox: AM, PM, or GY (graveyard/night)',
+    '3. Date is written at top left',
+    '4. P/A field = attendant name',
+    '5. DIPSTICK has two numbers per product: beginning and ending (like 5628-5518)',
+    '6. PRICES are on the right side: U=Unleaded, P=Premium, D=Diesel',
+    '7. PUMP 1 and PUMP 2 each have 4 hose rows with: beg_liter, beg_sales, end_liter, end_sales, shift_sales',
+    '8. shift_sales column is on the far right of each pump section',
+    '9. DENOMINATION table: count x bill value = total (read the COUNT column)',
+    '10. CASH SALES, CASH REMIT, CASH ON HAND are labeled clearly',
+    '11. Collectibles/payables at bottom like VIOS-GARY-700',
+    '',
+    'Return ONLY this exact JSON structure with NO markdown NO backticks NO explanation:',
+    '{"date":"YYYY-MM-DD","shift":"GY","attendant":"Kenny","dipstick":{"u_beg":5628,"u_end":5518,"p_beg":4428,"p_end":4368,"d_beg":1299,"d_end":1299},"prices":{"unleaded":78.60,"premium":79.10,"diesel":89.50},"pump1":[{"product":"Diesel","beg_liter":8967362.78,"beg_sales":38048601.22,"end_liter":8967360.37,"end_sales":38049101.32,"shift_sales":500},{"product":"Unleaded","beg_liter":861118.08,"beg_sales":48011205.30,"end_liter":861133.61,"end_sales":48012425.38,"shift_sales":1220.08},{"product":"Unleaded","beg_liter":402649.18,"beg_sales":22624527.97,"end_liter":402649.18,"end_sales":22624527.97,"shift_sales":0},{"product":"Diesel","beg_liter":127058.07,"beg_sales":50006686.67,"end_liter":127058.07,"end_sales":50006686.67,"shift_sales":0}],"pump2":[{"product":"Unleaded","beg_liter":5899694.39,"beg_sales":30270581.48,"end_liter":5899786.50,"end_sales":30273841.48,"shift_sales":3310},{"product":"Premium","beg_liter":13999395.59,"beg_sales":75062585.01,"end_liter":13999419.61,"end_sales":75064485.30,"shift_sales":1900.29},{"product":"Premium","beg_liter":12515665.07,"beg_sales":67183396.77,"end_liter":12515677.12,"end_sales":67184349.90,"shift_sales":953.18},{"product":"Unleaded","beg_liter":851310.40,"beg_sales":43967772.16,"end_liter":851349.62,"end_sales":43970883.98,"shift_sales":3110.82}],"cash_sales":10994.32,"cash_remit":10867,"cash_onhand":10167,"gcash_amount":0,"gcash_ref":"","denominations":{"p1000":4,"p500":9,"p200":0,"p100":14,"p50":1,"p20":6,"p10":7,"p5":5,"p1":2},"collectibles":[],"payables":[{"name":"VIOS-GARY","amount":700}]}',
+    '',
+    'That example above is from a DIFFERENT report - do NOT copy those values.',
+    'Read THIS image and return its actual values in the same JSON format.',
+    'Use plain numbers only. No commas in numbers. No peso signs.',
+    'If a value is truly unreadable write 0.'
+  ].join('\n');
 
   fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
@@ -662,7 +692,29 @@ function applyData(){
   if(!aiData)return;
   var d=aiData;
   if(d.date)document.getElementById('s-date').value=d.date;
-  if(d.shift){document.getElementById('s-shift').value=d.shift;document.getElementById('s-shift2').value=d.shift;}
+  if(d.shift){
+    var shiftVal = d.shift.toUpperCase();
+    document.getElementById('s-shift').value=shiftVal;
+    document.getElementById('s-shift2').value=shiftVal;
+  }
+  if(d.attendant){
+    // Fill text box always
+    var attTxt=document.getElementById('s-attendant-txt');
+    if(attTxt) attTxt.value=d.attendant;
+    // Try to match dropdown
+    var attSel=document.getElementById('s-attendant');
+    var found=false;
+    for(var i=0;i<attSel.options.length;i++){
+      if(attSel.options[i].text.toLowerCase().indexOf(d.attendant.toLowerCase())!==-1){
+        attSel.selectedIndex=i;found=true;break;
+      }
+    }
+    if(!found){
+      var opt=document.createElement('option');
+      opt.value=d.attendant;opt.textContent=d.attendant;
+      attSel.appendChild(opt);attSel.value=d.attendant;
+    }
+  }
   if(d.prices){
     if(d.prices.unleaded)document.getElementById('price-u').value=d.prices.unleaded;
     if(d.prices.premium)document.getElementById('price-p').value=d.prices.premium;
@@ -872,7 +924,7 @@ function submitShift(){
   var collectibles=[],payables2=[];
   document.getElementById('collect-rows').querySelectorAll('.payrow').forEach(function(r){var inp=r.querySelectorAll('input');collectibles.push({name:inp[0].value,amount:inp[1].value});});
   document.getElementById('payable-rows').querySelectorAll('.payrow').forEach(function(r){var inp=r.querySelectorAll('input');payables2.push({name:inp[0].value,amount:inp[1].value});});
-  var payload=Object.assign({type:'shift',station:station,date:document.getElementById('s-date').value,shift:document.getElementById('s-shift').value,attendant:document.getElementById('s-attendant').value,supervisor:document.getElementById('s-supervisor').value,price_u:document.getElementById('price-u').value,price_p:document.getElementById('price-p').value,price_d:document.getElementById('price-d').value,dip_u_beg:document.getElementById('dip-u-beg').value,dip_u_end:document.getElementById('dip-u-end').value,dip_p_beg:document.getElementById('dip-p-beg').value,dip_p_end:document.getElementById('dip-p-end').value,dip_d_beg:document.getElementById('dip-d-beg').value,dip_d_end:document.getElementById('dip-d-end').value,pump1:JSON.stringify(getHoseData(p1Hoses)),pump2:JSON.stringify(getHoseData(p2Hoses)),p1_sales:document.getElementById('p1-tss').textContent,p2_sales:document.getElementById('p2-tss').textContent,total_liters:document.getElementById('tot-l').textContent,total_sales:document.getElementById('tot-s').textContent,cash_sales:document.getElementById('cash-sales').value,cash_remit:document.getElementById('cash-remit').value,cash_onhand:document.getElementById('s-cashhand').textContent,over_short:document.getElementById('s-os').textContent,os_reason:(document.getElementById('os-reason')||{}).value||'',gcash_amount:document.getElementById('gcash-amt').value,gcash_ref:document.getElementById('gcash-ref').value,collectibles:JSON.stringify(collectibles),payables:JSON.stringify(payables2),net_remit:document.getElementById('net-remit').textContent,timestamp:new Date().toISOString()},denoms);
+  var payload=Object.assign({type:'shift',station:station,date:document.getElementById('s-date').value,shift:document.getElementById('s-shift').value,attendant:(document.getElementById('s-attendant-txt').value||document.getElementById('s-attendant').value),supervisor:document.getElementById('s-supervisor').value,price_u:document.getElementById('price-u').value,price_p:document.getElementById('price-p').value,price_d:document.getElementById('price-d').value,dip_u_beg:document.getElementById('dip-u-beg').value,dip_u_end:document.getElementById('dip-u-end').value,dip_p_beg:document.getElementById('dip-p-beg').value,dip_p_end:document.getElementById('dip-p-end').value,dip_d_beg:document.getElementById('dip-d-beg').value,dip_d_end:document.getElementById('dip-d-end').value,pump1:JSON.stringify(getHoseData(p1Hoses)),pump2:JSON.stringify(getHoseData(p2Hoses)),p1_sales:document.getElementById('p1-tss').textContent,p2_sales:document.getElementById('p2-tss').textContent,total_liters:document.getElementById('tot-l').textContent,total_sales:document.getElementById('tot-s').textContent,cash_sales:document.getElementById('cash-sales').value,cash_remit:document.getElementById('cash-remit').value,cash_onhand:document.getElementById('s-cashhand').textContent,over_short:document.getElementById('s-os').textContent,os_reason:(document.getElementById('os-reason')||{}).value||'',gcash_amount:document.getElementById('gcash-amt').value,gcash_ref:document.getElementById('gcash-ref').value,collectibles:JSON.stringify(collectibles),payables:JSON.stringify(payables2),net_remit:document.getElementById('net-remit').textContent,timestamp:new Date().toISOString()},denoms);
   fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
   .then(function(){showSt('sub-status','Submitted! Check your Google Sheet.','ok');})
   .catch(function(e){showSt('sub-status','Error: '+e.message,'err');});
@@ -966,6 +1018,29 @@ function calcPayroll(){
   document.getElementById('pay-result').innerHTML='<div class="card"><div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div class="avatar" style="width:40px;height:40px;font-size:13px">'+(emp.photo&&emp.photo.startsWith('data:')?'<img src="'+emp.photo+'">':(emp.fn[0]+emp.ln[0]))+'</div><div><div style="font-weight:700">'+emp.name+'</div><div style="font-size:11px;color:#8899bb">'+emp.pos+' | '+fmt(rate)+'/day</div></div></div><table style="width:100%;border-collapse:collapse;margin-bottom:12px"><thead><tr style="background:#0f3460"><th style="padding:6px 4px;font-size:10px;color:#8899bb;text-align:left">Date</th><th style="padding:6px 4px;font-size:10px;color:#8899bb;text-align:left">Status</th><th style="padding:6px 4px;font-size:10px;color:#8899bb;text-align:right">Pay</th></tr></thead><tbody>'+rows+'</tbody></table><div class="sg"><div class="sc"><div class="slabel">Basic Pay</div><div class="sval gold">'+fmt(basic)+'</div></div><div class="sc"><div class="slabel">Holiday Pay</div><div class="sval blue">'+fmt(holpay)+'</div></div><div class="sc" style="grid-column:span 2"><div class="slabel">GROSS WEEKLY PAY</div><div class="sval green" style="font-size:22px">'+fmt(basic+holpay)+'</div></div></div></div>';
 }
 
+function syncAttText(selId, txtId){
+  var sel=document.getElementById(selId);
+  var txt=document.getElementById(txtId);
+  if(txt&&sel) txt.value=sel.value;
+}
+function syncAttSel(txtId, selId){
+  var txt=document.getElementById(txtId);
+  var sel=document.getElementById(selId);
+  if(!txt||!sel) return;
+  var val=txt.value.trim();
+  // Try to find in dropdown
+  var found=false;
+  for(var i=0;i<sel.options.length;i++){
+    if(sel.options[i].text.toLowerCase().indexOf(val.toLowerCase())!==-1){sel.selectedIndex=i;found=true;break;}
+  }
+  if(!found){
+    // Check if we already added this option
+    var exists=false;
+    for(var j=0;j<sel.options.length;j++){if(sel.options[j].value===val){exists=true;break;}}
+    if(!exists){var opt=document.createElement('option');opt.value=val;opt.textContent=val;sel.appendChild(opt);}
+    sel.value=val;
+  }
+}
 function saveSettings(){
   sheetsUrl=document.getElementById('set-url').value.trim();
   apiKey=document.getElementById('set-key').value.trim();
