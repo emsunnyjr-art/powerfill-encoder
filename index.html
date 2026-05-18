@@ -2,262 +2,193 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>A's Fuel Encoder v4</title>
 <style>
-:root {
-  --fuel:#e65c00;--fuel2:#f9a825;--dark:#1a1a2e;--dark2:#16213e;--dark3:#0f3460;
-  --card:#1e2a45;--card2:#243352;--text:#f0f4ff;--muted:#8899bb;--gold:#f9a825;
-  --green:#00e676;--red:#ff5252;--blue:#4fc3f7;--border:rgba(255,255,255,0.08);
-  --radius:12px;--font:'Segoe UI',system-ui,sans-serif;
-}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:var(--dark);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden}
-.topbar{background:linear-gradient(135deg,#e65c00,#f9a825);padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,0.4)}
-.topbar-logo{font-size:20px;font-weight:800;color:#fff;letter-spacing:-0.5px}
-.topbar-logo span{font-weight:300;opacity:0.8}
-.topbar-sub{font-size:10px;color:rgba(255,255,255,0.75);margin-top:1px}
-.topbar-right{margin-left:auto;display:flex;gap:6px;align-items:center}
-.info-badge{background:rgba(0,0,0,0.25);border-radius:6px;padding:4px 8px;font-size:11px;font-weight:700;color:#fff;border:1px solid rgba(255,255,255,0.2)}
-
-/* MAIN NAV */
-.main-nav{display:flex;background:var(--dark2);border-bottom:2px solid var(--border);overflow-x:auto;scrollbar-width:none}
-.main-nav::-webkit-scrollbar{display:none}
-.mnav{flex:0 0 auto;padding:11px 14px;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;text-transform:uppercase;letter-spacing:0.5px;transition:all 0.2s}
-.mnav.active{color:var(--gold);border-bottom-color:var(--gold)}
-
-/* SUB TABS */
-.sub-tabs{display:flex;background:rgba(0,0,0,0.2);overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border)}
-.sub-tabs::-webkit-scrollbar{display:none}
-.stab{flex:0 0 auto;padding:9px 14px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.2s}
-.stab.active{color:var(--blue);border-bottom-color:var(--blue)}
-
-/* PANELS */
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#1a1a2e;color:#f0f4ff;font-family:'Segoe UI',sans-serif;min-height:100vh}
+.topbar{background:linear-gradient(135deg,#e65c00,#f9a825);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-size:20px;font-weight:800;color:#fff}.logo span{font-weight:300;opacity:.8}
+.logo-sub{font-size:10px;color:rgba(255,255,255,.75)}
+.badges{display:flex;gap:6px}
+.badge{background:rgba(0,0,0,.3);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;color:#fff;border:1px solid rgba(255,255,255,.2)}
+.mainnav{display:flex;background:#16213e;border-bottom:2px solid rgba(255,255,255,.08);overflow-x:auto;scrollbar-width:none}
+.mainnav::-webkit-scrollbar{display:none}
+.mnav{flex:0 0 auto;padding:11px 16px;font-size:11px;font-weight:700;color:#8899bb;cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;text-transform:uppercase}
+.mnav.active{color:#f9a825;border-bottom-color:#f9a825}
+.subtabs{display:flex;background:rgba(0,0,0,.2);overflow-x:auto;scrollbar-width:none;border-bottom:1px solid rgba(255,255,255,.08)}
+.subtabs::-webkit-scrollbar{display:none}
+.stab{flex:0 0 auto;padding:9px 14px;font-size:11px;font-weight:600;color:#8899bb;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+.stab.active{color:#4fc3f7;border-bottom-color:#4fc3f7}
 .module{display:none}.module.active{display:block}
-.panel{display:none;padding:14px;animation:fadeIn 0.2s ease}.panel.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-
-/* CARDS */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
-.card-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.card-title-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0}
-
-/* STATION TABS */
-.stn-tabs{display:flex;gap:6px;margin-bottom:12px}
-.stn-tab{flex:1;padding:9px 4px;background:var(--card2);border:1.5px solid var(--border);border-radius:8px;text-align:center;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;transition:all 0.2s}
-.stn-tab.active{background:rgba(230,92,0,0.2);border-color:var(--fuel);color:#fff}
-.stn-tab.inactive{opacity:0.3;cursor:default}
-
-/* FORM */
-.field-group{margin-bottom:10px}
-.field-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px}
-input[type=text],input[type=number],input[type=date],input[type=password],select,textarea{
-  width:100%;background:var(--dark2);border:1px solid var(--border);border-radius:8px;
-  color:var(--text);font-size:14px;padding:8px 11px;font-family:var(--font);-webkit-appearance:none;transition:border-color 0.2s}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold)}
-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238899bb'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-
-/* BUTTONS */
-.btn-primary{width:100%;padding:13px;background:linear-gradient(135deg,#e65c00,#f9a825);border:none;border-radius:var(--radius);color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:opacity 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px}
-.btn-primary:disabled{opacity:0.4;cursor:not-allowed}
-.btn-secondary{width:100%;padding:10px;background:transparent;border:1.5px solid var(--border);border-radius:8px;color:var(--muted);font-size:13px;cursor:pointer;transition:all 0.2s;margin-bottom:8px}
-.btn-secondary:hover{border-color:var(--gold);color:var(--gold)}
-.btn-danger{background:transparent;border:1px solid rgba(255,82,82,0.3);border-radius:6px;color:var(--red);font-size:12px;padding:4px 8px;cursor:pointer}
-.btn-small{padding:6px 12px;background:var(--dark3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;cursor:pointer;transition:all 0.2s}
-.btn-small:hover{border-color:var(--gold);color:var(--gold)}
-
+.panel{display:none;padding:14px}.panel.active{display:block}
+.card{background:#1e2a45;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px;margin-bottom:12px}
+.ctitle{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#8899bb;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:#f9a825;flex-shrink:0}
+.stntabs{display:flex;gap:6px;margin-bottom:12px}
+.stntab{flex:1;padding:9px 4px;background:#243352;border:1.5px solid rgba(255,255,255,.08);border-radius:8px;text-align:center;font-size:12px;font-weight:700;color:#8899bb;cursor:pointer;transition:all .2s}
+.stntab.active{background:rgba(230,92,0,.2);border-color:#e65c00;color:#fff}
+.stntab.off{opacity:.3;cursor:default}
+.flabel{font-size:10px;font-weight:600;color:#8899bb;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+input,select,textarea{width:100%;background:#16213e;border:1px solid rgba(255,255,255,.08);border-radius:8px;color:#f0f4ff;font-size:14px;padding:8px 11px;font-family:inherit;-webkit-appearance:none}
+input:focus,select:focus{outline:none;border-color:#f9a825}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.fg{margin-bottom:10px}
+.btnmain{width:100%;padding:13px;background:linear-gradient(135deg,#e65c00,#f9a825);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btnmain:disabled{opacity:.4;cursor:not-allowed}
+.btnsec{width:100%;padding:10px;background:transparent;border:1.5px solid rgba(255,255,255,.1);border-radius:8px;color:#8899bb;font-size:13px;cursor:pointer;margin-bottom:8px}
+.btnsm{padding:5px 10px;background:#0f3460;border:1px solid rgba(255,255,255,.1);border-radius:6px;color:#f0f4ff;font-size:12px;cursor:pointer}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.sc{background:#243352;border-radius:10px;padding:11px;border:1px solid rgba(255,255,255,.08)}
+.slabel{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#8899bb;margin-bottom:3px}
+.sval{font-size:18px;font-weight:800}
+.gold{color:#f9a825}.green{color:#00e676}.red{color:#ff5252}.blue{color:#4fc3f7}
+.sechdr{font-size:12px;font-weight:700;color:#f9a825;margin:14px 0 8px;padding-bottom:5px;border-bottom:1px solid rgba(255,255,255,.08)}
+.status{text-align:center;font-size:12px;padding:10px;border-radius:8px;margin-top:8px;display:none}
+.status.ok{background:rgba(0,230,118,.1);color:#00e676;border:1px solid rgba(0,230,118,.3)}
+.status.err{background:rgba(255,82,82,.1);color:#ff5252;border:1px solid rgba(255,82,82,.3)}
+.status.warn{background:rgba(249,168,37,.1);color:#f9a825;border:1px solid rgba(249,168,37,.3)}
+/* PHOTO UPLOAD */
+.upload-box{position:relative;border:2px dashed rgba(249,168,37,.4);border-radius:12px;padding:30px 20px;text-align:center;background:rgba(249,168,37,.04);margin-bottom:12px;cursor:pointer}
+.upload-box input[type=file]{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0}
+.upload-box .icon{font-size:40px;margin-bottom:8px}
+.upload-box .txt{color:#8899bb;font-size:13px}
+.upload-box .txt strong{color:#f0f4ff}
+#photo-preview{width:100%;border-radius:8px;max-height:220px;object-fit:contain;background:#000;display:none;margin-bottom:10px}
 /* HOSE TABLE */
-.tbl-wrap{overflow-x:auto;margin-bottom:10px}
-.htbl{width:100%;border-collapse:collapse;font-size:12px;min-width:500px}
-.htbl th{background:var(--dark3);color:var(--gold);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:7px 6px;text-align:center;border-bottom:1px solid var(--border);white-space:nowrap}
+.twrap{overflow-x:auto;margin-bottom:8px}
+.htbl{width:100%;border-collapse:collapse;font-size:12px;min-width:520px}
+.htbl th{background:#0f3460;color:#f9a825;font-size:10px;font-weight:700;text-transform:uppercase;padding:7px 5px;text-align:center;border-bottom:1px solid rgba(255,255,255,.08);white-space:nowrap}
 .htbl th:first-child{text-align:left}
-.htbl td{padding:5px 5px;border-bottom:1px solid var(--border);text-align:center;vertical-align:middle}
+.htbl td{padding:5px 4px;border-bottom:1px solid rgba(255,255,255,.06);text-align:center;vertical-align:middle}
 .htbl td:first-child{text-align:left}
-.htbl input[type=number]{padding:5px 7px;font-size:12px;text-align:right;background:var(--dark)}
-.shift-cell{background:rgba(249,168,37,0.1);color:var(--gold);font-weight:700}
-.flag-cell{background:rgba(255,82,82,0.1);color:var(--red);font-weight:700}
-.tfoot-row td{background:rgba(249,168,37,0.08);color:var(--gold);font-weight:700;font-size:13px;padding:8px 6px;border-top:2px solid var(--gold)}
-
-/* SUMMARY CARDS */
-.summ-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-.summ-card{background:var(--card2);border-radius:10px;padding:11px;border:1px solid var(--border)}
-.summ-label{font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:3px}
-.summ-val{font-size:18px;font-weight:800;color:var(--text)}
-.summ-val.gold{color:var(--gold)}.summ-val.green{color:var(--green)}.summ-val.red{color:var(--red)}.summ-val.blue{color:var(--blue)}
-
-/* SECTION HEADER */
-.sec-hdr{font-size:12px;font-weight:700;color:var(--gold);margin:14px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
-
-/* STATUS */
-.status-msg{text-align:center;font-size:12px;padding:10px;border-radius:8px;margin-top:8px;display:none}
-.status-msg.success{background:rgba(0,230,118,0.1);color:var(--green);border:1px solid rgba(0,230,118,0.3)}
-.status-msg.error{background:rgba(255,82,82,0.1);color:var(--red);border:1px solid rgba(255,82,82,0.3)}
-.status-msg.warn{background:rgba(249,168,37,0.1);color:var(--gold);border:1px solid rgba(249,168,37,0.3)}
-
-/* FLAG */
-.flag-row{background:rgba(255,82,82,0.05);border:1px solid rgba(255,82,82,0.2);border-radius:8px;padding:10px;margin-bottom:8px;font-size:12px}
-.flag-tag{display:inline-block;background:rgba(255,82,82,0.15);color:var(--red);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700;margin-right:6px}
-.warn-tag{display:inline-block;background:rgba(249,168,37,0.15);color:var(--gold);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700;margin-right:6px}
-
-/* PHOTO */
-.photo-area{border:2px dashed rgba(249,168,37,0.4);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;background:rgba(249,168,37,0.04);transition:all 0.2s;position:relative;margin-bottom:12px;overflow:hidden}
-.photo-area input[type=file]{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;font-size:0}
-.photo-preview{width:100%;border-radius:8px;max-height:200px;object-fit:contain;background:#000;display:none}
-
-/* EMPLOYEE CARD */
-.emp-card{background:var(--card2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
-.emp-avatar{width:48px;height:48px;border-radius:50%;background:var(--dark3);border:2px solid var(--gold);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--gold)}
-.emp-avatar img{width:100%;height:100%;object-fit:cover}
-.emp-info{flex:1}
-.emp-name{font-size:14px;font-weight:700;color:var(--text)}
-.emp-role{font-size:11px;color:var(--muted)}
-.emp-badges{display:flex;gap:5px;margin-top:4px;flex-wrap:wrap}
-.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700}
-.badge-green{background:rgba(0,230,118,0.15);color:var(--green)}
-.badge-gold{background:rgba(249,168,37,0.15);color:var(--gold)}
-.badge-red{background:rgba(255,82,82,0.15);color:var(--red)}
-.badge-blue{background:rgba(79,195,247,0.15);color:var(--blue)}
-
-/* CHECK TRACKER */
-.check-row{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px}
-.check-status{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700}
-.cs-pending{background:rgba(249,168,37,0.15);color:var(--gold)}
-.cs-paid{background:rgba(0,230,118,0.15);color:var(--green)}
-.cs-overdue{background:rgba(255,82,82,0.15);color:var(--red)}
-
-/* PIN OVERLAY */
-.pin-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:center}
-.pin-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;width:280px;text-align:center}
-.pin-title{font-size:18px;font-weight:800;color:var(--gold);margin-bottom:6px}
-.pin-sub{font-size:12px;color:var(--muted);margin-bottom:20px}
-.pin-input{font-size:24px;letter-spacing:8px;text-align:center;padding:12px}
-.pin-err{color:var(--red);font-size:12px;margin-top:8px;display:none}
-
-/* SPINNER */
-.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite}
+.htbl input{padding:5px 6px;font-size:12px;text-align:right;background:#16213e}
+.shiftcell{background:rgba(249,168,37,.1);color:#f9a825;font-weight:700}
+.flagcell{background:rgba(255,82,82,.1);color:#ff5252;font-weight:700}
+.tfoot td{background:rgba(249,168,37,.08);color:#f9a825;font-weight:700;font-size:13px;padding:8px 5px;border-top:2px solid #f9a825}
+/* DENOM */
+.dtbl{width:100%;border-collapse:collapse}
+.dtbl td{padding:5px 4px;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px}
+.dtbl td:last-child{width:120px}
+.dtfoot td{padding:8px 4px;color:#f9a825;font-weight:700;border-top:2px solid #f9a825}
+/* EMPLOYEE */
+.empcard{background:#243352;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.avatar{width:48px;height:48px;border-radius:50%;background:#0f3460;border:2px solid #f9a825;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#f9a825}
+.avatar img{width:100%;height:100%;object-fit:cover}
+/* CHECK */
+.chkrow{background:#243352;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.csbadge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700}
+.pending{background:rgba(249,168,37,.15);color:#f9a825}
+.paid{background:rgba(0,230,118,.15);color:#00e676}
+.overdue{background:rgba(255,82,82,.15);color:#ff5252}
+/* PIN */
+.pinoverlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:999;display:none;align-items:center;justify-content:center}
+.pinoverlay.show{display:flex}
+.pinbox{background:#1e2a45;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px;width:280px;text-align:center}
+/* AI RESULT */
+.aisum{font-size:13px;line-height:1.9;color:#f0f4ff}
+.airaw{font-size:11px;white-space:pre-wrap;max-height:150px;overflow-y:auto;color:#8899bb;margin-top:8px;display:none}
+.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* DELIVERY ROW */
-.del-row{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px}
-
-/* SCROLLBAR */
+.payrow{background:#243352;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px;margin-bottom:8px;display:flex;gap:8px;align-items:center}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%238899bb'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
 ::-webkit-scrollbar{width:3px;height:3px}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-
-/* HOLIDAY BADGE */
-.hol-badge{background:rgba(79,195,247,0.15);color:var(--blue);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700}
-
-.tag-d{background:rgba(0,230,118,0.12);color:var(--green);border-radius:4px;padding:1px 6px;font-size:10px;font-weight:700}
-.tag-g{background:rgba(230,92,0,0.15);color:#ff9800;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:700}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
 </style>
 </head>
 <body>
 
-<!-- PIN OVERLAY for Manager -->
-<div class="pin-overlay" id="pin-overlay" style="display:none">
-  <div class="pin-box">
-    <div class="pin-title">🔒 Manager Access</div>
-    <div class="pin-sub">Enter your PIN to continue</div>
-    <input type="password" class="pin-input" id="pin-input" maxlength="6" placeholder="••••••" oninput="checkPin()">
-    <div class="pin-err" id="pin-err">Wrong PIN. Try again.</div>
-    <button class="btn-secondary" style="margin-top:14px" onclick="closePinOverlay()">Cancel</button>
+<!-- PIN OVERLAY -->
+<div class="pinoverlay" id="pin-overlay">
+  <div class="pinbox">
+    <div style="font-size:18px;font-weight:800;color:#f9a825;margin-bottom:6px">🔒 Manager Access</div>
+    <div style="font-size:12px;color:#8899bb;margin-bottom:20px">Enter your PIN</div>
+    <input type="password" id="pin-input" maxlength="6" placeholder="••••••" style="font-size:24px;letter-spacing:8px;text-align:center;padding:12px" oninput="checkPin()">
+    <div id="pin-err" style="color:#ff5252;font-size:12px;margin-top:8px;display:none">Wrong PIN</div>
+    <button class="btnsec" style="margin-top:14px" onclick="document.getElementById('pin-overlay').classList.remove('show')">Cancel</button>
   </div>
 </div>
 
-<!-- TOP BAR -->
+<!-- TOPBAR -->
 <div class="topbar">
   <div>
-    <div class="topbar-logo">A's Fuel <span>Encoder</span> ⛽</div>
-    <div class="topbar-sub">Business Management System v4</div>
+    <div class="logo">A's Fuel <span>Encoder</span> ⛽</div>
+    <div class="logo-sub">Business Management System v4</div>
   </div>
-  <div class="topbar-right">
-    <div class="info-badge" id="badge-date">—</div>
-    <div class="info-badge" id="badge-station">GS1</div>
+  <div class="badges">
+    <div class="badge" id="bdg-date">—</div>
+    <div class="badge" id="bdg-stn">GS1</div>
   </div>
 </div>
 
 <!-- MAIN NAV -->
-<div class="main-nav">
-  <div class="mnav active" onclick="switchModule('shift')">⛽ Shift</div>
-  <div class="mnav" onclick="switchModule('delivery')">🚚 Delivery</div>
-  <div class="mnav" onclick="requirePin('manager')">📊 Manager</div>
-  <div class="mnav" onclick="switchModule('hr')">👥 HR</div>
-  <div class="mnav" onclick="switchModule('settings')">⚙️ Settings</div>
+<div class="mainnav">
+  <div class="mnav active" onclick="goModule('shift')">⛽ Shift</div>
+  <div class="mnav" onclick="goModule('delivery')">🚚 Delivery</div>
+  <div class="mnav" onclick="needPin('manager')">📊 Manager</div>
+  <div class="mnav" onclick="goModule('hr')">👥 HR</div>
+  <div class="mnav" onclick="goModule('settings')">⚙️ Settings</div>
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- MODULE: SHIFT ENCODER -->
-<!-- ═══════════════════════════════════════════ -->
-<div class="module active" id="module-shift">
-  <div class="sub-tabs">
-    <div class="stab active" onclick="switchTab('shift','photo')">📷 Photo</div>
-    <div class="stab" onclick="switchTab('shift','info')">📋 Info</div>
-    <div class="stab" onclick="switchTab('shift','meters')">⛽ Meters</div>
-    <div class="stab" onclick="switchTab('shift','cash')">💵 Cash</div>
-    <div class="stab" onclick="switchTab('shift','payables')">📄 Payables</div>
-    <div class="stab" onclick="switchTab('shift','submit')">✅ Submit</div>
+<!-- ══════════ SHIFT MODULE ══════════ -->
+<div class="module active" id="mod-shift">
+  <div class="subtabs">
+    <div class="stab active" onclick="goTab('shift','photo')">📷 Photo</div>
+    <div class="stab" onclick="goTab('shift','info')">📋 Info</div>
+    <div class="stab" onclick="goTab('shift','meters')">⛽ Meters</div>
+    <div class="stab" onclick="goTab('shift','cash')">💵 Cash</div>
+    <div class="stab" onclick="goTab('shift','payables')">📄 Payables</div>
+    <div class="stab" onclick="goTab('shift','submit')">✅ Submit</div>
   </div>
 
   <!-- PHOTO -->
   <div class="panel active" id="shift-photo">
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Select Station & Shift</div>
-      <div class="stn-tabs">
-        <div class="stn-tab active" onclick="setStation('GS1')">GS1</div>
-        <div class="stn-tab" onclick="setStation('GS2')">GS2</div>
-        <div class="stn-tab inactive">GS3</div>
-        <div class="stn-tab inactive">GS4</div>
-        <div class="stn-tab" onclick="setStation('GS5')">GS5</div>
+      <div class="ctitle"><span class="dot"></span>Station & Shift</div>
+      <div class="stntabs">
+        <div class="stntab active" onclick="setStn('GS1')">GS1</div>
+        <div class="stntab" onclick="setStn('GS2')">GS2</div>
+        <div class="stntab off">GS3</div>
+        <div class="stntab off">GS4</div>
+        <div class="stntab" onclick="setStn('GS5')">GS5</div>
       </div>
-      <div class="grid2">
-        <div class="field-group">
-          <div class="field-label">Shift</div>
-          <select id="shift-num">
-            <option value="1">Shift 1 (AM)</option>
-            <option value="2">Shift 2 (PM)</option>
-            <option value="3">Shift 3 (Night)</option>
-          </select>
-        </div>
-        <div class="field-group">
-          <div class="field-label">Status</div>
-          <select id="shift-status" onchange="toggleShiftActive()">
-            <option value="active">Operating</option>
-            <option value="no-product">No Product</option>
-            <option value="closed">Closed</option>
-          </select>
-        </div>
+      <div class="g2">
+        <div class="fg"><div class="flabel">Shift</div>
+          <select id="s-shiftnum"><option value="1">Shift 1 AM</option><option value="2">Shift 2 PM</option><option value="3">Shift 3 Night</option></select></div>
+        <div class="fg"><div class="flabel">Status</div>
+          <select id="s-status" onchange="toggleOp()"><option value="active">Operating</option><option value="noproduct">No Product</option><option value="closed">Closed</option></select></div>
       </div>
     </div>
-    <div id="shift-active-content">
+
+    <div id="active-section">
       <div class="card">
-        <div class="card-title"><span class="card-title-dot"></span>Upload Handwritten Report</div>
-        <div class="photo-area" id="photo-drop-zone">
-          <input type="file" id="photo-input" accept="image/*" onchange="onPhotoChange(event)" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer">
-          <div style="font-size:36px">📷</div>
-          <div style="color:#8899bb;font-size:13px;margin-top:6px">Tap to <strong style="color:#f0f4ff">capture or upload</strong></div>
+        <div class="ctitle"><span class="dot"></span>Upload Shift Report Photo</div>
+        <div class="upload-box" id="upload-box">
+          <input type="file" id="photo-file" accept="image/*" onchange="photoSelected(this)">
+          <div class="icon">📷</div>
+          <div class="txt">Tap to <strong>capture or upload</strong><br>handwritten shift report</div>
         </div>
-        <img id="photo-preview" style="display:none;width:100%;border-radius:8px;margin-top:10px;max-height:220px;object-fit:contain;background:#000">
-        <img class="photo-preview" id="photo-preview">
+        <img id="photo-preview" alt="preview">
       </div>
-      <button class="btn-primary" id="ai-btn" onclick="readWithAI()" disabled>
-        <span id="ai-btn-txt">🤖 Read with AI</span>
+      <button class="btnmain" id="ai-btn" disabled onclick="runAI()">
+        <span id="ai-txt">🤖 Read with AI</span>
       </button>
-      <div class="card" id="ai-result-card" style="display:none">
-        <div class="card-title"><span class="card-title-dot"></span>AI Reading Result</div>
-        <div id="ai-summary" style="font-size:13px;line-height:1.9;color:var(--text)"></div>
-        <div id="ai-response" style="font-size:11px;line-height:1.5;white-space:pre-wrap;max-height:200px;overflow-y:auto;color:var(--muted);margin-top:8px;display:block"></div>
-        <button class="btn-primary" id="apply-btn" onclick="applyAIData()" style="display:none;margin-top:10px;background:linear-gradient(135deg,#00c853,#00e676)">✅ Apply Data to Form</button>
-        <button class="btn-secondary" onclick="toggleRawJson()" style="margin-top:4px;font-size:11px">👁 Show/Hide Raw Data</button>
+      <div class="card" id="ai-card" style="display:none">
+        <div class="ctitle"><span class="dot"></span>AI Reading Result</div>
+        <div class="aisum" id="ai-sum"></div>
+        <div class="airaw" id="ai-raw"></div>
+        <button class="btnsec" onclick="toggleRaw()" style="margin-top:6px;font-size:11px">Show/Hide Raw</button>
+        <button class="btnmain" id="apply-btn" onclick="applyData()" style="display:none;background:linear-gradient(135deg,#00c853,#00e676);margin-top:8px">✅ Apply to Form</button>
       </div>
     </div>
-    <div id="shift-inactive-content" style="display:none">
+
+    <div id="inactive-section" style="display:none">
       <div class="card" style="text-align:center;padding:28px">
         <div style="font-size:40px;margin-bottom:10px">⛽</div>
-        <div style="color:var(--gold);font-weight:700;font-size:16px" id="no-op-label">No Product — No Operation</div>
-        <div style="color:var(--muted);font-size:12px;margin-top:6px">This shift will be recorded as zero in the spreadsheet</div>
-        <button class="btn-primary" style="margin-top:16px" onclick="submitZeroShift()">📤 Record Zero Shift</button>
+        <div style="color:#f9a825;font-weight:700;font-size:16px" id="inactive-label">No Product — No Operation</div>
+        <div style="color:#8899bb;font-size:12px;margin-top:6px">This shift will be recorded as zero</div>
+        <button class="btnmain" style="margin-top:16px" onclick="submitZero()">📤 Record Zero Shift</button>
       </div>
     </div>
   </div>
@@ -265,46 +196,20 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <!-- INFO -->
   <div class="panel" id="shift-info">
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Shift Details</div>
-      <div class="grid2">
-        <div class="field-group">
-          <div class="field-label">Date</div>
-          <input type="date" id="shift-date">
-        </div>
-        <div class="field-group">
-          <div class="field-label">Shift</div>
-          <select id="shift-num2">
-            <option value="1">Shift 1 AM</option>
-            <option value="2">Shift 2 PM</option>
-            <option value="3">Shift 3 Night</option>
-          </select>
-        </div>
+      <div class="ctitle"><span class="dot"></span>Shift Details</div>
+      <div class="g2">
+        <div class="fg"><div class="flabel">Date</div><input type="date" id="s-date"></div>
+        <div class="fg"><div class="flabel">Shift</div>
+          <select id="s-shiftnum2"><option value="1">Shift 1 AM</option><option value="2">Shift 2 PM</option><option value="3">Shift 3 Night</option></select></div>
       </div>
-      <div class="field-group">
-        <div class="field-label">Attendant — select or type</div>
-        <select id="attendant-select" onchange="syncAttendant()">
-          <option value="">-- Select TM --</option>
-        </select>
-      </div>
-      <div class="field-group">
-        <div class="field-label">Supervisor</div>
-        <select id="supervisor-select" onchange="syncSupervisor()">
-          <option value="">-- Select TM --</option>
-        </select>
-      </div>
-      <div class="grid3">
-        <div class="field-group">
-          <div class="field-label">Diesel ₱/L</div>
-          <input type="number" id="price-diesel" step="0.01" placeholder="0.00" oninput="recalcAll()">
-        </div>
-        <div class="field-group">
-          <div class="field-label">Gasoline ₱/L</div>
-          <input type="number" id="price-gas" step="0.01" placeholder="0.00" oninput="recalcAll()">
-        </div>
-        <div class="field-group">
-          <div class="field-label">Other ₱/L</div>
-          <input type="number" id="price-other" step="0.01" placeholder="0.00" oninput="recalcAll()">
-        </div>
+      <div class="fg"><div class="flabel">Attendant</div>
+        <select id="s-attendant"><option value="">-- Select TM --</option></select></div>
+      <div class="fg"><div class="flabel">Supervisor</div>
+        <select id="s-supervisor"><option value="">-- Select TM --</option></select></div>
+      <div class="g3">
+        <div class="fg"><div class="flabel">Diesel ₱/L</div><input type="number" id="p-diesel" step="0.01" placeholder="0.00" oninput="recalc()"></div>
+        <div class="fg"><div class="flabel">Unleaded ₱/L</div><input type="number" id="p-unleaded" step="0.01" placeholder="0.00" oninput="recalc()"></div>
+        <div class="fg"><div class="flabel">Premium ₱/L</div><input type="number" id="p-premium" step="0.01" placeholder="0.00" oninput="recalc()"></div>
       </div>
     </div>
   </div>
@@ -312,780 +217,923 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <!-- METERS -->
   <div class="panel" id="shift-meters">
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Pump Meter Readings</div>
-      <div class="tbl-wrap">
+      <div class="ctitle"><span class="dot"></span>Pump Meter Readings</div>
+      <div class="twrap">
         <table class="htbl">
-          <thead>
-            <tr>
-              <th>Hose</th><th>Product</th>
-              <th>Beg Ltr</th><th>Beg ₱</th>
-              <th>End Ltr</th><th>End ₱</th>
-              <th style="background:rgba(249,168,37,0.15)">Shift L</th>
-              <th style="background:rgba(249,168,37,0.15)">Shift ₱</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="meter-tbody"></tbody>
-          <tfoot>
-            <tr class="tfoot-row">
-              <td colspan="2">TOTAL</td>
-              <td id="tot-bl">0</td><td id="tot-bs">0</td>
-              <td id="tot-el">0</td><td id="tot-es">0</td>
-              <td id="tot-sl">0</td><td id="tot-ss">0</td>
-              <td></td>
-            </tr>
-          </tfoot>
+          <thead><tr>
+            <th>Hose</th><th>Product</th>
+            <th>Beg Ltr</th><th>Beg ₱</th>
+            <th>End Ltr</th><th>End ₱</th>
+            <th style="background:rgba(249,168,37,.15)">Shift L</th>
+            <th style="background:rgba(249,168,37,.15)">Shift ₱</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="hose-tbody"></tbody>
+          <tfoot><tr class="tfoot">
+            <td colspan="2">TOTAL</td>
+            <td id="t-bl">0</td><td id="t-bs">0</td>
+            <td id="t-el">0</td><td id="t-es">0</td>
+            <td id="t-sl">0</td><td id="t-ss">0</td>
+            <td></td>
+          </tr></tfoot>
         </table>
       </div>
-      <button class="btn-secondary" onclick="addHoseRow()">+ Add Hose</button>
+      <button class="btnsec" onclick="addHose()">+ Add Hose</button>
     </div>
-
-    <div id="flags-section"></div>
-
-    <div class="summ-grid">
-      <div class="summ-card"><div class="summ-label">Liters Sold</div><div class="summ-val gold" id="s-liters">0 L</div></div>
-      <div class="summ-card"><div class="summ-label">Peso Sales</div><div class="summ-val gold" id="s-sales">₱0</div></div>
-      <div class="summ-card"><div class="summ-label">Diesel Sold</div><div class="summ-val" id="s-diesel">0 L</div></div>
-      <div class="summ-card"><div class="summ-label">Unleaded/Gas Sold</div><div class="summ-val" id="s-gas">0 L</div></div>
-      <div class="summ-card"><div class="summ-label">Premium Sold</div><div class="summ-val" id="s-premium">0 L</div></div>
+    <div id="flag-section"></div>
+    <div class="sg">
+      <div class="sc"><div class="slabel">Liters Sold</div><div class="sval gold" id="sum-l">0 L</div></div>
+      <div class="sc"><div class="slabel">Peso Sales</div><div class="sval gold" id="sum-s">₱0</div></div>
+      <div class="sc"><div class="slabel">Diesel</div><div class="sval" id="sum-d">0 L</div></div>
+      <div class="sc"><div class="slabel">Unleaded</div><div class="sval" id="sum-u">0 L</div></div>
+      <div class="sc"><div class="slabel">Premium</div><div class="sval" id="sum-p">0 L</div></div>
     </div>
-
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Dipstick (End of Shift)</div>
-      <div class="grid2">
-        <div class="field-group"><div class="field-label">Diesel (L)</div><input type="number" id="dip-d" placeholder="0" oninput="checkInventory()"></div>
-        <div class="field-group"><div class="field-label">Gasoline (L)</div><input type="number" id="dip-g" placeholder="0" oninput="checkInventory()"></div>
+      <div class="ctitle"><span class="dot"></span>Dipstick End of Shift</div>
+      <div class="g3">
+        <div class="fg"><div class="flabel">Diesel (L)</div><input type="number" id="dip-d" placeholder="0"></div>
+        <div class="fg"><div class="flabel">Unleaded (L)</div><input type="number" id="dip-u" placeholder="0"></div>
+        <div class="fg"><div class="flabel">Premium (L)</div><input type="number" id="dip-p" placeholder="0"></div>
       </div>
-      <div id="inv-check" style="font-size:12px;color:var(--muted);margin-top:6px"></div>
+    </div>
+    <div class="card">
+      <div class="ctitle"><span class="dot"></span>Fuel Delivered This Shift</div>
+      <div class="g3">
+        <div class="fg"><div class="flabel">Diesel (L)</div><input type="number" id="del-d" placeholder="0"></div>
+        <div class="fg"><div class="flabel">Unleaded (L)</div><input type="number" id="del-u" placeholder="0"></div>
+        <div class="fg"><div class="flabel">Premium (L)</div><input type="number" id="del-p" placeholder="0"></div>
+      </div>
     </div>
   </div>
 
   <!-- CASH -->
   <div class="panel" id="shift-cash">
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Cash Collections</div>
-      <div class="field-group"><div class="field-label">Gross Sales (auto)</div><input type="number" id="gross-sales" readonly style="color:var(--gold)"></div>
-      <div class="field-group"><div class="field-label">AR / Charge Sales (₱)</div><input type="number" id="ar-sales" placeholder="0" oninput="calcCash()"></div>
-      <div class="field-group"><div class="field-label">Other Income (₱)</div><input type="number" id="other-income" placeholder="0" oninput="calcCash()"></div>
+      <div class="ctitle"><span class="dot"></span>Cash Collections</div>
+      <div class="fg"><div class="flabel">Gross Sales (auto)</div><input type="number" id="gross" readonly style="color:#f9a825"></div>
+      <div class="fg"><div class="flabel">AR / Charge Sales (₱)</div><input type="number" id="ar-sales" placeholder="0" oninput="calcCash()"></div>
+      <div class="fg"><div class="flabel">Other Income (₱)</div><input type="number" id="other-inc" placeholder="0" oninput="calcCash()"></div>
     </div>
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Count of Bills & Coins</div>
-      <table style="width:100%;border-collapse:collapse;font-size:13px">
-        <tbody id="denom-body">
-          <tr><td style="padding:5px 4px;color:var(--text)">₱1,000</td><td><input type="number" min="0" class="denom" data-val="1000" placeholder="0" oninput="calcCash()"></td></tr>
-          <tr><td style="padding:5px 4px;color:var(--text)">₱500</td><td><input type="number" min="0" class="denom" data-val="500" placeholder="0" oninput="calcCash()"></td></tr>
-          <tr><td style="padding:5px 4px;color:var(--text)">₱200</td><td><input type="number" min="0" class="denom" data-val="200" placeholder="0" oninput="calcCash()"></td></tr>
-          <tr><td style="padding:5px 4px;color:var(--text)">₱100</td><td><input type="number" min="0" class="denom" data-val="100" placeholder="0" oninput="calcCash()"></td></tr>
-          <tr><td style="padding:5px 4px;color:var(--text)">₱50</td><td><input type="number" min="0" class="denom" data-val="50" placeholder="0" oninput="calcCash()"></td></tr>
-          <tr><td style="padding:5px 4px;color:var(--text)">₱20</td><td><input type="number" min="0" class="denom" data-val="20" placeholder="0" oninput="calcCash()"></td></tr>
-          <tr><td style="padding:5px 4px;color:var(--text)">₱10</td><td><input type="number" min="0" class="denom" data-val="10" placeholder="0" oninput="calcCash()"></td></tr>
-          <tr><td style="padding:5px 4px;color:var(--text)">₱5</td><td><input type="number" min="0" class="denom" data-val="5" placeholder="0" oninput="calcCash()"></td></tr>
-          <tr><td style="padding:5px 4px;color:var(--text)">₱1</td><td><input type="number" min="0" class="denom" data-val="1" placeholder="0" oninput="calcCash()"></td></tr>
+      <div class="ctitle"><span class="dot"></span>Bill & Coin Count</div>
+      <table class="dtbl">
+        <tbody>
+          <tr><td style="color:#f0f4ff">₱1,000</td><td><input type="number" min="0" class="denom" data-v="1000" placeholder="0" oninput="calcCash()"></td></tr>
+          <tr><td style="color:#f0f4ff">₱500</td><td><input type="number" min="0" class="denom" data-v="500" placeholder="0" oninput="calcCash()"></td></tr>
+          <tr><td style="color:#f0f4ff">₱200</td><td><input type="number" min="0" class="denom" data-v="200" placeholder="0" oninput="calcCash()"></td></tr>
+          <tr><td style="color:#f0f4ff">₱100</td><td><input type="number" min="0" class="denom" data-v="100" placeholder="0" oninput="calcCash()"></td></tr>
+          <tr><td style="color:#f0f4ff">₱50</td><td><input type="number" min="0" class="denom" data-v="50" placeholder="0" oninput="calcCash()"></td></tr>
+          <tr><td style="color:#f0f4ff">₱20</td><td><input type="number" min="0" class="denom" data-v="20" placeholder="0" oninput="calcCash()"></td></tr>
+          <tr><td style="color:#f0f4ff">₱10</td><td><input type="number" min="0" class="denom" data-v="10" placeholder="0" oninput="calcCash()"></td></tr>
+          <tr><td style="color:#f0f4ff">₱5</td><td><input type="number" min="0" class="denom" data-v="5" placeholder="0" oninput="calcCash()"></td></tr>
+          <tr><td style="color:#f0f4ff">₱1</td><td><input type="number" min="0" class="denom" data-v="1" placeholder="0" oninput="calcCash()"></td></tr>
         </tbody>
-        <tfoot><tr style="border-top:2px solid var(--gold)"><td style="padding:8px 4px;color:var(--gold);font-weight:700">Cash Total</td><td style="padding:8px 4px;color:var(--gold);font-weight:700;font-size:15px" id="cash-total">₱0</td></tr></tfoot>
+        <tfoot><tr class="dtfoot"><td>Cash Total</td><td style="font-size:15px" id="cash-total">₱0</td></tr></tfoot>
       </table>
     </div>
-    <div class="summ-grid">
-      <div class="summ-card"><div class="summ-label">Cash on Hand</div><div class="summ-val" id="s-cash">₱0</div></div>
-      <div class="summ-card"><div class="summ-label">Over / Short</div><div class="summ-val" id="s-os">₱0</div></div>
+    <div class="sg">
+      <div class="sc"><div class="slabel">Cash on Hand</div><div class="sval" id="s-cash">₱0</div></div>
+      <div class="sc"><div class="slabel">Over / Short</div><div class="sval" id="s-os">₱0</div></div>
     </div>
-    <div id="cash-flag" style="display:none" class="flag-row"><span class="flag-tag">⚠ FLAG</span><span id="cash-flag-msg"></span><br><div class="field-group" style="margin-top:8px"><div class="field-label">Reason / Explanation (required)</div><textarea id="os-reason" rows="2" placeholder="Explain the over/short..."></textarea></div></div>
+    <div id="os-flag" style="display:none" class="card" style="border-color:rgba(255,82,82,.3)">
+      <div style="color:#ff5252;font-size:12px;font-weight:700;margin-bottom:8px">⚠️ Over/Short exceeds ₱500 — explanation required</div>
+      <div class="fg"><div class="flabel">Reason</div><textarea id="os-reason" rows="2" placeholder="Explain..."></textarea></div>
+    </div>
   </div>
 
   <!-- PAYABLES -->
   <div class="panel" id="shift-payables">
-    <div class="sec-hdr">⛽ Supplier Dues</div>
-    <div id="supplier-rows"></div>
-    <button class="btn-secondary" onclick="addPayRow('supplier')">+ Add Supplier</button>
-    <div class="sec-hdr">🏦 Checks Issued</div>
-    <div id="check-pay-rows"></div>
-    <button class="btn-secondary" onclick="addPayRow('check')">+ Add Check</button>
-    <div class="sec-hdr">📦 Fuel Loans / Withdrawals</div>
+    <div class="sechdr">⛽ Supplier Dues</div>
+    <div id="sup-rows"></div>
+    <button class="btnsec" onclick="addPay('sup')">+ Add Supplier</button>
+    <div class="sechdr">🏦 Checks Issued</div>
+    <div id="chk-rows"></div>
+    <button class="btnsec" onclick="addPay('chk')">+ Add Check</button>
+    <div class="sechdr">📦 Fuel Loans</div>
     <div id="loan-rows"></div>
-    <button class="btn-secondary" onclick="addPayRow('loan')">+ Add Fuel Loan</button>
-    <div class="summ-grid" style="margin-top:12px">
-      <div class="summ-card"><div class="summ-label">Total Payables</div><div class="summ-val red" id="tot-payables">₱0</div></div>
-      <div class="summ-card"><div class="summ-label">Net Collectible</div><div class="summ-val green" id="net-collect">₱0</div></div>
+    <button class="btnsec" onclick="addPay('loan')">+ Add Loan</button>
+    <div class="sg" style="margin-top:12px">
+      <div class="sc"><div class="slabel">Total Payables</div><div class="sval red" id="tot-pay">₱0</div></div>
+      <div class="sc"><div class="slabel">Net Collectible</div><div class="sval green" id="net-col">₱0</div></div>
     </div>
   </div>
 
   <!-- SUBMIT -->
   <div class="panel" id="shift-submit">
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Shift Summary</div>
-      <div class="summ-grid">
-        <div class="summ-card"><div class="summ-label">Station</div><div class="summ-val blue" id="sub-stn">—</div></div>
-        <div class="summ-card"><div class="summ-label">Shift</div><div class="summ-val" id="sub-shift">—</div></div>
-        <div class="summ-card"><div class="summ-label">Liters Sold</div><div class="summ-val gold" id="sub-liters">0</div></div>
-        <div class="summ-card"><div class="summ-label">Peso Sales</div><div class="summ-val gold" id="sub-sales">₱0</div></div>
-        <div class="summ-card"><div class="summ-label">Cash</div><div class="summ-val" id="sub-cash">₱0</div></div>
-        <div class="summ-card"><div class="summ-label">Over/Short</div><div class="summ-val" id="sub-os">₱0</div></div>
+      <div class="ctitle"><span class="dot"></span>Shift Summary</div>
+      <div class="sg">
+        <div class="sc"><div class="slabel">Station</div><div class="sval blue" id="sub-stn">—</div></div>
+        <div class="sc"><div class="slabel">Shift</div><div class="sval" id="sub-shift">—</div></div>
+        <div class="sc"><div class="slabel">Liters Sold</div><div class="sval gold" id="sub-l">0</div></div>
+        <div class="sc"><div class="slabel">Peso Sales</div><div class="sval gold" id="sub-s">₱0</div></div>
+        <div class="sc"><div class="slabel">Cash</div><div class="sval" id="sub-c">₱0</div></div>
+        <div class="sc"><div class="slabel">Over/Short</div><div class="sval" id="sub-os">₱0</div></div>
       </div>
     </div>
-    <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Google Sheets URL</div>
-      <input type="text" id="sheets-url" placeholder="https://script.google.com/macros/s/.../exec">
-    </div>
-    <button class="btn-primary" id="submit-btn" onclick="submitShift()">📤 Submit Shift Report</button>
-    <div class="status-msg" id="submit-status"></div>
+    <button class="btnmain" onclick="submitShift()">📤 Submit Shift Report</button>
+    <div class="status" id="sub-status"></div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- MODULE: DELIVERY & CHECK TRACKER -->
-<!-- ═══════════════════════════════════════════ -->
-<div class="module" id="module-delivery">
-  <div class="sub-tabs">
-    <div class="stab active" onclick="switchTab('delivery','new')">➕ New Delivery</div>
-    <div class="stab" onclick="switchTab('delivery','checks')">🏦 Checks</div>
-    <div class="stab" onclick="switchTab('delivery','history')">📋 History</div>
+<!-- ══════════ DELIVERY MODULE ══════════ -->
+<div class="module" id="mod-delivery">
+  <div class="subtabs">
+    <div class="stab active" onclick="goTab('delivery','new')">➕ New</div>
+    <div class="stab" onclick="goTab('delivery','checks')">🏦 Checks</div>
+    <div class="stab" onclick="goTab('delivery','history')">📋 History</div>
   </div>
-
   <div class="panel active" id="delivery-new">
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Record Fuel Delivery</div>
-      <div class="grid2">
-        <div class="field-group"><div class="field-label">Station</div>
-          <select id="del-station"><option>GS1</option><option>GS2</option><option>GS5</option></select></div>
-        <div class="field-group"><div class="field-label">Date</div><input type="date" id="del-date"></div>
+      <div class="ctitle"><span class="dot"></span>Record Fuel Delivery</div>
+      <div class="g2">
+        <div class="fg"><div class="flabel">Station</div><select id="del-stn"><option>GS1</option><option>GS2</option><option>GS5</option></select></div>
+        <div class="fg"><div class="flabel">Date</div><input type="date" id="del-date"></div>
       </div>
-      <div class="field-group"><div class="field-label">Supplier</div><input type="text" id="del-supplier" placeholder="e.g. Petron, Shell, Phoenix"></div>
-      <div class="grid2">
-        <div class="field-group"><div class="field-label">Diesel (L)</div><input type="number" id="del-diesel" placeholder="0" oninput="calcDeliveryAmt()"></div>
-        <div class="field-group"><div class="field-label">Gasoline (L)</div><input type="number" id="del-gas" placeholder="0" oninput="calcDeliveryAmt()"></div>
+      <div class="fg"><div class="flabel">Supplier</div><input type="text" id="del-sup" placeholder="Petron / Shell / Phoenix"></div>
+      <div class="g3">
+        <div class="fg"><div class="flabel">Diesel (L)</div><input type="number" id="del-dl" placeholder="0" oninput="calcDel()"></div>
+        <div class="fg"><div class="flabel">Unleaded (L)</div><input type="number" id="del-ul" placeholder="0" oninput="calcDel()"></div>
+        <div class="fg"><div class="flabel">Premium (L)</div><input type="number" id="del-pl" placeholder="0" oninput="calcDel()"></div>
       </div>
-      <div class="grid2">
-        <div class="field-group"><div class="field-label">Diesel Price/L</div><input type="number" id="del-price-d" step="0.01" placeholder="0.00" oninput="calcDeliveryAmt()"></div>
-        <div class="field-group"><div class="field-label">Gasoline Price/L</div><input type="number" id="del-price-g" step="0.01" placeholder="0.00" oninput="calcDeliveryAmt()"></div>
+      <div class="g3">
+        <div class="fg"><div class="flabel">Diesel ₱/L</div><input type="number" id="del-dp" step="0.01" placeholder="0" oninput="calcDel()"></div>
+        <div class="fg"><div class="flabel">Unleaded ₱/L</div><input type="number" id="del-up" step="0.01" placeholder="0" oninput="calcDel()"></div>
+        <div class="fg"><div class="flabel">Premium ₱/L</div><input type="number" id="del-pp" step="0.01" placeholder="0" oninput="calcDel()"></div>
       </div>
-      <div class="summ-card" style="margin-bottom:10px"><div class="summ-label">Total Delivery Amount</div><div class="summ-val gold" id="del-total">₱0</div></div>
+      <div class="sc"><div class="slabel">Total Amount</div><div class="sval gold" id="del-tot">₱0</div></div>
     </div>
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Check Issued for this Delivery</div>
-      <div class="grid2">
-        <div class="field-group"><div class="field-label">Check #</div><input type="text" id="chk-num" placeholder="e.g. 001234"></div>
-        <div class="field-group"><div class="field-label">Check Date</div><input type="date" id="chk-date"></div>
+      <div class="ctitle"><span class="dot"></span>Check Issued</div>
+      <div class="g2">
+        <div class="fg"><div class="flabel">Check #</div><input type="text" id="chk-num" placeholder="001234"></div>
+        <div class="fg"><div class="flabel">Bank</div><input type="text" id="chk-bank" placeholder="BDO / BPI"></div>
       </div>
-      <div class="grid2">
-        <div class="field-group"><div class="field-label">Check Amount (₱)</div><input type="number" id="chk-amount" placeholder="0.00"></div>
-        <div class="field-group"><div class="field-label">Due Date</div><input type="date" id="chk-due"></div>
+      <div class="g2">
+        <div class="fg"><div class="flabel">Check Date</div><input type="date" id="chk-date"></div>
+        <div class="fg"><div class="flabel">Due Date</div><input type="date" id="chk-due"></div>
       </div>
-      <div class="field-group"><div class="field-label">Bank</div><input type="text" id="chk-bank" placeholder="e.g. BDO, BPI, Metrobank"></div>
+      <div class="fg"><div class="flabel">Amount (₱)</div><input type="number" id="chk-amt" placeholder="0.00"></div>
     </div>
-    <button class="btn-primary" onclick="saveDelivery()">💾 Save Delivery & Check</button>
-    <div class="status-msg" id="del-status"></div>
+    <button class="btnmain" onclick="saveDel()">💾 Save Delivery & Check</button>
+    <div class="status" id="del-status"></div>
   </div>
-
   <div class="panel" id="delivery-checks">
-    <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Outstanding Checks</div>
-      <div class="summ-grid">
-        <div class="summ-card"><div class="summ-label">Total Outstanding</div><div class="summ-val red" id="chk-outstanding">₱0</div></div>
-        <div class="summ-card"><div class="summ-label">Overdue Checks</div><div class="summ-val red" id="chk-overdue-count">0</div></div>
-      </div>
+    <div class="sg">
+      <div class="sc"><div class="slabel">Outstanding</div><div class="sval red" id="chk-out">₱0</div></div>
+      <div class="sc"><div class="slabel">Overdue</div><div class="sval red" id="chk-ov">0</div></div>
     </div>
     <div id="checks-list"></div>
   </div>
-
   <div class="panel" id="delivery-history">
-    <div id="delivery-list"></div>
+    <div id="del-hist"></div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- MODULE: MANAGER DASHBOARD -->
-<!-- ═══════════════════════════════════════════ -->
-<div class="module" id="module-manager">
-  <div class="sub-tabs">
-    <div class="stab active" onclick="switchTab('manager','overview')">📊 Overview</div>
-    <div class="stab" onclick="switchTab('manager','fuel')">⛽ Fuel Loss</div>
-    <div class="stab" onclick="switchTab('manager','flags')">🚩 Flags</div>
-    <div class="stab" onclick="switchTab('manager','debt')">💳 Debt</div>
+<!-- ══════════ MANAGER MODULE ══════════ -->
+<div class="module" id="mod-manager">
+  <div class="subtabs">
+    <div class="stab active" onclick="goTab('manager','overview')">📊 Overview</div>
+    <div class="stab" onclick="goTab('manager','debt')">💳 Debt</div>
+    <div class="stab" onclick="goTab('manager','flags')">🚩 Flags</div>
   </div>
-
   <div class="panel active" id="manager-overview">
-    <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Today — All Stations</div>
-      <div class="summ-grid">
-        <div class="summ-card"><div class="summ-label">Total Sales Today</div><div class="summ-val gold" id="mgr-sales-today">₱0</div></div>
-        <div class="summ-card"><div class="summ-label">Total Liters Today</div><div class="summ-val gold" id="mgr-liters-today">0 L</div></div>
-        <div class="summ-card"><div class="summ-label">Cash Collected</div><div class="summ-val green" id="mgr-cash-today">₱0</div></div>
-        <div class="summ-card"><div class="summ-label">Over/Short Today</div><div class="summ-val" id="mgr-os-today">₱0</div></div>
-      </div>
+    <div class="sg">
+      <div class="sc"><div class="slabel">Checks Due</div><div class="sval red" id="mgr-due">₱0</div></div>
+      <div class="sc"><div class="slabel">Overdue</div><div class="sval red" id="mgr-ov">0</div></div>
     </div>
-    <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Per Station Summary</div>
-      <div id="mgr-per-station">
-        <div style="color:var(--muted);font-size:12px;text-align:center;padding:20px">No submissions yet today</div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Outstanding Debt Alert</div>
-      <div class="summ-grid">
-        <div class="summ-card"><div class="summ-label">Total Checks Due</div><div class="summ-val red" id="mgr-checks-due">₱0</div></div>
-        <div class="summ-card"><div class="summ-label">Overdue</div><div class="summ-val red" id="mgr-overdue">0</div></div>
-      </div>
-    </div>
+    <div class="card"><div class="ctitle"><span class="dot"></span>Outstanding Checks</div><div id="mgr-checks"></div></div>
   </div>
-
-  <div class="panel" id="manager-fuel">
-    <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Fuel Accountability Check</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.7">
-        Formula: <strong style="color:var(--text)">Beg Dipstick + Delivered − Sold = End Dipstick</strong><br>
-        Any gap = possible loss, theft, or volatility
-      </div>
-      <div id="fuel-loss-list">
-        <div style="color:var(--muted);font-size:12px;text-align:center;padding:20px">Submit shifts with dipstick readings to see fuel accountability</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="panel" id="manager-flags">
-    <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Anomaly Flags</div>
-      <div id="flags-log">
-        <div style="color:var(--muted);font-size:12px;text-align:center;padding:20px">No flags recorded yet</div>
-      </div>
-    </div>
-  </div>
-
   <div class="panel" id="manager-debt">
-    <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>All Checks & Payables</div>
-      <div id="debt-list">
-        <div style="color:var(--muted);font-size:12px;text-align:center;padding:20px">No checks recorded yet</div>
-      </div>
-    </div>
+    <div class="card"><div class="ctitle"><span class="dot"></span>All Deliveries & Checks</div><div id="mgr-debt-list"></div></div>
+  </div>
+  <div class="panel" id="manager-flags">
+    <div class="card"><div class="ctitle"><span class="dot"></span>Anomaly Flags</div><div id="flags-log" style="color:#8899bb;font-size:12px;padding:20px;text-align:center">No flags yet</div></div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- MODULE: HR -->
-<!-- ═══════════════════════════════════════════ -->
-<div class="module" id="module-hr">
-  <div class="sub-tabs">
-    <div class="stab active" onclick="switchTab('hr','team')">👥 Team</div>
-    <div class="stab" onclick="switchTab('hr','attendance')">📅 Attendance</div>
-    <div class="stab" onclick="switchTab('hr','payroll')">💰 Payroll</div>
-    <div class="stab" onclick="switchTab('hr','add')">➕ Add TM</div>
+<!-- ══════════ HR MODULE ══════════ -->
+<div class="module" id="mod-hr">
+  <div class="subtabs">
+    <div class="stab active" onclick="goTab('hr','team')">👥 Team</div>
+    <div class="stab" onclick="goTab('hr','attendance')">📅 Attendance</div>
+    <div class="stab" onclick="goTab('hr','payroll')">💰 Payroll</div>
+    <div class="stab" onclick="goTab('hr','addtm')">➕ Add TM</div>
   </div>
-
-  <div class="panel active" id="hr-team">
-    <div id="team-list">
-      <div style="color:var(--muted);font-size:12px;text-align:center;padding:30px">No team members yet.<br>Go to ➕ Add TM tab to add employees.</div>
-    </div>
-  </div>
-
+  <div class="panel active" id="hr-team"><div id="team-list"></div></div>
   <div class="panel" id="hr-attendance">
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Record Attendance</div>
-      <div class="grid2">
-        <div class="field-group"><div class="field-label">Date</div><input type="date" id="att-date"></div>
-        <div class="field-group"><div class="field-label">Station</div>
-          <select id="att-station"><option>GS1</option><option>GS2</option><option>GS5</option></select></div>
+      <div class="ctitle"><span class="dot"></span>Record Attendance</div>
+      <div class="g2">
+        <div class="fg"><div class="flabel">Date</div><input type="date" id="att-date"></div>
+        <div class="fg"><div class="flabel">Station</div><select id="att-stn"><option>GS1</option><option>GS2</option><option>GS5</option></select></div>
       </div>
-      <div class="field-group"><div class="field-label">Employee</div>
-        <select id="att-emp"><option value="">-- Select --</option></select></div>
-      <div class="grid2">
-        <div class="field-group"><div class="field-label">Shift</div>
-          <select id="att-shift"><option value="1">Shift 1</option><option value="2">Shift 2</option><option value="3">Shift 3</option></select></div>
-        <div class="field-group"><div class="field-label">Status</div>
-          <select id="att-status">
-            <option value="present">Present</option>
-            <option value="absent">Absent</option>
-            <option value="late">Late</option>
-            <option value="halfday">Half Day</option>
-            <option value="restday">Rest Day</option>
-            <option value="holiday">Holiday</option>
+      <div class="fg"><div class="flabel">Employee</div><select id="att-emp"><option value="">-- Select --</option></select></div>
+      <div class="g2">
+        <div class="fg"><div class="flabel">Shift</div><select id="att-shift"><option value="1">Shift 1</option><option value="2">Shift 2</option><option value="3">Shift 3</option></select></div>
+        <div class="fg"><div class="flabel">Status</div>
+          <select id="att-stat">
+            <option value="present">Present</option><option value="absent">Absent</option>
+            <option value="late">Late</option><option value="halfday">Half Day</option>
+            <option value="restday">Rest Day</option><option value="holiday">Holiday</option>
           </select></div>
       </div>
-      <div class="field-group"><div class="field-label">Notes / Violation</div><input type="text" id="att-notes" placeholder="Optional"></div>
-      <button class="btn-primary" onclick="saveAttendance()">💾 Save Attendance</button>
+      <div class="fg"><div class="flabel">Notes / Violation</div><input type="text" id="att-notes" placeholder="Optional"></div>
+      <button class="btnmain" onclick="saveAtt()">💾 Save</button>
     </div>
-    <div class="sec-hdr">📋 Recent Attendance</div>
     <div id="att-list"></div>
   </div>
-
   <div class="panel" id="hr-payroll">
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Weekly Payroll Calculator</div>
-      <div class="grid2">
-        <div class="field-group"><div class="field-label">Employee</div>
-          <select id="pay-emp"><option value="">-- Select --</option></select></div>
-        <div class="field-group"><div class="field-label">Week Ending</div><input type="date" id="pay-week"></div>
+      <div class="ctitle"><span class="dot"></span>Weekly Payroll</div>
+      <div class="g2">
+        <div class="fg"><div class="flabel">Employee</div><select id="pay-emp"><option value="">-- Select --</option></select></div>
+        <div class="fg"><div class="flabel">Week Ending</div><input type="date" id="pay-week"></div>
       </div>
-      <button class="btn-primary" onclick="calcPayroll()">🔢 Calculate Pay</button>
+      <button class="btnmain" onclick="calcPay()">🔢 Calculate</button>
     </div>
-    <div id="payroll-result" style="display:none">
-      <div class="card">
-        <div class="card-title"><span class="card-title-dot"></span>Payroll Breakdown</div>
-        <div id="payroll-detail"></div>
-      </div>
-    </div>
-    <div class="card" style="margin-top:4px">
-      <div class="card-title"><span class="card-title-dot"></span>🇵🇭 Philippine Holiday Pay Rules</div>
-      <div style="font-size:11px;color:var(--muted);line-height:1.9">
-        <strong style="color:var(--gold)">Regular Holiday (worked):</strong> 200% of daily rate<br>
-        <strong style="color:var(--gold)">Regular Holiday (not worked):</strong> 100% — paid<br>
-        <strong style="color:var(--gold)">Special Non-Working (worked):</strong> 130% of daily rate<br>
-        <strong style="color:var(--gold)">Special Non-Working (not worked):</strong> No pay (unless CBA)<br>
-        <strong style="color:var(--gold)">Rest Day + Regular Holiday:</strong> 260%<br>
-        <strong style="color:var(--gold)">Overtime (any day):</strong> +25% of hourly rate
+    <div id="pay-result"></div>
+    <div class="card">
+      <div class="ctitle"><span class="dot"></span>🇵🇭 Holiday Pay Rules</div>
+      <div style="font-size:11px;color:#8899bb;line-height:2">
+        <b style="color:#f9a825">Regular Holiday (worked):</b> 200%<br>
+        <b style="color:#f9a825">Regular Holiday (not worked):</b> 100%<br>
+        <b style="color:#f9a825">Special Non-Working (worked):</b> 130%<br>
+        <b style="color:#f9a825">Special Non-Working (not worked):</b> No pay<br>
+        <b style="color:#f9a825">Rest Day + Regular Holiday:</b> 260%
       </div>
     </div>
   </div>
-
-  <div class="panel" id="hr-add">
+  <div class="panel" id="hr-addtm">
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Add Team Member</div>
-      <div class="field-group"><div class="field-label">Photo</div>
-        <div class="photo-area" onclick="document.getElementById('emp-photo-input').click()" style="padding:14px">
-          <input type="file" id="emp-photo-input" accept="image/*" onchange="onEmpPhoto(event)">
-          <div style="font-size:28px">🤳</div>
-          <div style="color:var(--muted);font-size:12px;margin-top:4px">Tap to add photo</div>
+      <div class="ctitle"><span class="dot"></span>Add Team Member</div>
+      <div class="fg"><div class="flabel">Photo</div>
+        <div class="upload-box" id="emp-upload-box">
+          <input type="file" id="emp-photo-file" accept="image/*" onchange="empPhotoSelected(this)">
+          <div class="icon">🤳</div>
+          <div class="txt">Tap to add photo</div>
         </div>
-        <img id="emp-photo-preview" style="width:80px;height:80px;border-radius:50%;object-fit:cover;display:none;border:2px solid var(--gold)">
+        <img id="emp-photo-prev" style="display:none;width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid #f9a825;margin-top:8px">
       </div>
-      <div class="grid2">
-        <div class="field-group"><div class="field-label">First Name</div><input type="text" id="emp-fname" placeholder="Juan"></div>
-        <div class="field-group"><div class="field-label">Last Name</div><input type="text" id="emp-lname" placeholder="Dela Cruz"></div>
+      <div class="g2">
+        <div class="fg"><div class="flabel">First Name</div><input type="text" id="emp-fn" placeholder="Juan"></div>
+        <div class="fg"><div class="flabel">Last Name</div><input type="text" id="emp-ln" placeholder="Dela Cruz"></div>
       </div>
-      <div class="grid2">
-        <div class="field-group"><div class="field-label">Position</div>
-          <select id="emp-position">
-            <option>Attendant</option><option>Senior Attendant</option>
-            <option>Supervisor</option><option>Cashier</option><option>Guard</option><option>Reliever</option>
-          </select></div>
-        <div class="field-group"><div class="field-label">Station</div>
-          <select id="emp-station"><option>GS1</option><option>GS2</option><option>GS5</option><option>All</option></select></div>
+      <div class="g2">
+        <div class="fg"><div class="flabel">Position</div>
+          <select id="emp-pos"><option>Attendant</option><option>Senior Attendant</option><option>Supervisor</option><option>Cashier</option><option>Guard</option><option>Reliever</option></select></div>
+        <div class="fg"><div class="flabel">Station</div>
+          <select id="emp-stn"><option>GS1</option><option>GS2</option><option>GS5</option><option>All</option></select></div>
       </div>
-      <div class="grid2">
-        <div class="field-group"><div class="field-label">Daily Rate (₱)</div><input type="number" id="emp-rate" placeholder="600"></div>
-        <div class="field-group"><div class="field-label">Employment Type</div>
+      <div class="g2">
+        <div class="fg"><div class="flabel">Daily Rate (₱)</div><input type="number" id="emp-rate" placeholder="600"></div>
+        <div class="fg"><div class="flabel">Type</div>
           <select id="emp-type"><option value="regular">Regular</option><option value="probationary">Probationary</option><option value="casual">Casual</option></select></div>
       </div>
-      <div class="field-group"><div class="field-label">Date Hired</div><input type="date" id="emp-hired"></div>
-      <div class="field-group"><div class="field-label">Phone</div><input type="text" id="emp-phone" placeholder="09xx-xxx-xxxx"></div>
-      <button class="btn-primary" onclick="saveEmployee()">💾 Save Team Member</button>
-      <div class="status-msg" id="emp-status"></div>
+      <div class="g2">
+        <div class="fg"><div class="flabel">Date Hired</div><input type="date" id="emp-hired"></div>
+        <div class="fg"><div class="flabel">Phone</div><input type="text" id="emp-phone" placeholder="09xx-xxx-xxxx"></div>
+      </div>
+      <button class="btnmain" onclick="saveEmp()">💾 Save Team Member</button>
+      <div class="status" id="emp-status"></div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ -->
-<!-- MODULE: SETTINGS -->
-<!-- ═══════════════════════════════════════════ -->
-<div class="module" id="module-settings">
+<!-- ══════════ SETTINGS MODULE ══════════ -->
+<div class="module" id="mod-settings">
   <div style="padding:14px">
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Google Sheets URL</div>
-      <input type="text" id="settings-url" placeholder="https://script.google.com/macros/s/.../exec">
+      <div class="ctitle"><span class="dot"></span>Google Sheets URL</div>
+      <div class="fg"><input type="text" id="set-url" placeholder="https://script.google.com/macros/s/.../exec"></div>
+      <div class="ctitle" style="margin-top:12px"><span class="dot"></span>Anthropic API Key</div>
+      <div class="fg"><input type="password" id="set-key" placeholder="sk-ant-api03-..."></div>
+      <div style="font-size:11px;color:#8899bb;margin-bottom:10px;line-height:1.6">Get from <b style="color:#f9a825">console.anthropic.com</b> → API Keys → Create Key. Saved on this device only.</div>
+      <button class="btnmain" onclick="saveSettings()">💾 Save Settings</button>
+      <div class="status" id="set-status"></div>
     </div>
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Anthropic API Key (for AI Photo Reading)</div>
-      <input type="password" id="settings-apikey" placeholder="sk-ant-api03-...">
-      <div style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.7">
-        Get your key at <strong style="color:var(--gold)">console.anthropic.com</strong> → API Keys → Create Key.<br>
-        Saved privately on this device only. Never shared.
-      </div>
-      <button class="btn-primary" style="margin-top:10px" onclick="saveSettings()">💾 Save Settings</button>
-      <div class="status-msg" id="settings-status"></div>
+      <div class="ctitle"><span class="dot"></span>Active Stations</div>
+      <div style="font-size:13px;color:#8899bb;line-height:2.2">✅ GS1 Active &nbsp; ✅ GS2 Active &nbsp; 🔒 GS3 Future &nbsp; 🔒 GS4 Future &nbsp; ✅ GS5 Active</div>
     </div>
     <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>Active Stations</div>
-      <div style="font-size:13px;color:var(--muted);line-height:2">
-        ✅ GS1 — Active<br>✅ GS2 — Active<br>🔒 GS3 — Future<br>🔒 GS4 — Future<br>✅ GS5 — Active
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>🇵🇭 2025 Regular Holidays</div>
-      <div id="holidays-list" style="font-size:12px;line-height:2;color:var(--text)"></div>
-    </div>
-    <div class="card">
-      <div class="card-title"><span class="card-title-dot"></span>App Info</div>
-      <div style="font-size:12px;color:var(--muted);line-height:1.9">
-        Version: <strong style="color:var(--text)">4.0</strong><br>
-        App: <strong style="color:var(--gold)">A's Fuel Encoder</strong><br>
-        GitHub: <strong style="color:var(--text)">emsunnyjr-art/powerfill-encoder</strong><br>
-        Hosting: <strong style="color:var(--green)">Free — GitHub Pages</strong><br>
-        Storage: <strong style="color:var(--green)">Free — Google Sheets</strong>
-      </div>
+      <div class="ctitle"><span class="dot"></span>🇵🇭 2025 Philippine Holidays</div>
+      <div id="hol-list" style="font-size:12px;line-height:2"></div>
     </div>
   </div>
 </div>
 
 <script>
-// ═══════════ STATE ═══════════
-const MANAGER_PIN = '157345';
-let currentStation = 'GS1';
-let currentModule = 'shift';
-let photoBase64 = null;
-let aiParsedData = null;
-let hoseRows = [];
-let hoseIdCounter = 0;
-let employees = JSON.parse(localStorage.getItem('af_employees') || '[]');
-let deliveries = JSON.parse(localStorage.getItem('af_deliveries') || '[]');
-let attendance = JSON.parse(localStorage.getItem('af_attendance') || '[]');
-let sheetsUrl = localStorage.getItem('af_sheets_url') || '';
-let apiKey = localStorage.getItem('af_api_key') || '';
-let pendingModule = null;
-
-// PH Holidays 2025
-const PH_HOLIDAYS = [
-  {date:'2025-01-01',name:"New Year's Day",type:'regular'},
-  {date:'2025-04-09',name:'Araw ng Kagitingan',type:'regular'},
-  {date:'2025-04-17',name:'Maundy Thursday',type:'regular'},
-  {date:'2025-04-18',name:'Good Friday',type:'regular'},
-  {date:'2025-04-19',name:'Black Saturday',type:'special'},
-  {date:'2025-05-01',name:'Labor Day',type:'regular'},
-  {date:'2025-06-12',name:'Independence Day',type:'regular'},
-  {date:'2025-08-25',name:'National Heroes Day',type:'regular'},
-  {date:'2025-11-01',name:"All Saints' Day",type:'special'},
-  {date:'2025-11-02',name:"All Souls' Day",type:'special'},
-  {date:'2025-11-30',name:"Bonifacio Day",type:'regular'},
-  {date:'2025-12-08',name:'Immaculate Conception',type:'special'},
-  {date:'2025-12-24',name:'Christmas Eve',type:'special'},
-  {date:'2025-12-25',name:'Christmas Day',type:'regular'},
-  {date:'2025-12-30',name:'Rizal Day',type:'regular'},
-  {date:'2025-12-31',name:"New Year's Eve",type:'special'},
+// ═══ CONSTANTS ═══
+const PIN = '157345';
+const HOLIDAYS = [
+  {d:'2025-01-01',n:"New Year's Day",t:'R'},{d:'2025-04-09',n:'Araw ng Kagitingan',t:'R'},
+  {d:'2025-04-17',n:'Maundy Thursday',t:'R'},{d:'2025-04-18',n:'Good Friday',t:'R'},
+  {d:'2025-04-19',n:'Black Saturday',t:'S'},{d:'2025-05-01',n:'Labor Day',t:'R'},
+  {d:'2025-06-12',n:'Independence Day',t:'R'},{d:'2025-08-25',n:'National Heroes Day',t:'R'},
+  {d:'2025-11-01',n:"All Saints' Day",t:'S'},{d:'2025-11-02',n:"All Souls' Day",t:'S'},
+  {d:'2025-11-30',n:'Bonifacio Day',t:'R'},{d:'2025-12-08',n:'Immaculate Conception',t:'S'},
+  {d:'2025-12-24',n:'Christmas Eve',t:'S'},{d:'2025-12-25',n:'Christmas Day',t:'R'},
+  {d:'2025-12-30',n:'Rizal Day',t:'R'},{d:'2025-12-31',n:"New Year's Eve",t:'S'}
 ];
 
-// ═══════════ INIT ═══════════
-document.addEventListener('DOMContentLoaded', () => {
-  const now = new Date();
-  const d = now.toISOString().split('T')[0];
-  document.getElementById('badge-date').textContent = d;
-  document.getElementById('shift-date').value = d;
-  document.getElementById('del-date').value = d;
-  document.getElementById('att-date').value = d;
-  document.getElementById('pay-week').value = d;
-  document.getElementById('chk-date').value = d;
-  if (sheetsUrl) {
-    document.getElementById('sheets-url').value = sheetsUrl;
-    document.getElementById('settings-url').value = sheetsUrl;
-  }
-  if (apiKey) {
-    document.getElementById('settings-apikey').value = apiKey;
-  }
-  initHoseTable();
-  addPayRow('supplier');
+// ═══ STATE ═══
+let station = 'GS1';
+let photoB64 = null;
+let aiData = null;
+let hoseId = 0;
+let hoses = [];
+let employees = JSON.parse(localStorage.getItem('af_emp')||'[]');
+let deliveries = JSON.parse(localStorage.getItem('af_del')||'[]');
+let attendance = JSON.parse(localStorage.getItem('af_att')||'[]');
+let sheetsUrl = localStorage.getItem('af_url')||'';
+let apiKey = localStorage.getItem('af_key')||'';
+let pendingMod = null;
+
+// ═══ INIT ═══
+window.onload = function() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('bdg-date').textContent = today;
+  document.getElementById('s-date').value = today;
+  document.getElementById('del-date').value = today;
+  document.getElementById('att-date').value = today;
+  document.getElementById('pay-week').value = today;
+  document.getElementById('chk-date').value = today;
+  if(sheetsUrl) document.getElementById('set-url').value = sheetsUrl;
+  if(apiKey) document.getElementById('set-key').value = apiKey;
+  initHoses();
+  addPay('sup');
   renderHolidays();
   renderTeam();
-  populateEmpDropdowns();
+  fillEmpDrops();
   renderChecks();
-  renderDeliveries();
-});
+};
 
-// ═══════════ NAVIGATION ═══════════
-function switchModule(name) {
-  document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
-  document.querySelectorAll('.mnav').forEach(n => n.classList.remove('active'));
-  document.getElementById('module-' + name).classList.add('active');
-  const idx = {shift:0,delivery:1,manager:2,hr:3,settings:4}[name];
-  document.querySelectorAll('.mnav')[idx].classList.add('active');
-  currentModule = name;
-  if (name === 'shift') updateSubmitSummary();
-  if (name === 'manager') refreshManagerDash();
-  if (name === 'delivery') { renderChecks(); renderDeliveries(); }
+// ═══ NAVIGATION ═══
+function goModule(m) {
+  document.querySelectorAll('.module').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.mnav').forEach(x=>x.classList.remove('active'));
+  document.getElementById('mod-'+m).classList.add('active');
+  const mi = {shift:0,delivery:1,manager:2,hr:3,settings:4}[m];
+  document.querySelectorAll('.mnav')[mi].classList.add('active');
+  if(m==='manager') renderChecks();
+  if(m==='hr') renderTeam();
 }
 
-function switchTab(module, tab) {
-  const panels = document.getElementById('module-' + module).querySelectorAll('.panel');
-  panels.forEach(p => p.classList.remove('active'));
-  document.getElementById(module + '-' + tab).classList.add('active');
-  const tabs = document.getElementById('module-' + module).querySelectorAll('.stab');
-  tabs.forEach(t => t.classList.remove('active'));
-  const tabIdx = Array.from(document.getElementById(module + '-' + tab).parentElement.querySelectorAll('.panel')).indexOf(document.getElementById(module + '-' + tab));
-  if (tabs[tabIdx]) tabs[tabIdx].classList.add('active');
-  if (tab === 'team') renderTeam();
-  if (tab === 'attendance') renderAttendance();
+function goTab(mod, tab) {
+  const modEl = document.getElementById('mod-'+mod);
+  modEl.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  modEl.querySelectorAll('.stab').forEach(x=>x.classList.remove('active'));
+  const panel = document.getElementById(mod+'-'+tab);
+  if(panel) panel.classList.add('active');
+  const panels = Array.from(modEl.querySelectorAll('.panel'));
+  const pi = panels.indexOf(panel);
+  const tabs = modEl.querySelectorAll('.stab');
+  if(tabs[pi]) tabs[pi].classList.add('active');
+  if(tab==='team') renderTeam();
+  if(tab==='attendance') renderAtt();
+  if(tab==='checks') renderChecks();
+  if(tab==='history') renderDelHist();
+  if(tab==='submit') fillSummary();
 }
 
-// ═══════════ PIN ═══════════
-function requirePin(module) {
-  pendingModule = module;
-  document.getElementById('pin-overlay').style.display = 'flex';
-  document.getElementById('pin-input').value = '';
-  document.getElementById('pin-err').style.display = 'none';
-  setTimeout(() => document.getElementById('pin-input').focus(), 100);
+// ═══ PIN ═══
+function needPin(m) {
+  pendingMod = m;
+  document.getElementById('pin-overlay').classList.add('show');
+  document.getElementById('pin-input').value='';
+  document.getElementById('pin-err').style.display='none';
 }
 function checkPin() {
-  const val = document.getElementById('pin-input').value;
-  if (val.length === 6) {
-    if (val === MANAGER_PIN) {
-      document.getElementById('pin-overlay').style.display = 'none';
-      switchModule(pendingModule);
-    } else {
-      document.getElementById('pin-err').style.display = 'block';
-      document.getElementById('pin-input').value = '';
-    }
+  const v = document.getElementById('pin-input').value;
+  if(v.length===6) {
+    if(v===PIN) { document.getElementById('pin-overlay').classList.remove('show'); goModule(pendingMod); }
+    else { document.getElementById('pin-err').style.display='block'; document.getElementById('pin-input').value=''; }
   }
 }
-function closePinOverlay() { document.getElementById('pin-overlay').style.display = 'none'; }
 
-// ═══════════ STATION ═══════════
-function setStation(stn) {
-  currentStation = stn;
-  document.getElementById('badge-station').textContent = stn;
-  document.querySelectorAll('.stn-tab').forEach(t => {
-    if (t.textContent === stn) t.classList.add('active');
-    else if (!t.classList.contains('inactive')) t.classList.remove('active');
+// ═══ STATION ═══
+function setStn(s) {
+  station = s;
+  document.getElementById('bdg-stn').textContent = s;
+  document.querySelectorAll('.stntab').forEach(t=>{
+    if(!t.classList.contains('off')) t.classList.toggle('active', t.textContent===s);
   });
 }
 
-function toggleShiftActive() {
-  const status = document.getElementById('shift-status').value;
-  const active = status === 'active';
-  document.getElementById('shift-active-content').style.display = active ? 'block' : 'none';
-  document.getElementById('shift-inactive-content').style.display = active ? 'none' : 'block';
-  document.getElementById('no-op-label').textContent =
-    status === 'no-product' ? 'No Product — No Operation' : 'Station Closed';
-}
-
-// ═══════════ PHOTO ═══════════
-function onPhotoChange(e) {
-  const file = e.target.files[0]; 
-  if (!file) { alert('No file selected'); return; }
+// ═══ PHOTO UPLOAD ═══
+function photoSelected(inp) {
+  const file = inp.files[0];
+  if(!file) return;
   const reader = new FileReader();
-  reader.onload = evt => {
-    photoBase64 = evt.target.result.split(',')[1];
+  reader.onload = function(e) {
+    photoB64 = e.target.result.split(',')[1];
     const prev = document.getElementById('photo-preview');
-    if (prev) { prev.src = evt.target.result; prev.style.display = 'block'; }
-    document.getElementById('ai-btn').disabled = false;
-    document.getElementById('ai-btn').style.background = 'linear-gradient(135deg,#00c853,#00e676)';
-    document.getElementById('ai-btn-txt').textContent = '🤖 Photo Ready — Click to Read';
+    prev.src = e.target.result;
+    prev.style.display = 'block';
+    const btn = document.getElementById('ai-btn');
+    btn.disabled = false;
+    btn.style.background = 'linear-gradient(135deg,#00c853,#00e676)';
+    document.getElementById('ai-txt').textContent = '🤖 Photo Ready — Read with AI';
+    document.getElementById('upload-box').style.display = 'none';
   };
-  reader.onerror = () => alert('Could not read file. Try again.');
   reader.readAsDataURL(file);
 }
 
-async function readWithAI() {
-  if (!photoBase64) return;
-  const btn = document.getElementById('ai-btn');
-  btn.disabled = true;
-  document.getElementById('ai-btn-txt').innerHTML = '<div class="spinner"></div> Reading...';
+function empPhotoSelected(inp) {
+  const file = inp.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    document.getElementById('emp-photo-prev').src = e.target.result;
+    document.getElementById('emp-photo-prev').style.display = 'block';
+    document.getElementById('emp-upload-box').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
 
-  const key = apiKey || localStorage.getItem('af_api_key') || '';
-  if (!key) {
-    document.getElementById('ai-result-card').style.display = 'block';
-    document.getElementById('ai-summary').innerHTML = '<span style="color:var(--red)">⚠️ No API key. Go to ⚙️ Settings → enter your Anthropic API key → Save.</span>';
-    btn.disabled = false; document.getElementById('ai-btn-txt').textContent = '🤖 Read with AI';
+// ═══ AI READING ═══
+async function runAI() {
+  if(!photoB64) return;
+  const key = apiKey || localStorage.getItem('af_key') || '';
+  if(!key) {
+    showCard();
+    document.getElementById('ai-sum').innerHTML = '<span style="color:#ff5252">⚠️ No API key. Go to ⚙️ Settings → enter Anthropic API key → Save.</span>';
     return;
   }
+  const btn = document.getElementById('ai-btn');
+  btn.disabled = true;
+  document.getElementById('ai-txt').innerHTML = '<div class="spinner"></div> Reading...';
 
-  const prompt = `You are reading a handwritten gas station daily shift report. 
-Read EVERY piece of data visible and return it as a single valid JSON object.
-CRITICAL RULES:
-- No trailing commas anywhere
-- No markdown, no backticks, no explanation - ONLY the JSON object
-- All numbers as plain numbers (no commas, no currency symbols)
-- If you cannot read a value clearly, use 0
-- shift_sales for each hose = end_liter minus beg_liter (always positive)
-- shift_peso = end_sales minus beg_sales (always positive)
-- product must be one of: Diesel, Unleaded, Premium, Gasoline
+  const prompt = `Read this handwritten gas station shift report completely. Return ONLY a JSON object — no markdown, no backticks, no explanation. Use only plain numbers (no commas, no peso signs). If unclear use 0.
 
-Return this exact structure:
 {
   "date": "YYYY-MM-DD",
   "shift": "1",
-  "attendant": "name here",
-  "supervisor": "name here",
-  "prices": {
-    "diesel": 0,
-    "unleaded": 0,
-    "premium": 0
-  },
+  "attendant": "",
+  "supervisor": "",
+  "prices": { "diesel": 0, "unleaded": 0, "premium": 0 },
   "hoses": [
-    {
-      "hose": "P1-D",
-      "product": "Diesel",
-      "beg_liter": 0,
-      "beg_sales": 0,
-      "end_liter": 0,
-      "end_sales": 0,
-      "shift_liter": 0,
-      "shift_sales": 0
-    }
+    { "hose": "P1-D", "product": "Diesel", "beg_liter": 0, "beg_sales": 0, "end_liter": 0, "end_sales": 0 }
   ],
-  "dipstick": {
-    "diesel": 0,
-    "unleaded": 0,
-    "premium": 0
-  },
-  "fuel_in": {
-    "diesel": 0,
-    "unleaded": 0,
-    "premium": 0
-  },
-  "denominations": {
-    "d1000": 0,
-    "d500": 0,
-    "d200": 0,
-    "d100": 0,
-    "d50": 0,
-    "d20": 0,
-    "d10": 0,
-    "d5": 0,
-    "d1": 0
-  },
-  "gross_sales": 0,
+  "dipstick": { "diesel": 0, "unleaded": 0, "premium": 0 },
+  "fuel_delivered": { "diesel": 0, "unleaded": 0, "premium": 0 },
+  "denominations": { "p1000": 0, "p500": 0, "p200": 0, "p100": 0, "p50": 0, "p20": 0, "p10": 0, "p5": 0, "p1": 0 },
   "ar_sales": 0,
   "other_income": 0,
-  "cash_total": 0,
-  "over_short": 0,
-  "payables": [
-    {
-      "type": "supplier",
-      "name": "",
-      "amount": 0
-    }
-  ],
-  "total_payables": 0,
-  "net_collectible": 0
-}`;
+  "payables": [{ "type": "supplier", "name": "", "amount": 0 }]
+}
+
+product must be one of: Diesel, Unleaded, Premium, Gasoline
+shift values = end minus beginning, always positive`;
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': key,
-        'anthropic-version': '2023-06-01'
-      },
+      headers: { 'Content-Type':'application/json', 'x-api-key':key, 'anthropic-version':'2023-06-01' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 2000,
-        messages: [{
-          role: 'user',
-          content: [
-            { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: photoBase64 } },
-            { type: 'text', text: prompt }
-          ]
-        }]
+        messages: [{ role:'user', content:[
+          { type:'image', source:{ type:'base64', media_type:'image/jpeg', data:photoB64 }},
+          { type:'text', text:prompt }
+        ]}]
       })
     });
+    const data = await res.json();
+    const txt = data.content.map(b=>b.text||'').join('');
+    document.getElementById('ai-raw').textContent = txt;
+    showCard();
 
-    const data = await resp.json();
-    const text = data.content.map(b => b.text || '').join('');
-
-    document.getElementById('ai-result-card').style.display = 'block';
-    document.getElementById('ai-response').textContent = text;
-
-    // Bulletproof JSON extraction
-    let cleanText = text.trim();
-    // Remove ALL backtick fences
-    cleanText = cleanText.replace(/`{1,3}json/gi, '').replace(/`{1,3}/g, '');
-    // Extract only {....} block
-    const firstBrace = cleanText.indexOf('{');
-    const lastBrace = cleanText.lastIndexOf('}');
-    if (firstBrace !== -1 && lastBrace !== -1) {
-      cleanText = cleanText.substring(firstBrace, lastBrace + 1);
-    }
-    // Fix trailing commas before } or ]
-    cleanText = cleanText.replace(/,\s*([\]}])/g, '$1');
-    // Fix multiple commas
-    cleanText = cleanText.replace(/,\s*,/g, ',');
+    // Extract JSON
+    let clean = txt.replace(/`{1,3}json/gi,'').replace(/`{1,3}/g,'');
+    const f = clean.indexOf('{'), l = clean.lastIndexOf('}');
+    if(f!==-1 && l!==-1) clean = clean.substring(f,l+1);
+    clean = clean.replace(/,(\s*[\]}])/g,'$1').trim();
 
     try {
-      aiParsedData = JSON.parse(cleanText);
-      const d = aiParsedData;
-
-      // Build clean human-readable summary
-      let summary = '<div style="line-height:2">';
-      summary += `📅 <strong>Date:</strong> ${d.date || '—'}&nbsp;&nbsp;`;
-      summary += `🔄 <strong>Shift:</strong> ${d.shift || '—'}<br>`;
-      summary += `👤 <strong>Attendant:</strong> ${d.attendant || '—'}<br>`;
-      if (d.prices) {
-        summary += `💰 <strong>Prices:</strong> Diesel ₱${d.prices.diesel||0} | Unleaded ₱${d.prices.unleaded||0} | Premium ₱${d.prices.premium||0}<br>`;
-      }
-      if (d.hoses && d.hoses.length) {
-        summary += `<br>⛽ <strong>${d.hoses.length} Hose(s) found:</strong><br>`;
-        d.hoses.forEach(h => {
-          const sl = h.shift_liter || Math.max(0, (h.end_liter||0) - (h.beg_liter||0));
-          const ss = h.shift_sales || Math.max(0, (h.end_sales||0) - (h.beg_sales||0));
-          summary += `&nbsp;&nbsp;• <strong>${h.hose}</strong> ${h.product}: `;
-          summary += `<span style="color:var(--gold)">${fmt(sl)}L / ₱${fmt(ss)}</span><br>`;
+      aiData = JSON.parse(clean);
+      const d = aiData;
+      let s = '<div style="line-height:2">';
+      s += `📅 <b>${d.date||'—'}</b> &nbsp; 🔄 Shift ${d.shift||'—'}<br>`;
+      s += `👤 <b>${d.attendant||'—'}</b> &nbsp; Supervisor: ${d.supervisor||'—'}<br>`;
+      if(d.prices) s += `💰 Diesel ₱${d.prices.diesel||0} | Unleaded ₱${d.prices.unleaded||0} | Premium ₱${d.prices.premium||0}<br>`;
+      if(d.hoses&&d.hoses.length) {
+        s += `<br>⛽ <b>${d.hoses.length} hose(s):</b><br>`;
+        d.hoses.forEach(h=>{
+          const sl=Math.max(0,(h.end_liter||0)-(h.beg_liter||0));
+          const ss=Math.max(0,(h.end_sales||0)-(h.beg_sales||0));
+          s += `&nbsp;• <b>${h.hose}</b> ${h.product}: <span style="color:#f9a825">${fmt(sl)}L / ₱${fmt(ss)}</span><br>`;
         });
       }
-      if (d.dipstick) {
-        summary += `<br>🛢 <strong>Dipstick:</strong> Diesel ${d.dipstick.diesel||0}L | Unleaded ${d.dipstick.unleaded||0}L | Premium ${d.dipstick.premium||0}L<br>`;
-      }
-      if (d.cash_total) summary += `💵 <strong>Cash Total:</strong> ₱${fmt(d.cash_total)}<br>`;
-      if (d.over_short !== undefined) summary += `📊 <strong>Over/Short:</strong> ₱${fmt(d.over_short)}<br>`;
-      summary += '</div>';
-
-      document.getElementById('ai-summary').innerHTML = summary;
+      if(d.dipstick) s += `<br>🛢 Dip: D${d.dipstick.diesel||0}L U${d.dipstick.unleaded||0}L P${d.dipstick.premium||0}L<br>`;
+      s += '</div>';
+      document.getElementById('ai-sum').innerHTML = s;
       document.getElementById('apply-btn').style.display = 'block';
-
-    } catch(parseErr) {
-      document.getElementById('ai-summary').innerHTML =
-        `<span style="color:var(--red)">⚠️ Parse error: ${parseErr.message}</span><br>
-         <span style="color:var(--muted);font-size:11px">Raw data shown below. Try reading again or enter manually.</span>`;
-      document.getElementById('ai-response').style.display = 'block';
-      document.getElementById('apply-btn').style.display = 'none';
+    } catch(pe) {
+      document.getElementById('ai-sum').innerHTML = `<span style="color:#ff5252">Parse error: ${pe.message}<br>Check raw data below.</span>`;
+      document.getElementById('ai-raw').style.display = 'block';
     }
-
-  } catch(err) {
-    document.getElementById('ai-result-card').style.display = 'block';
-    document.getElementById('ai-summary').innerHTML = `<span style="color:var(--red)">❌ Error: ${err.message}</span>`;
+  } catch(e) {
+    showCard();
+    document.getElementById('ai-sum').innerHTML = `<span style="color:#ff5252">Error: ${e.message}</span>`;
   } finally {
     btn.disabled = false;
-    document.getElementById('ai-btn-txt').textContent = '🤖 Read Again';
+    document.getElementById('ai-txt').textContent = '🤖 Read Again';
   }
 }
 
-async function applyAIData() {
-  if (!aiParsedData) return;
-  const d = aiParsedData;
+function showCard() { document.getElementById('ai-card').style.display='block'; }
+function toggleRaw() {
+  const el = document.getElementById('ai-raw');
+  el.style.display = el.style.display==='none'?'block':'none';
+}
 
-  // Shift info
-  if (d.date) { document.getElementById('shift-date').value = d.date; }
-  if (d.shift) { document.getElementById('shift-num').value = d.shift; document.getElementById('shift-num2').value = d.shift; }
-  if (d.attendant) { document.getElementById('attendant-select').value = d.attendant; }
-  if (d.supervisor) { document.getElementById('supervisor-select').value = d.supervisor; }
-
-  // Prices
-  if (d.prices) {
-    if (d.prices.diesel) document.getElementById('price-diesel').value = d.prices.diesel;
-    if (d.prices.unleaded) document.getElementById('price-gas').value = d.prices.unleaded;
-    if (d.prices.premium) document.getElementById('price-other').value = d.prices.premium;
+// ═══ APPLY AI DATA ═══
+function applyData() {
+  if(!aiData) return;
+  const d = aiData;
+  if(d.date) document.getElementById('s-date').value = d.date;
+  if(d.shift) { document.getElementById('s-shiftnum').value=d.shift; document.getElementById('s-shiftnum2').value=d.shift; }
+  if(d.prices) {
+    if(d.prices.diesel) document.getElementById('p-diesel').value=d.prices.diesel;
+    if(d.prices.unleaded) document.getElementById('p-unleaded').value=d.prices.unleaded;
+    if(d.prices.premium) document.getElementById('p-premium').value=d.prices.premium;
   }
-
-  // Hoses - rebuild table completely
-  if (d.hoses && d.hoses.length) {
-    hoseRows = [];
-    document.getElementById('meter-tbody').innerHTML = '';
-    d.hoses.forEach(h => addHoseRowData(h));
+  if(d.hoses&&d.hoses.length) {
+    hoses=[]; document.getElementById('hose-tbody').innerHTML='';
+    d.hoses.forEach(h=>addHoseData(h));
   }
-
-  // Dipstick
-  if (d.dipstick) {
-    if (d.dipstick.diesel !== undefined) document.getElementById('dip-d').value = d.dipstick.diesel;
-    if (d.dipstick.unleaded !== undefined) document.getElementById('dip-g').value = d.dipstick.unleaded;
+  if(d.dipstick) {
+    if(d.dipstick.diesel!==undefined) document.getElementById('dip-d').value=d.dipstick.diesel;
+    if(d.dipstick.unleaded!==undefined) document.getElementById('dip-u').value=d.dipstick.unleaded;
+    if(d.dipstick.premium!==undefined) document.getElementById('dip-p').value=d.dipstick.premium;
   }
-
-  // Denominations
-  if (d.denominations) {
-    const map = {'d1000':'1000','d500':'500','d200':'200','d100':'100','d50':'50','d20':'20','d10':'10','d5':'5','d1':'1'};
-    document.querySelectorAll('.denom').forEach(inp => {
-      const key = Object.keys(map).find(k => map[k] === inp.dataset.val);
-      if (key && d.denominations[key] !== undefined) inp.value = d.denominations[key];
+  if(d.fuel_delivered) {
+    if(d.fuel_delivered.diesel!==undefined) document.getElementById('del-d').value=d.fuel_delivered.diesel;
+    if(d.fuel_delivered.unleaded!==undefined) document.getElementById('del-u').value=d.fuel_delivered.unleaded;
+    if(d.fuel_delivered.premium!==undefined) document.getElementById('del-p').value=d.fuel_delivered.premium;
+  }
+  if(d.denominations) {
+    const map={p1000:'1000',p500:'500',p200:'200',p100:'100',p50:'50',p20:'20',p10:'10',p5:'5',p1:'1'};
+    document.querySelectorAll('.denom').forEach(inp=>{
+      const k=Object.keys(map).find(k=>map[k]===inp.dataset.v);
+      if(k&&d.denominations[k]!==undefined) inp.value=d.denominations[k];
     });
   }
-
-  // Cash fields
-  if (d.ar_sales) document.getElementById('ar-sales').value = d.ar_sales;
-  if (d.other_income) document.getElementById('other-income').value = d.other_income;
-
-  // Recalculate everything
-  recalcAll();
-  calcCash();
-  checkInventory();
-  calcPayables();
-
-  // Switch to shift info tab to review
-  switchTab('shift', 'info');
+  if(d.ar_sales) document.getElementById('ar-sales').value=d.ar_sales;
+  if(d.other_income) document.getElementById('other-inc').value=d.other_income;
+  recalc(); calcCash();
+  goTab('shift','info');
 }
 
+// ═══ HOSE TABLE ═══
+function initHoses() {
+  [{hose:'H1',product:'Diesel'},{hose:'H2',product:'Diesel'},{hose:'H3',product:'Unleaded'},{hose:'H4',product:'Unleaded'}]
+    .forEach(h=>addHoseData(h));
+}
+function addHose() { addHoseData({}); }
+function addHoseData(data) {
+  const id = hoseId++;
+  hoses.push(id);
+  const p = data.product||'Diesel';
+  const tr = document.createElement('tr');
+  tr.id = 'h'+id;
+  tr.innerHTML = `
+    <td><input type="text" value="${data.hose||'H'+(id+1)}" style="width:46px;padding:4px 5px;font-size:11px"></td>
+    <td><select onchange="recalc()" style="font-size:11px;padding:3px 20px 3px 5px;width:88px">
+      <option${p==='Diesel'?' selected':''}>Diesel</option>
+      <option${p==='Unleaded'?' selected':''}>Unleaded</option>
+      <option${p==='Premium'?' selected':''}>Premium</option>
+      <option${p==='Gasoline'?' selected':''}>Gasoline</option>
+    </select></td>
+    <td><input type="number" class="bl" value="${data.beg_liter||0}" oninput="recalcRow(${id})"></td>
+    <td><input type="number" class="bs" value="${data.beg_sales||0}" oninput="recalcRow(${id})"></td>
+    <td><input type="number" class="el" value="${data.end_liter||0}" oninput="recalcRow(${id})"></td>
+    <td><input type="number" class="es" value="${data.end_sales||0}" oninput="recalcRow(${id})"></td>
+    <td class="shiftcell" id="rl${id}">0</td>
+    <td class="shiftcell" id="rs${id}">0</td>
+    <td><button style="background:none;border:none;color:#ff5252;cursor:pointer;font-size:16px" onclick="removeHose(${id})">×</button></td>`;
+  document.getElementById('hose-tbody').appendChild(tr);
+  recalcRow(id);
+}
+function removeHose(id) {
+  const tr=document.getElementById('h'+id); if(tr) tr.remove();
+  hoses=hoses.filter(x=>x!==id); recalcTotals();
+}
+function recalcRow(id) {
+  const tr=document.getElementById('h'+id); if(!tr) return;
+  const sl=Math.max(0,(+tr.querySelector('.el').value||0)-(+tr.querySelector('.bl').value||0));
+  const ss=Math.max(0,(+tr.querySelector('.es').value||0)-(+tr.querySelector('.bs').value||0));
+  document.getElementById('rl'+id).textContent=fmt(sl);
+  document.getElementById('rs'+id).textContent=fmt(ss);
+  document.getElementById('rs'+id).className = ss>20000?'flagcell':'shiftcell';
+  recalcTotals();
+}
+function recalc() { hoses.forEach(id=>recalcRow(id)); }
+function recalcTotals() {
+  let tbl=0,tbs=0,tel=0,tes=0,tsl=0,tss=0,td=0,tu=0,tp=0;
+  hoses.forEach(id=>{
+    const tr=document.getElementById('h'+id); if(!tr) return;
+    const bl=+tr.querySelector('.bl').value||0, bs=+tr.querySelector('.bs').value||0;
+    const el=+tr.querySelector('.el').value||0, es=+tr.querySelector('.es').value||0;
+    const sl=Math.max(0,el-bl), ss=Math.max(0,es-bs);
+    tbl+=bl;tbs+=bs;tel+=el;tes+=es;tsl+=sl;tss+=ss;
+    const prod=tr.querySelector('select').value;
+    if(prod==='Diesel') td+=sl; else if(prod==='Premium') tp+=sl; else tu+=sl;
+  });
+  ['t-bl','t-bs','t-el','t-es','t-sl','t-ss'].forEach((id,i)=>document.getElementById(id).textContent=fmt([tbl,tbs,tel,tes,tsl,tss][i]));
+  document.getElementById('sum-l').textContent=fmt(tsl)+' L';
+  document.getElementById('sum-s').textContent='₱'+fmt(tss);
+  document.getElementById('sum-d').textContent=fmt(td)+' L';
+  document.getElementById('sum-u').textContent=fmt(tu)+' L';
+  document.getElementById('sum-p').textContent=fmt(tp)+' L';
+  document.getElementById('gross').value=tss.toFixed(2);
+  calcCash(); checkFlags(tss);
+}
+function checkFlags(tss) {
+  const flags=[];
+  hoses.forEach(id=>{
+    const tr=document.getElementById('h'+id); if(!tr) return;
+    const ss=Math.max(0,(+tr.querySelector('.es').value||0)-(+tr.querySelector('.bs').value||0));
+    const hn=tr.querySelector('input[type=text]').value;
+    if(ss>20000) flags.push(`🚩 ${hn}: sales ₱${fmt(ss)} — possible misread`);
+  });
+  document.getElementById('flag-section').innerHTML=flags.map(f=>`<div style="background:rgba(255,82,82,.07);border:1px solid rgba(255,82,82,.2);border-radius:8px;padding:10px;margin-bottom:8px;font-size:12px;color:#ff5252">${f}</div>`).join('');
+}
 
+// ═══ SHIFT TOGGLE ═══
+function toggleOp() {
+  const v=document.getElementById('s-status').value;
+  document.getElementById('active-section').style.display=v==='active'?'block':'none';
+  document.getElementById('inactive-section').style.display=v!=='active'?'block':'none';
+  document.getElementById('inactive-label').textContent=v==='noproduct'?'No Product — No Operation':'Station Closed';
+}
+
+// ═══ CASH ═══
+function cashTotal() {
+  let t=0; document.querySelectorAll('.denom').forEach(i=>t+=(+i.value||0)*(+i.dataset.v)); return t;
+}
+function calcCash() {
+  const cash=cashTotal();
+  document.getElementById('cash-total').textContent='₱'+fmt(cash);
+  document.getElementById('s-cash').textContent='₱'+fmt(cash);
+  const gross=+document.getElementById('gross').value||0;
+  const ar=+document.getElementById('ar-sales').value||0;
+  const oth=+document.getElementById('other-inc').value||0;
+  const os=cash-(gross-ar+oth);
+  const el=document.getElementById('s-os');
+  el.textContent=(os>=0?'+':'')+'₱'+fmt(os);
+  el.className='sval '+(os>100?'green':os<-100?'red':'');
+  document.getElementById('os-flag').style.display=Math.abs(os)>500?'block':'none';
+  calcPays();
+}
+
+// ═══ PAYABLES ═══
+function addPay(type) {
+  const cont=document.getElementById({sup:'sup-rows',chk:'chk-rows',loan:'loan-rows'}[type]);
+  const div=document.createElement('div'); div.className='payrow';
+  div.innerHTML=`<input type="text" placeholder="${type==='sup'?'Supplier':type==='chk'?'Check #':'Borrower'}" style="flex:1">
+    <input type="number" placeholder="₱" style="width:100px;text-align:right" oninput="calcPays()">
+    <button style="background:none;border:none;color:#ff5252;cursor:pointer;font-size:18px" onclick="this.parentElement.remove();calcPays()">×</button>`;
+  cont.appendChild(div);
+}
+function calcPays() {
+  let t=0;
+  ['sup-rows','chk-rows','loan-rows'].forEach(id=>document.getElementById(id).querySelectorAll('input[type=number]').forEach(i=>t+=+i.value||0));
+  document.getElementById('tot-pay').textContent='₱'+fmt(t);
+  const gross=+document.getElementById('gross').value||0;
+  const ar=+document.getElementById('ar-sales').value||0;
+  const net=gross-ar-t;
+  const el=document.getElementById('net-col');
+  el.textContent='₱'+fmt(net); el.className='sval '+(net>=0?'green':'red');
+}
+
+// ═══ SUBMIT SHIFT ═══
+function fillSummary() {
+  document.getElementById('sub-stn').textContent=station;
+  document.getElementById('sub-shift').textContent=document.getElementById('s-date').value+' S'+document.getElementById('s-shiftnum').value;
+  document.getElementById('sub-l').textContent=document.getElementById('sum-l').textContent;
+  document.getElementById('sub-s').textContent=document.getElementById('sum-s').textContent;
+  document.getElementById('sub-c').textContent=document.getElementById('s-cash').textContent;
+  document.getElementById('sub-os').textContent=document.getElementById('s-os').textContent;
+}
+async function submitShift() {
+  const url=sheetsUrl||localStorage.getItem('af_url')||'';
+  if(!url){showSt('sub-status','Enter Google Sheets URL in Settings','err');return;}
+  const os=Math.abs(cashTotal()-(+document.getElementById('gross').value||0)+(+document.getElementById('ar-sales').value||0));
+  if(os>500&&!document.getElementById('os-reason').value.trim()){showSt('sub-status','Over/Short >₱500 — go to Cash tab and enter reason','warn');return;}
+  fillSummary();
+  const hoseData=hoses.map(id=>{
+    const tr=document.getElementById('h'+id); if(!tr) return null;
+    return {hose:tr.querySelector('input[type=text]').value,product:tr.querySelector('select').value,
+      beg_liter:tr.querySelector('.bl').value,beg_sales:tr.querySelector('.bs').value,
+      end_liter:tr.querySelector('.el').value,end_sales:tr.querySelector('.es').value,
+      shift_liter:document.getElementById('rl'+id).textContent,shift_sales:document.getElementById('rs'+id).textContent};
+  }).filter(Boolean);
+  const denoms={};
+  document.querySelectorAll('.denom').forEach(i=>denoms['p'+i.dataset.v]=i.value||0);
+  const payload={type:'shift',station,
+    date:document.getElementById('s-date').value,shift:document.getElementById('s-shiftnum').value,
+    attendant:document.getElementById('s-attendant').value,supervisor:document.getElementById('s-supervisor').value,
+    total_liters:document.getElementById('t-sl').textContent,total_sales:document.getElementById('t-ss').textContent,
+    dip_diesel:document.getElementById('dip-d').value,dip_unleaded:document.getElementById('dip-u').value,dip_premium:document.getElementById('dip-p').value,
+    ar_sales:document.getElementById('ar-sales').value,other_income:document.getElementById('other-inc').value,
+    cash_total:document.getElementById('s-cash').textContent,over_short:document.getElementById('s-os').textContent,
+    os_reason:document.getElementById('os-reason').value,
+    net_collectible:document.getElementById('net-col').textContent,
+    hoses:JSON.stringify(hoseData),...denoms,timestamp:new Date().toISOString()};
+  try {
+    await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    showSt('sub-status','✅ Submitted! Check your Google Sheet.','ok');
+  } catch(e){showSt('sub-status','❌ '+e.message,'err');}
+}
+async function submitZero() {
+  const url=sheetsUrl||localStorage.getItem('af_url')||'';
+  if(!url){alert('Set Google Sheets URL in Settings first');return;}
+  try {
+    await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'shift',station,date:document.getElementById('s-date').value,shift:document.getElementById('s-shiftnum').value,status:document.getElementById('s-status').value,total_liters:0,total_sales:0,timestamp:new Date().toISOString()})});
+    showSt('sub-status','✅ Zero shift recorded.','ok');
+  } catch(e){alert('Error: '+e.message);}
+}
+
+// ═══ DELIVERY ═══
+function calcDel() {
+  const t=((+document.getElementById('del-dl').value||0)*(+document.getElementById('del-dp').value||0))+
+          ((+document.getElementById('del-ul').value||0)*(+document.getElementById('del-up').value||0))+
+          ((+document.getElementById('del-pl').value||0)*(+document.getElementById('del-pp').value||0));
+  document.getElementById('del-tot').textContent='₱'+fmt(t);
+  document.getElementById('chk-amt').value=t.toFixed(2);
+}
+function saveDel() {
+  const d={id:Date.now(),station:document.getElementById('del-stn').value,date:document.getElementById('del-date').value,
+    supplier:document.getElementById('del-sup').value,
+    diesel_l:document.getElementById('del-dl').value,unleaded_l:document.getElementById('del-ul').value,premium_l:document.getElementById('del-pl').value,
+    total:document.getElementById('del-tot').textContent,
+    chk_num:document.getElementById('chk-num').value,chk_bank:document.getElementById('chk-bank').value,
+    chk_date:document.getElementById('chk-date').value,chk_due:document.getElementById('chk-due').value,
+    chk_amt:document.getElementById('chk-amt').value,status:'pending'};
+  deliveries.push(d); localStorage.setItem('af_del',JSON.stringify(deliveries));
+  showSt('del-status','✅ Saved!','ok'); renderChecks(); renderDelHist();
+}
+function markPaid(id) {
+  deliveries=deliveries.map(d=>d.id===id?{...d,status:'paid'}:d);
+  localStorage.setItem('af_del',JSON.stringify(deliveries)); renderChecks();
+}
+function renderChecks() {
+  const today=new Date().toISOString().split('T')[0];
+  const pending=deliveries.filter(d=>d.status!=='paid');
+  let tot=0,ov=0;
+  const html=pending.length?pending.map(d=>{
+    const od=d.chk_due&&d.chk_due<today; if(od)ov++; tot+=+d.chk_amt||0;
+    return `<div class="chkrow">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+        <b>${d.supplier||'—'}</b><span class="csbadge ${od?'overdue':'pending'}">${od?'OVERDUE':'PENDING'}</span>
+      </div>
+      <div style="font-size:11px;color:#8899bb;line-height:1.9">
+        Check #${d.chk_num||'—'} | ${d.chk_bank||'—'}<br>
+        Amount: <b style="color:#f0f4ff">₱${fmt(d.chk_amt)}</b> | Due: <b style="color:${od?'#ff5252':'#f0f4ff'}">${d.chk_due||'—'}</b> | ${d.station}
+      </div>
+      <button class="btnsm" style="margin-top:8px;color:#00e676;border-color:#00e676" onclick="markPaid(${d.id})">✅ Mark Paid</button>
+    </div>`;
+  }).join(''):'<div style="color:#8899bb;font-size:12px;text-align:center;padding:20px">No outstanding checks ✅</div>';
+  ['checks-list','mgr-checks'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=html;});
+  ['chk-out','mgr-due'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='₱'+fmt(tot);});
+  ['chk-ov','mgr-ov'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=ov;});
+}
+function renderDelHist() {
+  const el=document.getElementById('del-hist'); if(!el) return;
+  el.innerHTML=deliveries.length?[...deliveries].reverse().map(d=>`<div class="chkrow">
+    <div style="display:flex;justify-content:space-between"><b>${d.supplier||'—'}</b><span style="color:#f9a825">${d.total}</span></div>
+    <div style="font-size:11px;color:#8899bb;line-height:1.9">${d.date} | ${d.station}<br>D:${fmt(d.diesel_l)}L U:${fmt(d.unleaded_l)}L P:${fmt(d.premium_l)}L<br>Check #${d.chk_num||'—'} due ${d.chk_due||'—'} <span class="csbadge ${d.status==='paid'?'paid':'pending'}">${(d.status||'pending').toUpperCase()}</span></div>
+  </div>`).join(''):'<div style="color:#8899bb;font-size:12px;text-align:center;padding:20px">No deliveries yet</div>';
+}
+
+// ═══ HR ═══
+let empPhotoData=null;
+function saveEmp() {
+  const fn=document.getElementById('emp-fn').value.trim(), ln=document.getElementById('emp-ln').value.trim();
+  if(!fn||!ln){showSt('emp-status','Enter first and last name','err');return;}
+  const e={id:Date.now(),name:fn+' '+ln,fn,ln,pos:document.getElementById('emp-pos').value,stn:document.getElementById('emp-stn').value,
+    rate:document.getElementById('emp-rate').value,type:document.getElementById('emp-type').value,
+    hired:document.getElementById('emp-hired').value,phone:document.getElementById('emp-phone').value,
+    photo:document.getElementById('emp-photo-prev').src||null};
+  employees.push(e); localStorage.setItem('af_emp',JSON.stringify(employees));
+  showSt('emp-status','✅ '+e.name+' added!','ok');
+  fillEmpDrops(); renderTeam();
+  document.getElementById('emp-fn').value=''; document.getElementById('emp-ln').value='';
+  document.getElementById('emp-rate').value=''; document.getElementById('emp-phone').value='';
+  document.getElementById('emp-photo-prev').style.display='none';
+  document.getElementById('emp-upload-box').style.display='block';
+}
+function renderTeam() {
+  const el=document.getElementById('team-list'); if(!el) return;
+  el.innerHTML=employees.length?employees.map(e=>`<div class="empcard">
+    <div class="avatar">${e.photo&&e.photo.startsWith('data:')?`<img src="${e.photo}">`:(e.fn[0]+e.ln[0])}</div>
+    <div style="flex:1">
+      <div style="font-size:14px;font-weight:700">${e.name}</div>
+      <div style="font-size:11px;color:#8899bb">${e.pos} — ${e.stn}</div>
+      <div style="margin-top:4px;display:flex;gap:5px;flex-wrap:wrap">
+        <span style="background:rgba(249,168,37,.15);color:#f9a825;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700">₱${fmt(e.rate)}/day</span>
+        <span style="background:rgba(79,195,247,.15);color:#4fc3f7;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700">${e.type}</span>
+      </div>
+    </div>
+  </div>`).join(''):'<div style="color:#8899bb;font-size:12px;text-align:center;padding:30px">No team members yet.<br>Go to ➕ Add TM</div>';
+}
+function fillEmpDrops() {
+  ['s-attendant','s-supervisor','att-emp','pay-emp'].forEach(id=>{
+    const sel=document.getElementById(id); if(!sel) return;
+    const cur=sel.value;
+    sel.innerHTML='<option value="">-- Select TM --</option>';
+    employees.forEach(e=>{const o=document.createElement('option');o.value=e.name;o.textContent=e.name+' ('+e.pos+')';sel.appendChild(o);});
+    if(cur) sel.value=cur;
+  });
+}
+function saveAtt() {
+  const emp=document.getElementById('att-emp').value;
+  if(!emp){alert('Select employee');return;}
+  const r={id:Date.now(),date:document.getElementById('att-date').value,stn:document.getElementById('att-stn').value,
+    emp,shift:document.getElementById('att-shift').value,status:document.getElementById('att-stat').value,notes:document.getElementById('att-notes').value};
+  attendance.push(r); localStorage.setItem('af_att',JSON.stringify(attendance));
+  renderAtt(); document.getElementById('att-notes').value='';
+}
+function renderAtt() {
+  const el=document.getElementById('att-list'); if(!el) return;
+  const cols={present:'#00e676',absent:'#ff5252',late:'#f9a825',halfday:'#4fc3f7',restday:'#8899bb',holiday:'#4fc3f7'};
+  el.innerHTML=attendance.length?[...attendance].reverse().slice(0,20).map(a=>`<div class="chkrow" style="display:flex;justify-content:space-between;align-items:center">
+    <div><div style="font-weight:700;font-size:13px">${a.emp}</div>
+    <div style="font-size:11px;color:#8899bb">${a.date} | ${a.stn} | Shift ${a.shift}${a.notes?' | '+a.notes:''}</div></div>
+    <span style="background:rgba(0,0,0,.2);color:${cols[a.status]||'#8899bb'};border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700">${a.status.toUpperCase()}</span>
+  </div>`).join(''):'<div style="color:#8899bb;font-size:12px;text-align:center;padding:20px">No attendance yet</div>';
+}
+function calcPay() {
+  const nm=document.getElementById('pay-emp').value, we=document.getElementById('pay-week').value;
+  if(!nm||!we){alert('Select employee and week');return;}
+  const emp=employees.find(e=>e.name===nm); if(!emp) return;
+  const rate=+emp.rate||0;
+  const end=new Date(we), start=new Date(we);
+  start.setDate(end.getDate()-6);
+  const dates=[];
+  for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)) dates.push(d.toISOString().split('T')[0]);
+  let basic=0,holpay=0;
+  const rows=dates.map(dt=>{
+    const att=attendance.find(a=>a.emp===nm&&a.date===dt);
+    const hol=HOLIDAYS.find(h=>h.d===dt);
+    const stat=att?att.status:(hol?'holiday':'absent');
+    let pay=0, note='';
+    if(hol) {
+      if(hol.t==='R'){pay=stat==='present'?rate*2:rate;note=hol.n+(stat==='present'?' 200%':' 100%');}
+      else{pay=stat==='present'?rate*1.3:0;note=hol.n+(stat==='present'?' 130%':' no pay');}
+      holpay+=pay;
+    } else if(stat==='present'){pay=rate;basic+=rate;note='Present';}
+    else if(stat==='halfday'){pay=rate*.5;basic+=rate*.5;note='Half Day';}
+    else if(stat==='late'){pay=rate*.9;basic+=rate*.9;note='Late';}
+    else{note=stat.charAt(0).toUpperCase()+stat.slice(1);}
+    return `<tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+      <td style="padding:5px 4px;font-size:11px">${dt}</td>
+      <td style="padding:5px 4px;font-size:11px;color:#8899bb">${note}</td>
+      <td style="padding:5px 4px;font-size:12px;text-align:right;color:${pay>0?'#f9a825':'#8899bb'}">${pay>0?'₱'+fmt(pay):'—'}</td>
+    </tr>`;
+  }).join('');
+  const gross=basic+holpay;
+  const el=document.getElementById('pay-result');
+  el.innerHTML=`<div class="card">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <div class="avatar" style="width:40px;height:40px;font-size:13px">${emp.photo&&emp.photo.startsWith('data:')?`<img src="${emp.photo}">`:(emp.fn[0]+emp.ln[0])}</div>
+      <div><div style="font-weight:700">${emp.name}</div><div style="font-size:11px;color:#8899bb">${emp.pos} | ₱${fmt(rate)}/day</div></div>
+    </div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:12px">
+      <thead><tr style="background:#0f3460"><th style="padding:6px 4px;font-size:10px;color:#8899bb;text-align:left">Date</th><th style="padding:6px 4px;font-size:10px;color:#8899bb;text-align:left">Status</th><th style="padding:6px 4px;font-size:10px;color:#8899bb;text-align:right">Pay</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="sg">
+      <div class="sc"><div class="slabel">Basic Pay</div><div class="sval gold">₱${fmt(basic)}</div></div>
+      <div class="sc"><div class="slabel">Holiday Pay</div><div class="sval blue">₱${fmt(holpay)}</div></div>
+      <div class="sc" style="grid-column:span 2"><div class="slabel">GROSS WEEKLY PAY</div><div class="sval green" style="font-size:22px">₱${fmt(gross)}</div></div>
+    </div>
+  </div>`;
+}
+
+// ═══ SETTINGS ═══
+function saveSettings() {
+  sheetsUrl=document.getElementById('set-url').value.trim();
+  apiKey=document.getElementById('set-key').value.trim();
+  localStorage.setItem('af_url',sheetsUrl);
+  if(apiKey) localStorage.setItem('af_key',apiKey);
+  showSt('set-status','✅ Saved!','ok');
+}
+
+// ═══ HOLIDAYS ═══
+function renderHolidays() {
+  document.getElementById('hol-list').innerHTML=HOLIDAYS.map(h=>`<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+    <span>${h.d} — ${h.n}</span>
+    <span style="background:${h.t==='R'?'rgba(255,82,82,.15)':'rgba(249,168,37,.15)'};color:${h.t==='R'?'#ff5252':'#f9a825'};border-radius:4px;padding:1px 6px;font-size:10px;font-weight:700">${h.t==='R'?'Regular':'Special'}</span>
+  </div>`).join('');
+}
+
+// ═══ UTILS ═══
+function fmt(n){return Number(n).toLocaleString('en-PH',{maximumFractionDigits:2});}
+function showSt(id,msg,type){const el=document.getElementById(id);if(!el)return;el.textContent=msg;el.className='status '+type;el.style.display='block';setTimeout(()=>el.style.display='none',5000);}
+</script>
+</body>
+</html>
