@@ -701,6 +701,9 @@ shift values = end minus beginning, always positive`;
       })
     });
     const data = await res.json();
+    console.log('API response:', JSON.stringify(data).substring(0,300));
+    if(data.error) { showCard(); document.getElementById('ai-sum').innerHTML='<span style="color:#ff5252">API Error: '+data.error.message+'</span>'; btn.disabled=false; document.getElementById('ai-txt').textContent='🤖 Read Again'; return; }
+    if(!data.content || !Array.isArray(data.content)) { showCard(); document.getElementById('ai-sum').innerHTML='<span style="color:#ff5252">Unexpected response. Check console. Raw: '+JSON.stringify(data).substring(0,200)+'</span>'; btn.disabled=false; document.getElementById('ai-txt').textContent='🤖 Read Again'; return; }
     const txt = data.content.map(b=>b.text||'').join('');
     document.getElementById('ai-raw').textContent = txt;
     showCard();
