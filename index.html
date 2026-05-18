@@ -233,11 +233,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div id="shift-active-content">
       <div class="card">
         <div class="card-title"><span class="card-title-dot"></span>Upload Handwritten Report</div>
-        <div class="photo-area" id="photo-drop-zone">
-          <input type="file" id="photo-input" accept="image/*" onchange="onPhotoChange(event)" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:2">
-          <div style="font-size:36px;pointer-events:none">📷</div>
-          <div style="color:var(--muted);font-size:13px;margin-top:6px;pointer-events:none">Tap to <strong style="color:var(--text)">capture or upload</strong></div>
-        </div>
+        <label for="photo-input" style="display:block;border:2px dashed rgba(249,168,37,0.4);border-radius:12px;padding:20px;text-align:center;cursor:pointer;background:rgba(249,168,37,0.04);margin-bottom:12px">
+          <div style="font-size:36px">📷</div>
+          <div style="color:#8899bb;font-size:13px;margin-top:6px">Tap to <strong style="color:#f0f4ff">capture or upload</strong></div>
+        </label>
+        <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="onPhotoChange(event)">
         <img class="photo-preview" id="photo-preview">
       </div>
       <button class="btn-primary" id="ai-btn" onclick="readWithAI()" disabled>
